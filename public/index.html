@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DREYKO Bot · ICT + Open Interest</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">⚡ DREYKO Bot <span class="sub">· ICT · Manipulation · Open Interest · Market Maker Model</span></div>
+  <div class="controls">
+    <label>Zaman Dilimi
+      <select id="interval">
+        <option value="5m">5dk</option>
+        <option value="15m" selected>15dk</option>
+        <option value="30m">30dk</option>
+        <option value="60m">1sa</option>
+        <option value="4h">4sa</option>
+        <option value="1d">1g</option>
+      </select>
+    </label>
+    <label>Tarama
+      <select id="count">
+        <option value="20">Top 20</option>
+        <option value="30" selected>Top 30</option>
+        <option value="50">Top 50</option>
+      </select>
+    </label>
+    <label class="auto">
+      <input type="checkbox" id="autoscan" checked> Oto-tara (60sn)
+    </label>
+    <label class="auto">
+      <input type="checkbox" id="sound" checked> 🔔 Alarm
+    </label>
+    <button id="scanNow">Şimdi Tara</button>
+    <button id="btBtn" title="GERÇEK MMxM filtresi backtest sonuçları">📊 Backtest</button>
+  </div>
+</header>
+
+<div id="btOverlay" class="bt-overlay" hidden>
+  <div class="bt-box">
+    <div class="bt-head"><b>📊 GERÇEK MMxM Filtresi — Backtest Sonuçları</b><button id="btClose">✕</button></div>
+    <pre id="btText">Yükleniyor…</pre>
+  </div>
+</div>
+
+<main>
+  <section class="main">
+    <div class="layers" id="layers">
+      <span class="lbl">Katmanlar:</span>
+      <label><input type="checkbox" data-layer="range" checked> Range</label>
+      <label><input type="checkbox" data-layer="manipulation" checked> Manipulation</label>
+      <label><input type="checkbox" data-layer="mmModel" checked> MM Model</label>
+      <label><input type="checkbox" data-layer="ipda" checked> IPDA</label>
+      <label><input type="checkbox" data-layer="oi" checked> Open Interest</label>
+      <label><input type="checkbox" data-layer="trade" checked> Giriş/SL/TP</label>
+      <label><input type="checkbox" data-layer="wyckoffTR" checked> Wyckoff TR</label>
+      <label><input type="checkbox" data-layer="volprof" checked> Hacim Profili</label>
+      <label><input type="checkbox" data-layer="ifvg" checked> iFVG</label>
+      <label><input type="checkbox" data-layer="fvg"> FVG</label>
+      <label><input type="checkbox" data-layer="liquidity"> Likidite</label>
+    </div>
+    <div class="chartwrap">
+      <canvas id="chart"></canvas>
+      <button id="fsBtn" class="fsbtn" title="Tam ekran (F)">⛶</button>
+    </div>
+    <div id="panel" class="setup-panel">
+      <div class="empty">Sağdan bir setup seç veya bir sembol ara. Bot yalnızca yeterli confluence olduğunda sinyal verir (aksi halde izleme modu).</div>
+    </div>
+    <div class="search">
+      <input id="symInput" placeholder="Sembol ara (örn: BTCUSDT)" list="symList">
+      <datalist id="symList"></datalist>
+      <button id="loadSym">Analiz Et</button>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="side-head">
+      <span>Setup Tarama</span>
+      <span id="scanStatus" class="status">—</span>
+    </div>
+    <div id="results" class="results"></div>
+  </aside>
+</main>
+
+<footer class="disclaimer">
+  ⚠️ Bu araç algoritmik SMC/ICT örüntü tespitidir, yatırım tavsiyesi değildir. Veriler MEXC spot. Risk yönetimini kendiniz yapın.
+</footer>
+
+<audio id="ding" preload="auto"></audio>
+<script src="chart.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

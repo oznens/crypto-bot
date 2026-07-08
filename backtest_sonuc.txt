@@ -1,0 +1,23 @@
+== GERÇEK MMxM FİLTRESİ BACKTESTİ ==
+Tarih: 05.07.2026 17:22:03 | Setup: 27 | Semboller: 15 | TF: 4h(LTF 15m) + 1d(LTF 60m)
+Kurallar: giriş=limit(geri alınan seviye), stop=wick±%0.3, aynı barda SL+TP→SL (muhafazakar), skor reclaim anı verisiyle (sızıntısız)
+
+— LTF onayı × HTF skoru (LTF hariç 0-4) —
+LTF onay + HTF>=2             n   16 | dolan  12 | TP1(range): WR %8.3  -0.64R (12 işlem) | 2R: WR %25.0  -0.25R (12)
+LTF onay + HTF<2              n    0 | dolan   0 | TP1(range): WR %-  -R (0 işlem) | 2R: WR %-  -R (0)
+LTF yok + HTF>=2              n   11 | dolan  10 | TP1(range): WR %0.0  -1.00R (10 işlem) | 2R: WR %10.0  -0.70R (10)
+LTF yok + HTF<2               n    0 | dolan   0 | TP1(range): WR %-  -R (0 işlem) | 2R: WR %-  -R (0)
+
+— zaman dilimi bazında LTF etkisi —
+4h · LTF onaylı               n   15 | dolan  12 | TP1(range): WR %8.3  -0.64R (12 işlem) | 2R: WR %25.0  -0.25R (12)
+4h · LTF onaysız              n   11 | dolan  10 | TP1(range): WR %0.0  -1.00R (10 işlem) | 2R: WR %10.0  -0.70R (10)
+1d · LTF onaylı               n    1 | dolan   0 | TP1(range): WR %-  -R (0 işlem) | 2R: WR %-  -R (0)
+1d · LTF onaysız              n    0 | dolan   0 | TP1(range): WR %-  -R (0 işlem) | 2R: WR %-  -R (0)
+
+— toplam LTF etkisi —
+LTF onaylı (hepsi)            n   16 | dolan  12 | TP1(range): WR %8.3  -0.64R (12 işlem) | 2R: WR %25.0  -0.25R (12)
+LTF onaysız (hepsi)           n   11 | dolan  10 | TP1(range): WR %0.0  -1.00R (10 işlem) | 2R: WR %10.0  -0.70R (10)
+
+SONUÇ: Edge kaynağı LTF CISD+MSS onayı. GERÇEK = LTF onay + skor>=3.
+Bu koşum (TP1): LTF onaylı -0.64R/işlem, onaysız -1.00R/işlem — LTF onaysız girme.
+Not: LTF-onaylı örneklem küçük; her koşum güncel pencereyi tarar, rakamlar oynar. Yönün kalıcılığı için ara ara tekrar koş.

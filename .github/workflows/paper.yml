@@ -1,0 +1,34 @@
+name: paper-trading
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # ~5 dk'da bir (GitHub yoğunlukta geciktirebilir)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Motoru çalıştır
+        run: node paper_engine.js
+      - name: Durumu commit'le
+        run: |
+          git config user.name "paper-bot"
+          git config user.email "actions@github.com"
+          git add paper_state.json docs/paper_state.json
+          if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
+          git commit -m "paper: durum güncellendi [skip ci]"
+          git pull --rebase origin main || true
+          git push
