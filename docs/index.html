@@ -16,47 +16,71 @@ h1{font-size:18px;margin:0 0 4px}
 .card .k{font-size:11px;color:var(--dim)}
 .card .v{font-size:17px;font-weight:bold;margin-top:3px}
 .g{color:#5fd99a}.r{color:#f08a8a}.b{color:#79c0ff}.y{color:var(--gold)}
-canvas{width:100%;height:120px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:14px}
+canvas.eq{width:100%;height:120px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:14px}
 h2{font-size:14px;margin:16px 0 8px;color:#c9d1d9}
 table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12px}
 th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th{background:#161b24;color:var(--dim);font-size:10px;text-transform:uppercase}
 td:first-child,th:first-child{text-align:left}
+tr.row{cursor:pointer}
+tr.row:hover td{background:#1a212c}
 .tag{font-size:9px;font-weight:bold;padding:1px 6px;border-radius:4px}
 .tag.L{background:rgba(38,162,105,.2);color:#5fd99a}
 .tag.S{background:rgba(224,68,75,.2);color:#f08a8a}
 .tag.tp{background:rgba(38,162,105,.25);color:#5fd99a}
 .tag.sl{background:rgba(224,68,75,.25);color:#f08a8a}
 .tag.be{background:rgba(232,195,74,.2);color:var(--gold)}
+.tag.tf{background:#2a3350;color:#9db8e8}
 .empty{color:var(--dim);padding:14px;text-align:center}
 .wrap{overflow-x:auto}
 details{margin-top:2px}
 summary{cursor:pointer;color:var(--dim);font-size:11px}
-.rsn{font-size:11px;color:#9aa4b2;margin:4px 0 0 12px;line-height:1.5}
+.rsn{font-size:11px;color:#9aa4b2;margin:4px 0 0 12px;line-height:1.5;white-space:normal}
 .foot{color:var(--dim);font-size:11px;margin-top:14px;text-align:center}
+.mod{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:50;display:flex;align-items:center;justify-content:center;padding:14px}
+.mod[hidden]{display:none}
+.mbox{background:#10141c;border:1px solid var(--line);border-radius:10px;max-width:860px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+.mhead{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.mhead button{background:transparent;border:none;color:var(--dim);font-size:15px;cursor:pointer}
+.mhead button:hover{color:#fff}
+#mcv{width:100%;height:380px;display:block}
+.mfoot{padding:6px 12px 10px;color:var(--dim);font-size:11px}
 </style>
 </head>
 <body>
 <h1>📄 DREYKO × yigit × SolCJ × JB — Paper Trading</h1>
 <div class="sub" id="sub">yükleniyor…</div>
 <div class="cards" id="cards"></div>
-<canvas id="eq" height="120"></canvas>
-<h2>📌 Açık Pozisyonlar</h2>
+<canvas id="eq" class="eq" height="120"></canvas>
+<h2>📌 Açık Pozisyonlar <span style="color:var(--dim);font-weight:normal;font-size:11px">(satıra tıkla → setup grafiği)</span></h2>
 <div class="wrap"><div id="open"></div></div>
 <h2>✅ Kapanan İşlemler (son 50)</h2>
 <div class="wrap"><div id="closed"></div></div>
-<div class="foot">MEXC perp verisi · 60m sinyal + 15m LTF onayı · güven ≥%75 · market giriş (kayma %0.05 + taker %0.02) · TP1'de %50 derisk + SL→BE · risk %1 · SANAL işlemdir, yatırım tavsiyesi değildir.</div>
+<div class="foot">MEXC perp · sinyal TF: 15m / 60m / 4sa (+LTF onayı) · güven ≥%75 · market giriş (kayma %0.05 + taker %0.02) · TP1'de %50 derisk + SL→BE · risk %1 · tüm saatler <b>New York (NY)</b> · SANAL işlemdir, yatırım tavsiyesi değildir.</div>
+
+<div class="mod" id="mod" hidden>
+  <div class="mbox">
+    <div class="mhead"><b id="mtitle">grafik</b><button id="mclose">✕</button></div>
+    <canvas id="mcv"></canvas>
+    <div class="mfoot" id="mfoot"></div>
+  </div>
+</div>
+
 <script>
+let ST=null;
 const fmt=(v,d)=>v==null?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:d==null?6:d});
 const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+'dk':m<1440?(m/60).toFixed(1)+'sa':(m/1440).toFixed(1)+'g'};
+const NY=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
+const NYs=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',hour12:false}):'-';
 async function load(){
   let st=null;
   for(const u of ['paper_state.json','../paper_state.json']){
     try{const r=await fetch(u+'?t='+Date.now());if(r.ok){st=await r.json();break;}}catch(e){}
   }
   if(!st){document.getElementById('sub').textContent='paper_state.json bulunamadı — ilk koşum bekleniyor (Actions).';return;}
+  ST=st;
   const s=st.stats||{};
-  document.getElementById('sub').textContent='Son koşum: '+(st.lastRun?new Date(st.lastRun).toLocaleString('tr-TR'):'-')+' ('+ago(st.lastRun)+' önce) · koşum #'+(st.runs||0)+' · kaynak: '+(s.source||'-')+' · TF '+(s.tf||'60m')+' · eşik %'+(s.minConf||75);
+  document.getElementById('sub').textContent='Son koşum: '+NYs(st.lastRun)+' NY ('+ago(st.lastRun)+' önce) · koşum #'+(st.runs||0)+' · kaynak: '+(s.source||'-')+' · TF: '+(s.tf||'-')+' · eşik %'+(s.minConf||75);
   const eqPnl=st.equity-st.startEquity;
   document.getElementById('cards').innerHTML=[
     ['Özkaynak',fmt(st.equity,2)+' $',eqPnl>=0?'g':'r'],
@@ -69,22 +93,25 @@ async function load(){
   drawEq(st.equityHistory||[]);
   const O=document.getElementById('open');
   if(!st.open.length) O.innerHTML='<div class="empty">Açık pozisyon yok — motor sinyal bekliyor.</div>';
-  else O.innerHTML='<table><tr><th>Parite</th><th>Yön</th><th>Giriş</th><th>SL</th><th>TP1</th><th>TP-F</th><th>Miktar</th><th>Risk$</th><th>Güven</th><th>Not</th><th>MMxM</th><th>Derisk</th><th>Yaş</th></tr>'+
-    st.open.map(t=>'<tr><td>'+t.symbol.replace('_','/')+'<details><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+
+  else O.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Giriş</th><th>SL</th><th>TP1</th><th>TP-F</th><th>Miktar</th><th>Risk$</th><th>Güven</th><th>Not</th><th>MMxM</th><th>Derisk</th><th>Açılış (NY)</th><th>Yaş</th></tr>'+
+    st.open.map((t,i)=>'<tr class="row" onclick="showChart(\'open\','+i+')"><td>'+t.symbol.replace('_','/')+'<details onclick="event.stopPropagation()"><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+
+    '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
     '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td><td>'+fmt(t.entry)+'</td><td class="r">'+fmt(t.sl)+'</td><td class="g">'+fmt(t.tp1)+'</td><td class="g">'+fmt(t.tpF)+'</td>'+
     '<td>'+fmt(t.qty,4)+'</td><td>'+fmt(t.riskUSD,0)+'</td><td>%'+t.conf+'</td><td>'+t.grade+'</td><td>'+(t.mmxm?(t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':'')):'-')+'</td>'+
-    '<td>'+(t.deriskDone?'✓ BE':'-')+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
+    '<td>'+(t.deriskDone?'✓ BE':'-')+'</td><td>'+NY(t.openedAt)+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
   const C=document.getElementById('closed');
   const cl=(st.closed||[]).slice(0,50);
   if(!cl.length) C.innerHTML='<div class="empty">Henüz kapanan işlem yok.</div>';
-  else C.innerHTML='<table><tr><th>Parite</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkışlar</th><th>PnL $</th><th>R</th><th>Güven</th><th>Süre</th><th>Kapanış</th></tr>'+
-    cl.map(t=>{const cls=t.closeReason==='TP'?'tp':t.closeReason==='BE'?'be':'sl';
-    return '<tr><td>'+t.symbol.replace('_','/')+'</td><td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td>'+
+  else C.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkışlar</th><th>PnL $</th><th>R</th><th>Güven</th><th>Süre</th><th>Kapanış (NY)</th></tr>'+
+    cl.map((t,i)=>{const cls=t.closeReason==='TP'?'tp':t.closeReason==='BE'?'be':'sl';
+    return '<tr class="row" onclick="showChart(\'closed\','+i+')"><td>'+t.symbol.replace('_','/')+'</td>'+
+    '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
+    '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td>'+
     '<td><span class="tag '+cls+'">'+t.closeReason+'</span></td><td>'+fmt(t.entry)+'</td>'+
     '<td>'+(t.fills||[]).map(f=>f.why+'@'+fmt(f.px)).join(' · ')+'</td>'+
     '<td class="'+(t.realized>=0?'g':'r')+'">'+(t.realized>=0?'+':'')+fmt(t.realized,2)+'</td>'+
     '<td class="'+(t.r>=0?'g':'r')+'">'+(t.r>=0?'+':'')+fmt(t.r,2)+'</td><td>%'+t.conf+'</td>'+
-    '<td>'+((t.closedAt-t.openedAt)/3600000).toFixed(1)+'sa</td><td>'+new Date(t.closedAt).toLocaleString('tr-TR')+'</td></tr>';}).join('')+'</table>';
+    '<td>'+((t.closedAt-t.openedAt)/3600000).toFixed(1)+'sa</td><td>'+NY(t.closedAt)+'</td></tr>';}).join('')+'</table>';
 }
 function drawEq(h){
   const cv=document.getElementById('eq'),ctx=cv.getContext('2d');
@@ -99,6 +126,78 @@ function drawEq(h){
   ctx.fillStyle='#8b949e';ctx.font='10px Arial';
   ctx.fillText(fmt(mx,0),8,12);ctx.fillText(fmt(mn,0),8,H-4);
 }
+// ---- setup grafiği modalı ----
+function showChart(kind,idx){
+  if(!ST) return;
+  const t=(kind==='open'?ST.open:ST.closed)[idx];
+  if(!t) return;
+  document.getElementById('mtitle').textContent=t.symbol.replace('_','/')+' · '+(t.tf||'-')+' · '+t.side+' · güven %'+t.conf+' · '+t.grade+(t.mmxm?' · MMxM '+t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':''):'');
+  document.getElementById('mfoot').textContent='Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
+  document.getElementById('mod').hidden=false;
+  drawSnap(t);
+}
+function drawSnap(t){
+  const cv=document.getElementById('mcv'),ctx=cv.getContext('2d');
+  const W=cv.clientWidth||820,H=380;
+  cv.width=W*(devicePixelRatio||1);cv.height=H*(devicePixelRatio||1);
+  ctx.scale(devicePixelRatio||1,devicePixelRatio||1);
+  ctx.fillStyle='#0b0e13';ctx.fillRect(0,0,W,H);
+  const sn=t.snap;
+  if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
+  const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
+  const pL=6,pR=W-72,pT=10,pB=H-24;
+  let mn=Infinity,mx=-Infinity;
+  for(const c of cs){if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h;}
+  [t.entry,t.sl,t.tp1,t.tpF].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
+  const sp=(mx-mn)||1;mn-=sp*.05;mx+=sp*.05;
+  const X=i=>pL+(pR-pL)*(i+.5)/cs.length, Y=p=>pB-(p-mn)/(mx-mn)*(pB-pT);
+  // range + manipülasyon
+  if(sn.manip){
+    const m=sn.manip;
+    ctx.strokeStyle='rgba(200,210,225,.5)';ctx.lineWidth=1;
+    [m.rangeHigh,m.rangeLow].forEach(p=>{const y=Y(p);ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pR,y);ctx.stroke();});
+    ctx.fillStyle='rgba(190,200,215,.7)';ctx.font='9px Arial';ctx.textAlign='left';
+    ctx.fillText('Range HIGH',pL+3,Y(m.rangeHigh)-3);ctx.fillText('Range LOW',pL+3,Y(m.rangeLow)+10);
+    if(m.rangeFrom!=null&&m.rangeTo>=0){
+      const x0=X(Math.max(0,m.rangeFrom)),x1=X(Math.min(cs.length-1,m.rangeTo));
+      ctx.strokeStyle='rgba(38,162,105,.55)';ctx.setLineDash([3,3]);
+      ctx.strokeRect(Math.min(x0,x1),Y(m.rangeHigh),Math.abs(x1-x0),Y(m.rangeLow)-Y(m.rangeHigh));ctx.setLineDash([]);
+    }
+    if(m.sweepAt>=0&&m.sweepAt<cs.length){
+      const xa=X(Math.max(0,m.sweepAt)),xb=X(Math.min(cs.length-1,Math.max(m.at,m.sweepAt)));
+      const yA=Y(m.side==='LONG'?m.rangeLow:m.wick),yB=Y(m.side==='LONG'?m.wick:m.rangeHigh);
+      ctx.fillStyle='rgba(224,68,75,.28)';
+      ctx.fillRect(Math.min(xa,xb)-6,Math.min(yA,yB),Math.abs(xb-xa)+12,Math.abs(yB-yA)||4);
+      ctx.fillStyle='#e0444b';ctx.font='bold 9px Arial';ctx.textAlign='center';
+      ctx.fillText('Manipulation',(xa+xb)/2,(m.side==='LONG'?Math.max(yA,yB)+11:Math.min(yA,yB)-4));
+    }
+  }
+  // mumlar
+  const bw=Math.max(1,Math.min((pR-pL)/cs.length*.62,9));
+  for(let i=0;i<cs.length;i++){
+    const c=cs[i],x=X(i),up=c.c>=c.o;
+    ctx.strokeStyle='#7d8694';ctx.beginPath();ctx.moveTo(x,Y(c.h));ctx.lineTo(x,Y(c.l));ctx.stroke();
+    ctx.fillStyle=up?'#26a269':'#e0444b';
+    const yo=Y(c.o),yc=Y(c.c);ctx.fillRect(x-bw/2,Math.min(yo,yc),bw,Math.max(1,Math.abs(yc-yo)));
+  }
+  // seviye çizgileri + sağ etiketler
+  const lvl=(p,col,lab,dash)=>{if(p==null)return;const y=Y(p);
+    ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.setLineDash(dash||[]);
+    ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pR,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=col;ctx.fillRect(pR,y-8,66,15);
+    ctx.fillStyle='#fff';ctx.font='bold 9px Arial';ctx.textAlign='left';ctx.fillText(lab,pR+3,y+3);};
+  lvl(t.entry,'#3b82f6','GİRİŞ '+fmt(t.entry,4));
+  lvl(t.sl,'#e0444b','SL');
+  lvl(t.tp1,'#26a269','TP1',[5,3]);
+  if(t.tpF!==t.tp1) lvl(t.tpF,'#26a269','TP-F',[5,3]);
+  // x ekseni: ilk/son mum NY saati
+  ctx.fillStyle='#8b949e';ctx.font='9px Arial';ctx.textAlign='left';
+  ctx.fillText(NY(cs[0].t)+' NY',pL+2,H-8);
+  ctx.textAlign='right';ctx.fillText(NY(cs[cs.length-1].t)+' NY',pR-2,H-8);
+}
+document.getElementById('mclose').onclick=()=>document.getElementById('mod').hidden=true;
+document.getElementById('mod').onclick=e=>{if(e.target.id==='mod')document.getElementById('mod').hidden=true;};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('mod').hidden=true;});
 load();setInterval(load,60000);
 </script>
 </body>

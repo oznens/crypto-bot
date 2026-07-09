@@ -212,6 +212,15 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { ok: true, mtime: st.mtimeMs, text: fs.readFileSync(fp, 'utf8') });
     }
     if (u.pathname.startsWith('/api/')) return sendJSON(res, 404, { error: 'bilinmeyen uç nokta' });
+    // Paper trading panosu (docs/) — lokalden de izlenebilsin
+    if (u.pathname === '/paper' || u.pathname === '/paper/') {
+      try { const b = fs.readFileSync(path.join(__dirname, 'docs', 'index.html')); res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); return res.end(b); }
+      catch (e) { return sendJSON(res, 404, { error: 'pano yok' }); }
+    }
+    if (u.pathname === '/paper_state.json') {
+      try { const b = fs.readFileSync(path.join(__dirname, 'docs', 'paper_state.json')); res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); return res.end(b); }
+      catch (e) { return sendJSON(res, 404, { error: 'state yok' }); }
+    }
     return serveStatic(res, u.pathname);
   } catch (e) {
     return sendJSON(res, 502, { error: e.message || String(e) });

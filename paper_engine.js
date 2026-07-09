@@ -11,7 +11,7 @@
 const https = require('https'), fs = require('fs'), path = require('path');
 const A = require('./analysis');
 
-const STATE_F = path.join(__dirname, 'paper_state.json');
+const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
 const DOCS_F = path.join(__dirname, 'docs', 'paper_state.json');
 const MAX_SYMS = +(process.env.PAPER_MAX_SYMS || 50);
 const MIN_CONF = 75;                     // güven eşiği (%)
@@ -19,7 +19,7 @@ const START_EQ = 10000;                  // başlangıç özkaynak (USDT)
 const RISK_PCT = 0.01;                   // işlem başına risk (yigit %1)
 const LEV_CAP = 10;                      // notional tavanı = özkaynak × 10
 const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
-const TF = '60m', LTF = '15m';
+const TF_LIST = [['4h', '15m'], ['60m', '15m'], ['15m', '5m']];   // [sinyal TF, LTF onayı] — yüksek TF öncelikli
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -73,7 +73,20 @@ function loadState() {
 function saveState(st) {
   const s = JSON.stringify(st, null, 1);
   fs.writeFileSync(STATE_F, s);
-  try { fs.mkdirSync(path.dirname(DOCS_F), { recursive: true }); fs.writeFileSync(DOCS_F, s); } catch (e) {}
+  if (!process.env.PAPER_STATE) {                              // test modunda docs kopyasına dokunma
+    try { fs.mkdirSync(path.dirname(DOCS_F), { recursive: true }); fs.writeFileSync(DOCS_F, s); } catch (e) {}
+  }
+}
+
+// Panoda tıklanınca grafik çizilebilsin diye giriş anındaki mum + yapı anlık görüntüsü
+function makeSnap(a) {
+  const c = a.candles.slice(-132);
+  const off = a.candles.length - c.length;
+  const mp = a.structures.manipulation;
+  return {
+    candles: c.map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]),
+    manip: mp ? { rangeFrom: mp.rangeFrom - off, rangeTo: mp.rangeTo - off, sweepAt: mp.sweepAt - off, at: mp.at - off, rangeHigh: mp.rangeHigh, rangeLow: mp.rangeLow, wick: mp.wick, side: mp.side } : null
+  };
 }
 
 // ---- işlem yönetimi (gerçekçi dolumlar) ----
@@ -93,6 +106,7 @@ function finishTrade(st, tr, why) {
   tr.status = 'closed'; tr.closedAt = Date.now(); tr.closeReason = why;
   tr.r = rnd(tr.realized / tr.riskUSD, 2);
   st.closed.unshift(tr); if (st.closed.length > 400) st.closed.length = 400;
+  st.closed.forEach((t, i) => { if (i >= 60 && t.snap) delete t.snap; });   // dosya şişmesin: grafik son 60 kapanışta kalır
   st.open = st.open.filter(x => x !== tr);
 }
 async function manageOpen(st) {
@@ -128,11 +142,11 @@ async function manageOpen(st) {
 }
 
 // ---- yeni sinyal -> market giriş ----
-function tryOpen(st, sym, a, mktPx) {
+function tryOpen(st, sym, a, mktPx, tf) {
   const s = a.setup; if (!s || s.confidence < MIN_CONF) return null;
   if (st.open.find(t => t.symbol === sym)) return null;
   const mp = a.structures.manipulation; if (!mp) return null;
-  const sig = sym + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
+  const sig = sym + '|' + tf + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
   if (st.recentSigs.includes(sig)) return null;
   const long = s.side === 'LONG';
   const entry = mktPx * (long ? 1 + SLIP : 1 - SLIP);         // MARKET giriş: aleyhte kayma
@@ -149,11 +163,12 @@ function tryOpen(st, sym, a, mktPx) {
   if (!(qty > 0)) return null;
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
   const tr = {
-    id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf: TF,
+    id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
     sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),
+    snap: makeSnap(a),                                          // panoda grafik için giriş anı görüntüsü
     openedAt: Date.now(), lastCheck: Date.now(), status: 'open', deriskDone: false, realized: 0, feeCharged: false, fills: []
   };
   st.open.push(tr);
@@ -172,24 +187,27 @@ function tryOpen(st, sym, a, mktPx) {
 
   let scanned = 0, opened = 0, errors = 0;
   for (const sym of syms) {
-    if (st.open.find(t => t.symbol === sym)) continue;        // sembolde açık işlem varsa tarama
-    try {
-      const c60 = await klines(sym, TF, 500);
-      if (c60.length < 80) continue;
-      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', '') });
-      scanned++;
-      if (a.setup && a.setup.confidence >= MIN_CONF) {
-        try {                                                  // LTF onayı ile yeniden değerlendir (GERÇEK MMxM)
-          const cl = await klines(sym, LTF, 500);
-          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), ltf: { interval: LTF, candles: cl } });
-        } catch (e) {}
+    if (st.open.find(t => t.symbol === sym)) continue;        // sembolde açık işlem varsa tarama (TF fark etmez)
+    for (const [tf, ltfIv] of TF_LIST) {                      // yüksek TF öncelikli; işlem açılınca diğer TF'lere bakma
+      try {
+        const cc = await klines(sym, tf, 500);
+        if (cc.length < 80) { await sleep(80); continue; }
+        let a = A.analyze(cc, { interval: tf, symbol: sym.replace('_', '') });
+        scanned++;
         if (a.setup && a.setup.confidence >= MIN_CONF) {
-          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c);
-          if (tr) { opened++; console.log('AÇILDI:', sym, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade); }
+          try {                                                // LTF onayı ile yeniden değerlendir (GERÇEK MMxM)
+            const cl = await klines(sym, ltfIv, 500);
+            a = A.analyze(cc, { interval: tf, symbol: sym.replace('_', ''), ltf: { interval: ltfIv, candles: cl } });
+          } catch (e) {}
+          if (a.setup && a.setup.confidence >= MIN_CONF) {
+            const tr = tryOpen(st, sym, a, cc[cc.length - 1].c, tf);
+            if (tr) { opened++; console.log('AÇILDI:', sym, tf, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade); break; }
+          }
         }
-      }
-    } catch (e) { errors++; }
-    await sleep(120);
+      } catch (e) { errors++; }
+      await sleep(80);
+    }
+    await sleep(60);
   }
 
   st.lastRun = Date.now();
@@ -201,7 +219,7 @@ function tryOpen(st, sym, a, mktPx) {
     winRate: st.closed.length ? rnd(100 * wins / st.closed.length, 1) : null,
     netPnl: rnd(st.equity - st.startEquity, 2),
     totalR: rnd(st.closed.reduce((s2, t) => s2 + (t.r || 0), 0), 2),
-    source: SRC, minConf: MIN_CONF, tf: TF
+    source: SRC, minConf: MIN_CONF, tf: TF_LIST.map(x => x[0]).join('/')
   };
   saveState(st);
   console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
