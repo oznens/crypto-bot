@@ -19,7 +19,7 @@ const START_EQ = 10000;                  // başlangıç özkaynak (USDT)
 const RISK_PCT = 0.01;                   // işlem başına risk (yigit %1)
 const LEV_CAP = 10;                      // notional tavanı = özkaynak × 10
 const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
-const TF_LIST = [['4h', '15m'], ['60m', '15m'], ['15m', '5m']];   // [sinyal TF, LTF onayı] — yüksek TF öncelikli
+const TF_LIST = [['1d', '60m'], ['4h', '15m'], ['60m', '15m'], ['15m', '5m']];   // [sinyal TF, LTF onayı] — yüksek TF öncelikli
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -50,8 +50,8 @@ async function topSymbols() {
       .sort((a, b) => (+b.quoteVolume || 0) - (+a.quoteVolume || 0)).slice(0, MAX_SYMS).map(x => x.symbol);
   }
 }
-const IV_PERP = { '1m': 'Min1', '5m': 'Min5', '15m': 'Min15', '60m': 'Min60', '4h': 'Hour4' };
-const secPerBar = { '1m': 60, '5m': 300, '15m': 900, '60m': 3600, '4h': 14400 };
+const IV_PERP = { '1m': 'Min1', '5m': 'Min5', '15m': 'Min15', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
+const secPerBar = { '1m': 60, '5m': 300, '15m': 900, '60m': 3600, '4h': 14400, '1d': 86400 };
 async function klines(sym, iv, bars) {
   if (SRC === 'perp') {
     const end = Math.floor(Date.now() / 1000), start = end - bars * secPerBar[iv];
