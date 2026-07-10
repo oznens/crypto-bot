@@ -20,6 +20,12 @@ const RISK_PCT = 0.01;                   // işlem başına risk (yigit %1)
 const LEV_CAP = 10;                      // notional tavanı = özkaynak × 10
 const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
 const TF_LIST = [['1d', '60m'], ['4h', '15m'], ['60m', '15m'], ['15m', '5m']];   // [sinyal TF, LTF onayı] — yüksek TF öncelikli
+// ---- v2 SIKI FİLTRELER (50 işlemlik -40R analizinden: B notlular WR%5, dar stoplar gürültüye süpürüldü,
+// aynı saatte 4-5 korele işlem, ters-bias shortlar; A+ ve GERÇEK✓ görece iyiydi) ----
+const MIN_RISK = { '15m': 0.008, '60m': 0.012, '4h': 0.02, '1d': 0.03 };   // min stop mesafesi (giriş %'si)
+const MAX_OPEN = 6;                    // toplam eşzamanlı pozisyon tavanı (korelasyon freni)
+const MAX_NEW_PER_RUN = 2;             // koşum başına yeni işlem tavanı
+const TP1_R = 1.5;                     // TP1 = 1.5R sabit (derisk gerçekten çalışsın); TP-F = yapısal hedef
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -144,6 +150,10 @@ async function manageOpen(st) {
 // ---- yeni sinyal -> market giriş ----
 function tryOpen(st, sym, a, mktPx, tf) {
   const s = a.setup; if (!s || s.confidence < MIN_CONF) return null;
+  if (st.open.length >= MAX_OPEN) return null;                // v2: eşzamanlı pozisyon tavanı
+  if (s.grade === 'B') return null;                           // v2: sadece A / A+ (B'ler WR %5 çıktı)
+  if (!s.mmxm || !s.mmxm.valid) return null;                  // v2: sadece GERÇEK MMxM ✓ (LTF onaylı)
+  if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== (s.side === 'LONG'))) return null;   // v2: yigit sert kuralı — ters bias'ta işlem yok
   if (st.open.find(t => t.symbol === sym)) return null;
   const mp = a.structures.manipulation; if (!mp) return null;
   const sig = sym + '|' + tf + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
@@ -152,11 +162,14 @@ function tryOpen(st, sym, a, mktPx, tf) {
   const entry = mktPx * (long ? 1 + SLIP : 1 - SLIP);         // MARKET giriş: aleyhte kayma
   const sl = s.stop, tps = s.tps;
   if (long ? sl >= entry : sl <= entry) return null;          // stop yanlış tarafta (fiyat kaçmış)
-  const tpF = tps[tps.length - 1], tp1 = tps[0];
+  const tpF = tps[tps.length - 1];
   if (long ? entry >= tpF : entry <= tpF) return null;        // hedef zaten geçilmiş
   const riskDist = Math.abs(entry - sl);
+  if (riskDist / entry < (MIN_RISK[tf] || 0.01)) return null; // v2: dar stop = gürültü stopu -> işlem yok
   const rrAct = Math.abs(tpF - entry) / riskDist;
   if (rrAct < 1) return null;                                 // market girişten sonra en az 1R kalmalı
+  let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;   // v2: TP1 = 1.5R (derisk çalışsın)
+  if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
   let qty = riskUSD / riskDist;
   qty = Math.min(qty, st.equity * LEV_CAP / entry);
@@ -187,6 +200,7 @@ function tryOpen(st, sym, a, mktPx, tf) {
 
   let scanned = 0, opened = 0, errors = 0;
   for (const sym of syms) {
+    if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;   // v2: koşum/toplam tavanları
     if (st.open.find(t => t.symbol === sym)) continue;        // sembolde açık işlem varsa tarama (TF fark etmez)
     for (const [tf, ltfIv] of TF_LIST) {                      // yüksek TF öncelikli; işlem açılınca diğer TF'lere bakma
       try {
