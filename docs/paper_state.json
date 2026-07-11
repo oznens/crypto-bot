@@ -1,5 +1,5 @@
 {
- "equity": 10155.91,
+ "equity": 10230.24,
  "startEquity": 10000,
  "open": [
   {
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1783713690322,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1953,7 +1953,7 @@
     }
    },
    "openedAt": 1783721578409,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1970,9 +1970,9 @@
    "mkt": 0.3996,
    "slip": 0.0005,
    "entryFee": 0.973,
-   "qty": 12168.69216458,
+   "qty": 6084.34608229,
    "notional": 4865.04,
-   "sl": 0.391522,
+   "sl": 0.3998,
    "tp1": 0.412217,
    "tpF": 0.4247,
    "riskUSD": 100.73,
@@ -2932,12 +2932,20 @@
     }
    },
    "openedAt": 1783725429078,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
-   "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
+   "deriskDone": true,
+   "realized": 74.33,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1783777963931,
+     "px": 0.412217,
+     "part": 0.5,
+     "why": "TP1-derisk",
+     "pnl": 74.33
+    }
+   ]
   },
   {
    "id": "SKHYNIXSTOCK_USDT-1783741732101",
@@ -3911,7 +3919,7 @@
     }
    },
    "openedAt": 1783741732101,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -4890,7 +4898,7 @@
     }
    },
    "openedAt": 1783750007528,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -5869,7 +5877,7 @@
     }
    },
    "openedAt": 1783757672182,
-   "lastCheck": 1783771500000,
+   "lastCheck": 1783777800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -8929,16 +8937,21 @@
    "t": 1783771533359,
    "eq": 10155.91,
    "open": 6
+  },
+  {
+   "t": 1783777964485,
+   "eq": 10230.24,
+   "open": 6
   }
  ],
- "lastRun": 1783771533359,
- "runs": 11,
+ "lastRun": 1783777964485,
+ "runs": 12,
  "stats": {
   "closed": 3,
   "wins": 2,
   "losses": 1,
   "winRate": 66.7,
-  "netPnl": 155.91,
+  "netPnl": 230.24,
   "totalR": 1.55,
   "source": "perp",
   "minConf": 75,
