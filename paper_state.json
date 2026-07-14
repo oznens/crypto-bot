@@ -1,5 +1,5 @@
 {
- "equity": 10329.57,
+ "equity": 10404.13,
  "startEquity": 10000,
  "open": [
   {
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1783895258527,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1953,7 +1953,7 @@
     }
    },
    "openedAt": 1783918235166,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -2932,7 +2932,7 @@
     }
    },
    "openedAt": 1783966489236,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
    "deriskDone": true,
    "realized": 74.32,
@@ -3919,7 +3919,7 @@
     }
    },
    "openedAt": 1783987831944,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.22,
@@ -3944,9 +3944,9 @@
    "mkt": 63.763,
    "slip": 0.0005,
    "entryFee": 0.9264,
-   "qty": 72.60469058,
+   "qty": 36.30234529,
    "notional": 4631.81,
-   "sl": 62.4042,
+   "sl": 63.794881,
    "tp1": 65.880904,
    "tpF": 72.976,
    "riskUSD": 100.97,
@@ -4906,12 +4906,20 @@
     }
    },
    "openedAt": 1784008666476,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
-   "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
+   "deriskDone": true,
+   "realized": 74.56,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1784064625827,
+     "px": 65.880904,
+     "part": 0.5,
+     "why": "TP1-derisk",
+     "pnl": 74.56
+    }
+   ]
   },
   {
    "id": "XRP_USDT-1784035750239",
@@ -5885,7 +5893,7 @@
     }
    },
    "openedAt": 1784035750239,
-   "lastCheck": 1784060400000,
+   "lastCheck": 1784064600000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -29054,16 +29062,21 @@
    "t": 1784060505859,
    "eq": 10329.57,
    "open": 6
+  },
+  {
+   "t": 1784064625991,
+   "eq": 10404.13,
+   "open": 6
   }
  ],
- "lastRun": 1784060505859,
- "runs": 59,
+ "lastRun": 1784064625991,
+ "runs": 60,
  "stats": {
   "closed": 23,
   "wins": 9,
   "losses": 14,
   "winRate": 39.1,
-  "netPnl": 329.57,
+  "netPnl": 404.13,
   "totalR": 1.98,
   "source": "perp",
   "minConf": 75,
