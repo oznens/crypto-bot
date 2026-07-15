@@ -132,7 +132,7 @@ function showChart(kind,idx){
   const t=(kind==='open'?ST.open:ST.closed)[idx];
   if(!t) return;
   document.getElementById('mtitle').textContent=t.symbol.replace('_','/')+' · '+(t.tf||'-')+' · '+t.side+' · güven %'+t.conf+' · '+t.grade+(t.mmxm?' · MMxM '+t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':''):'');
-  document.getElementById('mfoot').textContent='Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
+  document.getElementById('mfoot').textContent='Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı, pozisyon artık kaybedemez)':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
   document.getElementById('mod').hidden=false;
   drawSnap(t);
 }
@@ -146,9 +146,11 @@ function drawSnap(t){
   if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
   const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
   const pL=6,pR=W-72,pT=10,pB=H-24;
+  const origDist=(t.riskUSD&&t.qty)?t.riskUSD/t.qty:null;                 // orijinal stop mesafesi (derisk öncesi)
+  const origSL=origDist!=null?(t.side==='LONG'?t.entry-origDist:t.entry+origDist):null;
   let mn=Infinity,mx=-Infinity;
   for(const c of cs){if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h;}
-  [t.entry,t.sl,t.tp1,t.tpF].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
+  [t.entry,t.sl,t.tp1,t.tpF,origSL].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
   const sp=(mx-mn)||1;mn-=sp*.05;mx+=sp*.05;
   const X=i=>pL+(pR-pL)*(i+.5)/cs.length, Y=p=>pB-(p-mn)/(mx-mn)*(pB-pT);
   // range + manipülasyon
@@ -187,7 +189,13 @@ function drawSnap(t){
     ctx.fillStyle=col;ctx.fillRect(pR,y-8,66,15);
     ctx.fillStyle='#fff';ctx.font='bold 9px Arial';ctx.textAlign='left';ctx.fillText(lab,pR+3,y+3);};
   lvl(t.entry,'#3b82f6','GİRİŞ '+fmt(t.entry,4));
-  lvl(t.sl,'#e0444b','SL');
+  if(t.deriskDone&&origSL!=null){                       // derisk edildiyse: ilk stop soluk kesikli gösterilir
+    const y=Y(origSL);
+    ctx.strokeStyle='rgba(224,68,75,.45)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pR,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(240,138,138,.8)';ctx.font='9px Arial';ctx.textAlign='left';ctx.fillText('SL (ilk — BE\'ye taşındı)',pL+3,y-3);
+  }
+  lvl(t.sl,'#e0444b',t.deriskDone?'SL→BE':'SL');
   lvl(t.tp1,'#26a269','TP1',[5,3]);
   if(t.tpF!==t.tp1) lvl(t.tpF,'#26a269','TP-F',[5,3]);
   // x ekseni: ilk/son mum NY saati

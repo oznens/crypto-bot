@@ -141,9 +141,10 @@ async function manageOpen(st) {
         finishTrade(st, tr, 'TP');
         break;
       }
-      tr.lastCheck = k.t;
     }
-    if (tr.status !== 'closed' && news.length) tr.lastCheck = news[news.length - 1].t;
+    // son mum hâlâ oluşuyor olabilir: lastCheck'i t-1 kur ki sonraki koşumda TAMAMLANMIŞ haliyle yeniden değerlendirilsin
+    // (çift işlem riski yok: deriskDone ve closed guard'ları var)
+    if (tr.status !== 'closed' && news.length) tr.lastCheck = news[news.length - 1].t - 1;
   }
 }
 
