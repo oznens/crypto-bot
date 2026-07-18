@@ -178,7 +178,7 @@ function tryOpen(st, sym, a, mktPx, tf) {
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
   const tr = {
     id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf,
-    entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
+    entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), qty0: rnd(qty, 8), notional: rnd(entry * qty, 2),
     sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),

@@ -146,11 +146,13 @@ function drawSnap(t){
   if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
   const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
   const pL=6,pR=W-72,pT=10,pB=H-24;
-  const origDist=(t.riskUSD&&t.qty)?t.riskUSD/t.qty:null;                 // orijinal stop mesafesi (derisk öncesi)
-  const origSL=origDist!=null?(t.side==='LONG'?t.entry-origDist:t.entry+origDist):null;
+  const q0=t.qty0||t.qty;                                                 // kapanan işlemde qty 0'a iner — açılış miktarını kullan
+  const origDist=(t.riskUSD&&q0)?t.riskUSD/q0:null;                       // orijinal stop mesafesi (derisk öncesi)
+  let origSL=origDist!=null?(t.side==='LONG'?t.entry-origDist:t.entry+origDist):null;
+  if(origSL!=null&&!isFinite(origSL)) origSL=null;
   let mn=Infinity,mx=-Infinity;
   for(const c of cs){if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h;}
-  [t.entry,t.sl,t.tp1,t.tpF,origSL].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
+  [t.entry,t.sl,t.tp1,t.tpF,origSL].forEach(v=>{if(v!=null&&isFinite(v)){if(v<mn)mn=v;if(v>mx)mx=v;}});
   const sp=(mx-mn)||1;mn-=sp*.05;mx+=sp*.05;
   const X=i=>pL+(pR-pL)*(i+.5)/cs.length, Y=p=>pB-(p-mn)/(mx-mn)*(pB-pT);
   // range + manipülasyon
