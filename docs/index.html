@@ -132,7 +132,8 @@ function showChart(kind,idx){
   const t=(kind==='open'?ST.open:ST.closed)[idx];
   if(!t) return;
   document.getElementById('mtitle').textContent=t.symbol.replace('_','/')+' · '+(t.tf||'-')+' · '+t.side+' · güven %'+t.conf+' · '+t.grade+(t.mmxm?' · MMxM '+t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':''):'');
-  document.getElementById('mfoot').textContent='Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı, pozisyon artık kaybedemez)':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
+  const kapView=!!(t.closedAt&&t.snapClose&&t.snapClose.candles&&t.snapClose.candles.length);
+  document.getElementById('mfoot').textContent=(kapView?'KAPANIŞ dönemi görüntüsü — işlem bu mumlarda yaşandı, fill noktaları işaretli':'Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem')+' · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı'+(t.closedAt?'':', pozisyon artık kaybedemez')+')':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
   document.getElementById('mod').hidden=false;
   drawSnap(t);
 }
@@ -142,7 +143,9 @@ function drawSnap(t){
   cv.width=W*(devicePixelRatio||1);cv.height=H*(devicePixelRatio||1);
   ctx.scale(devicePixelRatio||1,devicePixelRatio||1);
   ctx.fillStyle='#0b0e13';ctx.fillRect(0,0,W,H);
-  const sn=t.snap;
+  const kapali=!!t.closedAt;
+  const sn=(kapali&&t.snapClose&&t.snapClose.candles&&t.snapClose.candles.length)?t.snapClose:t.snap;   // kapananlarda İŞLEM DÖNEMİ görüntüsü
+  const kapanisGorunumu=kapali&&sn===t.snapClose;
   if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
   const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
   const pL=6,pR=W-72,pT=10,pB=H-24;
@@ -190,6 +193,20 @@ function drawSnap(t){
     ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pR,y);ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle=col;ctx.fillRect(pR,y-8,66,15);
     ctx.fillStyle='#fff';ctx.font='bold 9px Arial';ctx.textAlign='left';ctx.fillText(lab,pR+3,y+3);};
+  // fill işaretleri (kapanış görünümünde): TP1-derisk / TP-final / SL noktaları
+  if(kapanisGorunumu&&t.fills&&t.fills.length&&cs.length>1){
+    const barMs=cs[1].t-cs[0].t;
+    t.fills.forEach(f=>{
+      let fi=cs.findIndex(c=>f.t>=c.t&&f.t<c.t+barMs);
+      if(fi<0) fi=f.t<cs[0].t?0:cs.length-1;
+      const x=X(fi),y=Y(f.px);
+      const col=/TP1/.test(f.why)?'#e8c34a':/TP/.test(f.why)?'#26a269':'#e0444b';
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();
+      ctx.strokeStyle='#0b0e13';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle=col;ctx.font='bold 8px Arial';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText(f.why,Math.min(Math.max(x,pL+26),pR-26),y-6);
+    });
+  }
   lvl(t.entry,'#3b82f6','GİRİŞ '+fmt(t.entry,4));
   if(t.deriskDone&&origSL!=null){                       // derisk edildiyse: ilk stop soluk kesikli gösterilir
     const y=Y(origSL);

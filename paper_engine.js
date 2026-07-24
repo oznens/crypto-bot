@@ -108,11 +108,16 @@ function closePart(st, tr, px, part, why, taker) {
   tr.qty = rnd(tr.qty - qty, 8);
   return pnl;
 }
-function finishTrade(st, tr, why) {
+async function finishTrade(st, tr, why) {
   tr.status = 'closed'; tr.closedAt = Date.now(); tr.closeReason = why;
   tr.r = rnd(tr.realized / tr.riskUSD, 2);
+  // kapanış dönemi görüntüsü: pano kapanan işlemde İŞLEMİN YAŞADIĞI dönemi göstersin ("stop olmuş gibi" karışıklığı biter)
+  try {
+    const cc = await klines(tr.symbol, tr.tf, 140);
+    tr.snapClose = { candles: cc.slice(-132).map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]) };
+  } catch (e) {}
   st.closed.unshift(tr); if (st.closed.length > 400) st.closed.length = 400;
-  st.closed.forEach((t, i) => { if (i >= 60 && t.snap) delete t.snap; });   // dosya şişmesin: grafik son 60 kapanışta kalır
+  st.closed.forEach((t, i) => { if (i >= 60) { if (t.snap) delete t.snap; if (t.snapClose) delete t.snapClose; } });   // dosya şişmesin
   st.open = st.open.filter(x => x !== tr);
 }
 async function manageOpen(st) {
@@ -129,7 +134,7 @@ async function manageOpen(st) {
       if (hitSL) {                                            // muhafazakar: aynı barda SL önce
         const px = tr.sl * (long ? 1 - SLIP : 1 + SLIP);      // market SL: kayma + taker
         closePart(st, tr, px, 1, tr.deriskDone ? 'BE/SL' : 'SL', true);
-        finishTrade(st, tr, tr.deriskDone ? 'BE' : 'SL');
+        await finishTrade(st, tr, tr.deriskDone ? 'BE' : 'SL');
         break;
       }
       if (hitT1 && tr.tp1 !== tr.tpF) {                       // TP1: %50 derisk (limit=maker) + SL->BE
@@ -138,7 +143,7 @@ async function manageOpen(st) {
       }
       if (hitTF) {                                            // final TP (limit)
         closePart(st, tr, tr.tpF, 1, 'TP-final', false);
-        finishTrade(st, tr, 'TP');
+        await finishTrade(st, tr, 'TP');
         break;
       }
     }
