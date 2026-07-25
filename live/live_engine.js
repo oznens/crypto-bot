@@ -11,8 +11,8 @@ const https = require('https'), http = require('http'), fs = require('fs'), path
 const A = require('../analysis');
 
 const DRY = process.env.DRY_RUN !== '0';
-const RISK_PCT = +(process.env.RISK_PCT || 0.005);       // canlı başlangıç: %0.5
-const MAX_OPEN = +(process.env.MAX_OPEN || 3);
+const RISK_PCT = +(process.env.RISK_PCT || 0.03);        // küçük kasada min-kontrat engelini aşmak için (büyüdükçe düşür)
+const MAX_OPEN = +(process.env.MAX_OPEN || 2);
 const MAX_NEW_PER_SCAN = 2;
 const MIN_CONF = 75;
 const MIN_RISK = { '15m': 0.008, '60m': 0.012, '4h': 0.02, '1d': 0.03 };
@@ -111,15 +111,37 @@ async function openTrade(sym, a, mktPx, tf) {
   qty = riskUSD / riskDist0;
   qty = Math.min(qty, st.equity * LEV / mktPx);
   if (!(qty > 0)) return null;
+  let cs = 1, noDerisk = false;
   if (DRY) {
+    // DRY'da da kontrat kurallarını uygula (anahtar varsa) — canlıda açılamayacak işlem DRY'da da açılmasın
+    if (process.env.MEXC_KEY) {
+      try {
+        const e = await exchange();
+        const mk = e.market(ccxtSym(sym));
+        cs = mk.contractSize || 1;
+        const minA = (mk.limits && mk.limits.amount && mk.limits.amount.min) || 1;
+        let contracts = +e.amountToPrecision(ccxtSym(sym), qty / cs);
+        if (!(contracts >= minA)) { log('ATLANDI [DRY]', sym, 'min kontrat altı (' + rnd(qty / cs, 4) + ' < ' + minA + ')'); return null; }
+        if (contracts < 2 * minA) noDerisk = true;
+        if ((contracts * cs * mktPx) / LEV > st.equity * 0.9) { log('ATLANDI [DRY]', sym, 'marj yetersiz'); return null; }
+        qty = contracts * cs;
+      } catch (er) { /* market bilgisi yoksa ham qty ile devam */ }
+    }
     entry = mktPx * (long ? 1 + SLIP : 1 - SLIP);
     entryFee = rnd(entry * qty * FEE_TAKER, 4);
   } else {
     try {
       const e = await exchange();
-      qty = +e.amountToPrecision(ccxtSym(sym), qty);
-      if (!(qty > 0)) return null;
-      const r = await liveMarket(sym, long ? 'buy' : 'sell', qty, false);
+      const mk = e.market(ccxtSym(sym));
+      cs = mk.contractSize || 1;                                     // MEXC swap KONTRAT birimiyle çalışır
+      let contracts = +e.amountToPrecision(ccxtSym(sym), qty / cs);
+      const minA = (mk.limits && mk.limits.amount && mk.limits.amount.min) || 1;
+      if (!(contracts >= minA)) { log('ATLANDI', sym, 'min kontrat altı (küçük kasa)'); return null; }
+      if (contracts < 2 * minA) noDerisk = true;                     // yarım kapatma imkansız -> TP1 tam kapanış olur
+      const notion = contracts * cs * mktPx;
+      if (notion / LEV > st.equity * 0.9) { log('ATLANDI', sym, 'marj yetersiz'); return null; }
+      const r = await liveMarket(sym, long ? 'buy' : 'sell', contracts, false);
+      qty = contracts * cs;                                          // kayıtlar coin cinsinden
       entry = r.px || mktPx; entryFee = r.fee || rnd(entry * qty * FEE_TAKER, 4);
     } catch (er) { log('EMİR HATASI', sym, er.message.slice(0, 120)); return null; }
   }
@@ -127,7 +149,7 @@ async function openTrade(sym, a, mktPx, tf) {
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   const tpF = s.tps[s.tps.length - 1];
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
-  const tr = { id: sym + '-' + Date.now(), symbol: sym, side: s.side, tf, src: 'perp',
+  const tr = { id: sym + '-' + Date.now(), symbol: sym, side: s.side, tf, src: 'perp', cs, noDerisk,
     entry: rnd(entry), sl: rnd(slPlan), tp1: rnd(tp1), tpF: rnd(tpF), qty: rnd(qty, 8), qty0: rnd(qty, 8),
     riskUSD, entryFee, conf: s.confidence, grade: s.grade, model: s.model, mmxm: s.mmxm || null,
     reasons: (s.reasons || []).slice(0, 6), snap: makeSnap(a),
@@ -141,8 +163,12 @@ async function closePart(tr, px, part, why, taker) {
   if (DRY) { fee = px * qty * FEE_TAKER; }
   else {
     try {
-      const r = await liveMarket(tr.symbol, tr.side === 'LONG' ? 'sell' : 'buy', qty, true);
-      fillPx = r.px || px; fee = r.fee || fillPx * qty * FEE_TAKER;
+      const e = await exchange();
+      const cs = tr.cs || 1;
+      let contracts = +e.amountToPrecision(ccxtSym(tr.symbol), qty / cs);
+      if (!(contracts > 0)) contracts = Math.max(1, Math.round(qty / cs));   // son güvenlik: en az 1 kontrat
+      const r = await liveMarket(tr.symbol, tr.side === 'LONG' ? 'sell' : 'buy', contracts, true);
+      fillPx = r.px || px; fee = r.fee || fillPx * contracts * cs * FEE_TAKER;
     } catch (er) { log('KAPATMA HATASI', tr.symbol, er.message.slice(0, 120)); return false; }
   }
   const gross = (tr.side === 'LONG' ? fillPx - tr.entry : tr.entry - fillPx) * qty;
@@ -183,7 +209,9 @@ async function manage() {
           break;
         }
         if (!tr.deriskDone && tr.tp1 !== tr.tpF && (long ? k.h >= tr.tp1 : k.l <= tr.tp1)) {
-          if (await closePart(tr, tr.tp1, 0.5, 'TP1-derisk', false)) { tr.deriskDone = true; tr.sl = tr.entry; log('DERISK', tr.symbol, 'SL→BE'); }
+          if (tr.noDerisk) {                                        // pozisyon 1 kontrat: yarım kapatılamaz -> TP1'de tam kapanış
+            if (await closePart(tr, tr.tp1, 1, 'TP1-tam', false)) { await finishTrade(tr, 'TP'); break; }
+          } else if (await closePart(tr, tr.tp1, 0.5, 'TP1-derisk', false)) { tr.deriskDone = true; tr.sl = tr.entry; log('DERISK', tr.symbol, 'SL→BE'); }
         }
         if (long ? k.h >= tr.tpF : k.l <= tr.tpF) {
           if (await closePart(tr, tr.tpF, 1, 'TP-final', false)) await finishTrade(tr, 'TP');
@@ -205,6 +233,9 @@ async function scan() {
   try {
     st.runs = (st.runs || 0) + 1;
     if (!DRY) { try { st.equity = rnd(await liveBalance(), 2); if (!st.startEquity) st.startEquity = st.equity; } catch (e) { log('bakiye okunamadı', e.message.slice(0, 80)); } }
+    else if (!st.realBalSeen && process.env.MEXC_KEY) {              // DRY: gerçek kasayı başlangıç yap (boyutlama gerçekçi olsun)
+      try { const b = await liveBalance(); if (b > 0) { st.equity = st.startEquity = rnd(b, 2); log('DRY kasa gerçek bakiyeye ayarlandı:', st.equity); } st.realBalSeen = true; } catch (e) { st.realBalSeen = true; }
+    }
     const syms = await topSymbols();
     let opened = 0;
     for (const sym of syms) {
