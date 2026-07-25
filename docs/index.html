@@ -98,7 +98,7 @@ async function load(){
     '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
     '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td><td>'+fmt(t.entry)+'</td><td class="r">'+fmt(t.sl)+'</td><td class="g">'+fmt(t.tp1)+'</td><td class="g">'+fmt(t.tpF)+'</td>'+
     '<td>'+fmt(t.qty,4)+'</td><td>'+fmt(t.riskUSD,0)+'</td><td>%'+t.conf+'</td><td>'+t.grade+'</td><td>'+(t.mmxm?(t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':'')):'-')+'</td>'+
-    '<td>'+(t.deriskDone?'✓ BE':'-')+'</td><td>'+NY(t.openedAt)+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
+    '<td>'+(t.deriskDone?'<span class="tag be">✓ BE — kaybedemez</span>':'-')+'</td><td>'+NY(t.openedAt)+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
   const C=document.getElementById('closed');
   const cl=(st.closed||[]).slice(0,50);
   if(!cl.length) C.innerHTML='<div class="empty">Henüz kapanan işlem yok.</div>';
@@ -133,7 +133,11 @@ function showChart(kind,idx){
   if(!t) return;
   document.getElementById('mtitle').textContent=t.symbol.replace('_','/')+' · '+(t.tf||'-')+' · '+t.side+' · güven %'+t.conf+' · '+t.grade+(t.mmxm?' · MMxM '+t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':''):'');
   const kapView=!!(t.closedAt&&t.snapClose&&t.snapClose.candles&&t.snapClose.candles.length);
-  document.getElementById('mfoot').textContent=(kapView?'KAPANIŞ dönemi görüntüsü — işlem bu mumlarda yaşandı, fill noktaları işaretli':'Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem')+' · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı'+(t.closedAt?'':', pozisyon artık kaybedemez')+')':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
+  const canliView=!t.closedAt&&!!(t.snapLive&&t.snapLive.candles&&t.snapLive.candles.length);
+  const bas=kapView?'KAPANIŞ dönemi görüntüsü — işlem bu mumlarda yaşandı, fill noktaları işaretli'
+    :canliView?('CANLI görüntü (son güncelleme NY '+NYs(t.snapLive.at)+') — pozisyon açık, fill noktaları işaretli')
+    :('Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem');
+  document.getElementById('mfoot').textContent=bas+' · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı'+(t.closedAt?'':', pozisyon artık kaybedemez')+')':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
   document.getElementById('mod').hidden=false;
   drawSnap(t);
 }
@@ -144,8 +148,10 @@ function drawSnap(t){
   ctx.scale(devicePixelRatio||1,devicePixelRatio||1);
   ctx.fillStyle='#0b0e13';ctx.fillRect(0,0,W,H);
   const kapali=!!t.closedAt;
-  const sn=(kapali&&t.snapClose&&t.snapClose.candles&&t.snapClose.candles.length)?t.snapClose:t.snap;   // kapananlarda İŞLEM DÖNEMİ görüntüsü
-  const kapanisGorunumu=kapali&&sn===t.snapClose;
+  const canli=!kapali&&t.snapLive&&t.snapLive.candles&&t.snapLive.candles.length;
+  // kapananlarda İŞLEM DÖNEMİ, açıklarda CANLI görüntü; ikisi de yoksa giriş-anı (eski kayıtlar)
+  const sn=(kapali&&t.snapClose&&t.snapClose.candles&&t.snapClose.candles.length)?t.snapClose:(canli?t.snapLive:t.snap);
+  const kapanisGorunumu=(kapali&&sn===t.snapClose)||!!canli;   // fill noktaları bu görünümlerde anlamlı
   if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
   const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
   const pL=6,pR=W-72,pT=10,pB=H-24;

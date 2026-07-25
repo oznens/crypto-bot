@@ -116,6 +116,7 @@ async function finishTrade(st, tr, why) {
     const cc = await klines(tr.symbol, tr.tf, 140);
     tr.snapClose = { candles: cc.slice(-132).map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]) };
   } catch (e) {}
+  delete tr.snapLive;                                                        // kapanınca canlı görüntü gereksiz (snapClose var)
   st.closed.unshift(tr); if (st.closed.length > 400) st.closed.length = 400;
   st.closed.forEach((t, i) => { if (i >= 60) { if (t.snap) delete t.snap; if (t.snapClose) delete t.snapClose; } });   // dosya şişmesin
   st.open = st.open.filter(x => x !== tr);
@@ -150,6 +151,14 @@ async function manageOpen(st) {
     // son mum hâlâ oluşuyor olabilir: lastCheck'i t-1 kur ki sonraki koşumda TAMAMLANMIŞ haliyle yeniden değerlendirilsin
     // (çift işlem riski yok: deriskDone ve closed guard'ları var)
     if (tr.status !== 'closed' && news.length) tr.lastCheck = news[news.length - 1].t - 1;
+    // AÇIK pozisyonun grafiği canlı kalsın: sinyal TF'inden güncel mumlar (giriş-anı görüntüsü donmuş kalıp
+    // "stop olmuş gibi" görünmesin — UNI/XLM/ARB şüphelerinin kök nedeni buydu)
+    if (tr.status !== 'closed') {
+      try {
+        const cc = await klines(tr.symbol, tr.tf, 140);
+        tr.snapLive = { candles: cc.slice(-132).map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]), at: Date.now() };
+      } catch (e) {}
+    }
   }
 }
 

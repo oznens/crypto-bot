@@ -185,6 +185,7 @@ async function finishTrade(tr, why) {
   tr.r = rnd(tr.realized / tr.riskUSD, 2);
   try { const cc = await klines(tr.symbol, tr.tf, 140);
     tr.snapClose = { candles: cc.slice(-132).map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]) }; } catch (e) {}
+  delete tr.snapLive;
   st.closed.unshift(tr); if (st.closed.length > 300) st.closed.length = 300;
   st.closed.forEach((t, i) => { if (i >= 40) { delete t.snap; delete t.snapClose; } });
   st.open = st.open.filter(x => x !== tr);
@@ -219,6 +220,13 @@ async function manage() {
         }
       }
       if (tr.status !== 'closed' && news.length) tr.lastCheck = news[news.length - 1].t - 1;
+      // açık pozisyonun grafiği canlı kalsın (2 dk'da bir yenile — pano donmuş görüntü göstermesin)
+      if (tr.status !== 'closed' && (!tr.snapLive || Date.now() - tr.snapLive.at > 120000)) {
+        try {
+          const cc = await klines(tr.symbol, tr.tf, 140);
+          tr.snapLive = { candles: cc.slice(-132).map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]), at: Date.now() };
+        } catch (e) {}
+      }
       await sleep(150);
     }
     save();
