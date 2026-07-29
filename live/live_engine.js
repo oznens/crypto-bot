@@ -149,7 +149,17 @@ async function openTrade(sym, a, mktPx, tf) {
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   const tpF = s.tps[s.tps.length - 1];
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
-  const tr = { id: sym + '-' + Date.now(), symbol: sym, side: s.side, tf, src: 'perp', cs, noDerisk,
+  // teşhis alanları (kalibrasyon için): stop mesafesi, ATR, giriş mumu gücü (CISD kalitesi)
+  const cc0 = a.candles;
+  let atr14 = null;
+  { let s2 = 0, k2 = 0; for (let i = Math.max(1, cc0.length - 14); i < cc0.length; i++) { const h = cc0[i].h, l = cc0[i].l, pc = cc0[i - 1].c; s2 += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); k2++; } if (k2) atr14 = s2 / k2; }
+  const lastC = cc0[cc0.length - 1];
+  const diag = { stopDist: rnd(riskDist), atr: atr14 ? rnd(atr14) : null,
+    stopATR: atr14 ? rnd(riskDist / atr14, 2) : null,
+    bodyATR: atr14 ? rnd(Math.abs(lastC.c - lastC.o) / atr14, 2) : null,
+    tpfATR: atr14 ? rnd(Math.abs(tpF - entry) / atr14, 2) : null,
+    nyHour: +new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: '2-digit', hour12: false }) };
+  const tr = { id: sym + '-' + Date.now(), symbol: sym, side: s.side, tf, src: 'perp', cs, noDerisk, diag,
     entry: rnd(entry), sl: rnd(slPlan), tp1: rnd(tp1), tpF: rnd(tpF), qty: rnd(qty, 8), qty0: rnd(qty, 8),
     riskUSD, entryFee, conf: s.confidence, grade: s.grade, model: s.model, mmxm: s.mmxm || null,
     reasons: (s.reasons || []).slice(0, 6), snap: makeSnap(a),

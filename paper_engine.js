@@ -190,12 +190,23 @@ function tryOpen(st, sym, a, mktPx, tf) {
   qty = Math.min(qty, st.equity * LEV_CAP / entry);
   if (!(qty > 0)) return null;
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
+  // teşhis alanları (sonraki kalibrasyonlar için): stop mesafesi, ATR ve giriş mumu gücü (CISD kalitesi)
+  const cc0 = a.candles;
+  let atr14 = null;
+  { let s2 = 0, k2 = 0; for (let i = Math.max(1, cc0.length - 14); i < cc0.length; i++) { const h = cc0[i].h, l = cc0[i].l, pc = cc0[i - 1].c; s2 += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); k2++; } if (k2) atr14 = s2 / k2; }
+  const lastC = cc0[cc0.length - 1];
+  const diag = { stopDist: rnd(riskDist), atr: atr14 ? rnd(atr14) : null,
+    stopATR: atr14 ? rnd(riskDist / atr14, 2) : null,
+    bodyATR: atr14 ? rnd(Math.abs(lastC.c - lastC.o) / atr14, 2) : null,
+    tpfATR: atr14 ? rnd(Math.abs(tpF - entry) / atr14, 2) : null,
+    nyHour: +new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: '2-digit', hour12: false }) };
   const tr = {
     id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), qty0: rnd(qty, 8), notional: rnd(entry * qty, 2),
     sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),
+    diag,                                                       // teşhis: stopATR / bodyATR / tpfATR / nyHour
     snap: makeSnap(a),                                          // panoda grafik için giriş anı görüntüsü
     openedAt: Date.now(), lastCheck: Date.now(), status: 'open', deriskDone: false, realized: 0, feeCharged: false, fills: []
   };

@@ -149,8 +149,15 @@ function findManips(candles) {
         if (Math.abs(tpF - entry) / riskDist < 1) continue;                   // kalan RR ≥ 1
         let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
         if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
+        // teşhis alanları (kalibrasyon hipotezleri: stop/ATR, giriş mumu gücü, hedef mesafesi, seans)
+        let atr14 = null;
+        { let s2 = 0, k2 = 0; for (let i = Math.max(1, m.at - 13); i <= m.at; i++) { const h = cc[i].h, l = cc[i].l, pc = cc[i - 1].c; s2 += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); k2++; } if (k2) atr14 = s2 / k2; }
+        const eb = cc[m.at];
         cands.push({ t: barT, sym, tf, side: s.side, entry, sl, tp1, tpF, conf: s.confidence, grade: s.grade,
-          mmxm: s.mmxm ? s.mmxm.score : null, sig: sym + '|' + tf + '|' + s.side + '|' + cc[m.sweepAt].t });
+          mmxm: s.mmxm ? s.mmxm.score : null, sig: sym + '|' + tf + '|' + s.side + '|' + cc[m.sweepAt].t,
+          stopATR: atr14 ? rnd(riskDist / atr14, 2) : null, bodyATR: atr14 ? rnd(Math.abs(eb.c - eb.o) / atr14, 2) : null,
+          tpfATR: atr14 ? rnd(Math.abs(tpF - entry) / atr14, 2) : null,
+          nyHour: +new Date(barT).toLocaleString('en-US', { timeZone: 'America/New_York', hour: '2-digit', hour12: false }) });
         bulundu++;
       }
       cache[tf] = null;                                                        // belleği boşalt
@@ -274,6 +281,6 @@ function findManips(candles) {
   say('\nNOT: semboller BUGÜNKÜ hacim top-' + N_SYM + "'i (seçim yanlılığı); giriş = reclaim barı kapanışı;");
   say('yönetim 5m barlarla, aynı barda SL+TP → SL (muhafazakâr); komisyon+kayma dahil.');
   fs.writeFileSync(__dirname + '/backtest3ay_sonuc.txt', L.join('\n'));
-  fs.writeFileSync(__dirname + '/backtest3ay_islemler.json', JSON.stringify({ closed: closed.map(t => ({ sym: t.sym, tf: t.tf, side: t.side, t: t.t, sonuc: t.sonuc, r: rnd(t.r, 2), usd: rnd(t.realized, 2), conf: t.conf, mmxm: t.mmxm })), eqCurve }, null, 1));
+  fs.writeFileSync(__dirname + '/backtest3ay_islemler.json', JSON.stringify({ closed: closed.map(t => ({ sym: t.sym, tf: t.tf, side: t.side, t: t.t, sonuc: t.sonuc, r: rnd(t.r, 2), usd: rnd(t.realized, 2), conf: t.conf, mmxm: t.mmxm, stopATR: t.stopATR, bodyATR: t.bodyATR, tpfATR: t.tpfATR, nyHour: t.nyHour })), eqCurve }, null, 1));
   console.log('\nKaydedildi: backtest3ay_sonuc.txt + backtest3ay_islemler.json | süre ' + Math.round((Date.now() - t0) / 60000) + ' dk');
 })().catch(e => { console.error('HATA', e.stack); process.exit(1); });
