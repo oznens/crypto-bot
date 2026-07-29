@@ -31,14 +31,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const rnd = (v, d) => { const m = Math.pow(10, d == null ? 6 : d); return Math.round(v * m) / m; };
 const iso = t => new Date(t).toISOString().slice(0, 16).replace('T', ' ');
 let REQ = 0;
-function get(url) {
+function getOnce(url) {
   return new Promise((res, rej) => {
     const r = https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 25000 }, x => {
       let b = ''; x.on('data', d => b += d);
-      x.on('end', () => { try { res(JSON.parse(b)); } catch (e) { rej(new Error('json')); } });
+      x.on('end', () => { try { res(JSON.parse(b)); } catch (e) { rej(new Error('json:' + x.statusCode + ':' + b.slice(0, 60))); } });
     });
     r.on('error', rej); r.on('timeout', () => r.destroy(new Error('timeout')));
   });
+}
+async function get(url) {                       // rate-limit'e karşı artan bekleme ile 4 deneme
+  let last;
+  for (let i = 0; i < 4; i++) {
+    try { return await getOnce(url); }
+    catch (e) { last = e; await new Promise(r => setTimeout(r, 800 * (i + 1) * (i + 1))); }
+  }
+  throw last;
 }
 async function klines(sym, tf, startSec, endSec) {   // 2000 bar limitini sayfalayarak aşar
   const step = SEC[tf], out = [];
@@ -55,7 +63,7 @@ async function klines(sym, tf, startSec, endSec) {   // 2000 bar limitini sayfal
     for (let i = 0; i < dd.time.length; i++) out.push({ t: dd.time[i] * 1000, o: +dd.open[i], h: +dd.high[i], l: +dd.low[i], c: +dd.close[i], v: +dd.vol[i] });
     if (dd.time.length < 100) break;
     end = dd.time[0] - step;
-    await sleep(90);
+    await sleep(260);         // MEXC 5600+ istekte IP'yi 403'lüyor — nazik hız (ilk koşumda 90ms engellenmeye yol açtı)
   }
   const seen = new Set(), ded = [];
   for (const c of out) { if (!seen.has(c.t) && isFinite(c.c) && c.c > 0) { seen.add(c.t); ded.push(c); } }
