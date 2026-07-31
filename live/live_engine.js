@@ -12,8 +12,12 @@ const A = require('../analysis');
 
 const DRY = process.env.DRY_RUN !== '0';
 const RISK_PCT = +(process.env.RISK_PCT || 0.03);        // küçük kasada min-kontrat engelini aşmak için (büyüdükçe düşür)
-const MAX_OPEN = +(process.env.MAX_OPEN || 2);
+// v3: slot sayımı RİSK üzerinden — TP1'de derisk edilip SL'i BE'ye çekilen pozisyon net zarar edemez,
+// dolayısıyla risk slotu tüketmez. MAX_TOTAL yalnızca yönetim yükü + gap riski için mutlak tavan.
+const MAX_OPEN = +(process.env.MAX_OPEN || 2);          // eşzamanlı RİSKLİ pozisyon tavanı
+const MAX_TOTAL = +(process.env.MAX_TOTAL || MAX_OPEN * 3);   // BE'dekiler dahil mutlak tavan
 const MAX_NEW_PER_SCAN = 2;
+const riskli = () => st.open.filter(t => !t.deriskDone).length;
 const MIN_CONF = 75;
 const MIN_RISK = { '15m': 0.008, '60m': 0.012, '4h': 0.02, '1d': 0.03 };
 const TP1_R = 1.5;
@@ -257,7 +261,7 @@ async function scan() {
     const syms = await topSymbols();
     let opened = 0;
     for (const sym of syms) {
-      if (opened >= MAX_NEW_PER_SCAN || st.open.length >= MAX_OPEN) break;
+      if (opened >= MAX_NEW_PER_SCAN || riskli() >= MAX_OPEN || st.open.length >= MAX_TOTAL) break;   // v3 tavanlar
       if (st.open.find(t => t.symbol === sym)) continue;
       for (const [tf, ltfIv] of TF_LIST) {
         try {
@@ -294,7 +298,7 @@ async function scan() {
     st.equityHistory.push({ t: st.lastRun, eq: st.equity, open: st.open.length });
     if (st.equityHistory.length > 3000) st.equityHistory.splice(0, 500);
     save();
-    log('tarama bitti | açık:', st.open.length, '| kapalı:', st.closed.length, '| kasa:', st.equity, DRY ? '(DRY)' : '(CANLI)');
+    log('tarama bitti | açık:', st.open.length, '(riskli ' + riskli() + '/' + MAX_OPEN + ', BE ' + (st.open.length - riskli()) + ')', '| kapalı:', st.closed.length, '| kasa:', st.equity, DRY ? '(DRY)' : '(CANLI)');
   } catch (e) { log('scan hata', e.message); }
   scanning = false;
 }

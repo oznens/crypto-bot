@@ -23,8 +23,13 @@ const TF_LIST = [['1d', '60m'], ['4h', '15m'], ['60m', '15m'], ['15m', '5m']];  
 // ---- v2 SIKI FİLTRELER (50 işlemlik -40R analizinden: B notlular WR%5, dar stoplar gürültüye süpürüldü,
 // aynı saatte 4-5 korele işlem, ters-bias shortlar; A+ ve GERÇEK✓ görece iyiydi) ----
 const MIN_RISK = { '15m': 0.008, '60m': 0.012, '4h': 0.02, '1d': 0.03 };   // min stop mesafesi (giriş %'si)
-const MAX_OPEN = 6;                    // toplam eşzamanlı pozisyon tavanı (korelasyon freni)
+// v3: slot sayımı RİSK üzerinden. TP1'de derisk edilip SL'i BE'ye çekilen pozisyon net zarar edemez
+// (TP1 kârı cepte) -> risk slotu tüketmez. Ölçüm: 267 koşumun %96.6'sı tavanda geçmişti, ARB 16.7 gün
+// BE'de slot işgal ediyordu. MAX_TOTAL sadece yönetim yükü + gap riski için mutlak emniyet tavanı.
+const MAX_OPEN = 6;                    // eşzamanlı RİSKLİ (BE'ye çekilmemiş) pozisyon tavanı
+const MAX_TOTAL = 14;                  // BE'dekiler dahil mutlak açık pozisyon tavanı
 const MAX_NEW_PER_RUN = 2;             // koşum başına yeni işlem tavanı
+const riskli = st => st.open.filter(t => !t.deriskDone).length;   // risk taşıyan pozisyon sayısı
 const TP1_R = 1.5;                     // TP1 = 1.5R sabit (derisk gerçekten çalışsın); TP-F = yapısal hedef
 
 function get(url, timeout) {
@@ -165,7 +170,8 @@ async function manageOpen(st) {
 // ---- yeni sinyal -> market giriş ----
 function tryOpen(st, sym, a, mktPx, tf) {
   const s = a.setup; if (!s || s.confidence < MIN_CONF) return null;
-  if (st.open.length >= MAX_OPEN) return null;                // v2: eşzamanlı pozisyon tavanı
+  if (riskli(st) >= MAX_OPEN) return null;                    // v3: RİSKLİ pozisyon tavanı (BE'dekiler sayılmaz)
+  if (st.open.length >= MAX_TOTAL) return null;               // v3: mutlak emniyet tavanı
   if (s.grade === 'B') return null;                           // v2: sadece A / A+ (B'ler WR %5 çıktı)
   if (!s.mmxm || !s.mmxm.valid) return null;                  // v2: sadece GERÇEK MMxM ✓ (LTF onaylı)
   if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== (s.side === 'LONG'))) return null;   // v2: yigit sert kuralı — ters bias'ta işlem yok
@@ -226,7 +232,7 @@ function tryOpen(st, sym, a, mktPx, tf) {
 
   let scanned = 0, opened = 0, errors = 0;
   for (const sym of syms) {
-    if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;   // v2: koşum/toplam tavanları
+    if (opened >= MAX_NEW_PER_RUN || riskli(st) >= MAX_OPEN || st.open.length >= MAX_TOTAL) break;   // v3 tavanlar
     if (st.open.find(t => t.symbol === sym)) continue;        // sembolde açık işlem varsa tarama (TF fark etmez)
     for (const [tf, ltfIv] of TF_LIST) {                      // yüksek TF öncelikli; işlem açılınca diğer TF'lere bakma
       try {
@@ -262,6 +268,6 @@ function tryOpen(st, sym, a, mktPx, tf) {
     source: SRC, minConf: MIN_CONF, tf: TF_LIST.map(x => x[0]).join('/')
   };
   saveState(st);
-  console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
+  console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '(riskli ' + riskli(st) + '/' + MAX_OPEN + ', BE ' + (st.open.length - riskli(st)) + ')', '| kapalı:', st.closed.length, '| hata:', errors);
   console.log('özkaynak:', st.equity, '| net PnL:', st.stats.netPnl, '| WR:', st.stats.winRate);
 })().catch(e => { console.error('HATA', e.stack); process.exit(1); });

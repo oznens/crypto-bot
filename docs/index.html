@@ -88,7 +88,7 @@ async function load(){
     ['Toplam R',(s.totalR>0?'+':'')+fmt(s.totalR,2)+'R',s.totalR>=0?'g':'r'],
     ['Win Rate',s.winRate!=null?'%'+s.winRate:'-','b'],
     ['Kapanan',fmt(s.closed,0)+' (W'+fmt(s.wins,0)+'/L'+fmt(s.losses,0)+')','b'],
-    ['Açık',st.open.length,'y']
+    ['Açık (riskli/BE)',st.open.length+' <span style="font-size:12px;color:var(--dim)">('+st.open.filter(t=>!t.deriskDone).length+' riskli · '+st.open.filter(t=>t.deriskDone).length+' BE)</span>','y']
   ].map(c=>'<div class="card"><div class="k">'+c[0]+'</div><div class="v '+c[2]+'">'+c[1]+'</div></div>').join('');
   drawEq(st.equityHistory||[]);
   const O=document.getElementById('open');
