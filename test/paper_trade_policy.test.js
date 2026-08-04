@@ -11,11 +11,11 @@ const Policy = require('../core/paper_trade_policy');
 }
 
 {
-  const p = Policy.calculatePosition({ equity: 10000, riskPct: 0.01, leverageCap: 1, entry: 100, stop: 50 });
+  const p = Policy.calculatePosition({ equity: 10000, riskPct: 0.01, leverageCap: 1, entry: 100, stop: 99.99 });
   assert.equal(p.valid, true);
   assert.equal(p.leverageCapped, true);
   assert.equal(p.qty, 100);
-  assert.equal(p.actualRiskUSD, 5000);
+  assert.ok(Math.abs(p.actualRiskUSD - 1) < 1e-9);
 }
 
 {
