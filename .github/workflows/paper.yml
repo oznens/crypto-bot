@@ -17,6 +17,7 @@ on:
       - 'scripts/apply_v5_4_risk_rejection_dedupe.js'
       - 'test/paper_health.test.js'
       - 'test/paper_trade_policy.test.js'
+      - 'test/paper_analytics.test.js'
 
 permissions:
   contents: write
@@ -47,8 +48,13 @@ jobs:
       - name: İşlem politikası testlerini çalıştır
         run: node test/paper_trade_policy.test.js
 
-      - name: Motor sözdizimini doğrula
-        run: node --check paper_engine.js
+      - name: Analitik testlerini çalıştır
+        run: node test/paper_analytics.test.js
+
+      - name: Kod sözdizimini doğrula
+        run: |
+          node --check paper_engine.js
+          node --check paper_analytics.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
@@ -65,10 +71,10 @@ jobs:
 
       - name: State dosyasını doğrula ve Pages'a kopyala
         run: |
-          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');if(!s.health||!s.health.status)throw new Error('state sağlık sonucu eksik');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status);"
+          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');if(!s.health||!s.health.status)throw new Error('state sağlık sonucu eksik');if(!s.analyticsMeta||s.analyticsMeta.version!=='5.5')throw new Error('analytics sürümü geçersiz');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status,'analytics',s.analyticsMeta.version);"
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
-          node -e "const s=JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));if(!s.health)throw new Error('docs state sağlık sonucu eksik');console.log('docs/paper_state.json doğrulandı');"
+          node -e "const s=JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));if(!s.health)throw new Error('docs state sağlık sonucu eksik');if(!s.analyticsMeta||s.analyticsMeta.version!=='5.5')throw new Error('docs analytics sürümü geçersiz');console.log('docs/paper_state.json doğrulandı');"
 
       - name: Durumu commit'le
         run: |
@@ -76,6 +82,6 @@ jobs:
           git config user.email "actions@github.com"
           git add paper_engine.js paper_state.json docs/paper_state.json
           if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
-          git commit -m "paper: V5.4 risk kayıtları, durum ve analitik güncellendi [skip ci]"
+          git commit -m "paper: V5.5 analitik, durum ve sağlık güncellendi [skip ci]"
           git pull --rebase origin main || true
           git push
