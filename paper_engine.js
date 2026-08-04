@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const A = require('./analysis');
 const Risk = require('./core/risk_engine');
+const TradePolicy = require('./core/paper_trade_policy');
 const { detect: detectRegime } = require('./core/regime_detector');
 
 const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
@@ -213,14 +214,8 @@ async function finishTrade(state, trade, why) {
   state.open = state.open.filter(item => item !== trade);
 }
 
-function updateExcursion(trade, candle) {
-  const initialRiskDist = trade.initialRiskDist || Math.abs(trade.entry - trade.initialSL);
-  if (!(initialRiskDist > 0)) return;
-  const long = trade.side === 'LONG';
-  const favorable = long ? candle.h - trade.entry : trade.entry - candle.l;
-  const adverse = long ? trade.entry - candle.l : candle.h - trade.entry;
-  trade.mfeR = Math.max(trade.mfeR || 0, favorable / initialRiskDist);
-  trade.maeR = Math.max(trade.maeR || 0, adverse / initialRiskDist);
+function updateExcursion(trade, candle, options) {
+  return TradePolicy.applyExcursion(trade, candle, options);
 }
 
 async function manageOpen(state) {
@@ -239,9 +234,9 @@ async function manageOpen(state) {
     const news = candles.filter(c => c.t > trade.lastCheck);
     for (const candle of news) {
       const long = trade.side === 'LONG';
-      updateExcursion(trade, candle);
-
       const hitSL = long ? candle.l <= trade.sl : candle.h >= trade.sl;
+      updateExcursion(trade, candle, { stopFirst: hitSL });
+
       const hitT1 = !trade.deriskDone && (long ? candle.h >= trade.tp1 : candle.l <= trade.tp1);
       const hitTF = long ? candle.h >= trade.tpF : candle.l <= trade.tpF;
 
@@ -334,7 +329,17 @@ function tryOpen(state, symbol, analysis, marketPrice, timeframe) {
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   if (long ? tp1 > finalTarget : tp1 < finalTarget) tp1 = finalTarget;
 
-  const riskUSD = rnd(state.equity * RISK_PCT, 2);
+  const position = TradePolicy.calculatePosition({
+    equity: state.equity,
+    riskPct: RISK_PCT,
+    leverageCap: LEV_CAP,
+    entry,
+    stop
+  });
+  if (!position.valid) return null;
+
+  const qty = position.qty;
+  const riskUSD = rnd(position.actualRiskUSD, 2);
   const riskDecision = Risk.evaluateTrade(state, {
     symbol,
     side: setup.side,
@@ -344,10 +349,6 @@ function tryOpen(state, symbol, analysis, marketPrice, timeframe) {
     recordRiskRejection(state, symbol, setup.side, timeframe, riskDecision);
     return null;
   }
-
-  let qty = riskUSD / riskDist;
-  qty = Math.min(qty, state.equity * LEV_CAP / entry);
-  if (!(qty > 0)) return null;
 
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
   const candles = analysis.candles;
@@ -397,6 +398,8 @@ function tryOpen(state, symbol, analysis, marketPrice, timeframe) {
     tp1: rnd(tp1),
     tpF: rnd(finalTarget),
     riskUSD,
+    plannedRiskUSD: rnd(position.plannedRiskUSD, 2),
+    leverageCapped: position.leverageCapped,
     rrPlan: setup.rr,
     conf: setup.confidence,
     grade: setup.grade,
