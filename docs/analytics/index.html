@@ -3,11 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="0; url=../analytics.html">
-<title>Performans Analitiğine yönlendiriliyor</title>
-<script>location.replace('../analytics.html');</script>
+<title>DREYKO Performans Analitiği</title>
+<style>
+:root{--bg:#0b0e13;--panel:#12161e;--line:#2c3442;--text:#e6edf3;--dim:#8b949e;--green:#5fd99a;--red:#f08a8a;--blue:#79c0ff;--gold:#e8c34a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Segoe UI,sans-serif;padding:16px;font-size:14px}a{color:var(--blue);text-decoration:none}h1{font-size:20px;margin:0 0 5px}.sub{color:var(--dim);font-size:12px;margin-bottom:14px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px}.k{font-size:10px;color:var(--dim);text-transform:uppercase}.v{font-size:18px;font-weight:700;margin-top:4px}.g{color:var(--green)}.r{color:var(--red)}.b{color:var(--blue)}.y{color:var(--gold)}h2{font-size:14px;margin:18px 0 8px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{font-size:10px;color:var(--dim);text-transform:uppercase}th:first-child,td:first-child{text-align:left}.tag{display:inline-block;border-radius:5px;padding:2px 6px;font-size:10px;background:#243044;color:#b8d2ff}.empty{padding:16px;color:var(--dim);text-align:center}.foot{color:var(--dim);font-size:11px;text-align:center;margin-top:18px}.hero{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.nav{font-size:12px}
+</style>
 </head>
 <body>
-<p><a href="../analytics.html">Performans analitiğini aç</a></p>
+<div class="hero"><div><h1>📊 DREYKO Performans Analitiği</h1><div class="sub" id="sub">yükleniyor…</div></div><div class="nav"><a href="../">← Paper Trading Panosu</a></div></div>
+<div class="cards" id="cards"></div>
+<div class="grid">
+  <section><h2>🏆 Strateji Sıralaması</h2><div class="panel" id="ranking"></div></section>
+  <section><h2>🧭 Seans Performansı</h2><div class="panel" id="sessions"></div></section>
+  <section><h2>🌦️ Piyasa Rejimi</h2><div class="panel" id="regimes"></div></section>
+  <section><h2>⏱️ Zaman Dilimi</h2><div class="panel" id="timeframes"></div></section>
+  <section><h2>↕️ Yön Performansı</h2><div class="panel" id="sides"></div></section>
+  <section><h2>🛡️ Son Risk Reddetmeleri</h2><div class="panel" id="rejections"></div></section>
+</div>
+<div class="foot">İstatistikler kapanan paper işlemlerden üretilir. Az örneklemli sonuçlar güvenilir kabul edilmemelidir. Yatırım tavsiyesi değildir.</div>
+<script>
+const fmt=(v,d=2)=>v==null||!isFinite(+v)?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:d});
+const pct=v=>v==null?'-':'%'+fmt(v,2);
+const cls=v=>+v>0?'g':+v<0?'r':'b';
+const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+' dk':m<1440?(m/60).toFixed(1)+' sa':(m/1440).toFixed(1)+' gün'};
+const table=(headers,rows)=>rows.length?'<table><thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>':'<div class="empty">Henüz yeterli veri yok.</div>';
+function statRows(obj){return Object.entries(obj||{}).sort((a,b)=>(b[1].totalR||0)-(a[1].totalR||0)).map(([name,s])=>'<tr><td><span class="tag">'+name+'</span></td><td>'+fmt(s.trades,0)+'</td><td>'+pct(s.winrate)+'</td><td class="'+cls(s.totalR)+'">'+fmt(s.totalR)+'R</td><td class="'+cls(s.avgR)+'">'+fmt(s.avgR,3)+'R</td><td>'+fmt(s.profitFactor,2)+'</td><td>'+fmt(s.maxDrawdownR,2)+'R</td></tr>')}
+async function load(){
+ let st=null;for(const u of ['../paper_state.json','../../paper_state.json']){try{const r=await fetch(u+'?t='+Date.now());if(r.ok){st=await r.json();break}}catch(e){}}
+ if(!st){document.getElementById('sub').textContent='paper_state.json bulunamadı.';return}
+ const p=st.performance||{},o=p.overall||{},best=st.bestStrategy||null,meta=st.analyticsMeta||{};
+ document.getElementById('sub').textContent='Son analitik: '+(meta.generatedAt?new Date(meta.generatedAt).toLocaleString('tr-TR'):'-')+' · '+ago(meta.generatedAt)+' önce · kapanan işlem '+(meta.closedTrades||0)+' · minimum sıralama örneği '+(meta.rankingMinTrades||20);
+ document.getElementById('cards').innerHTML=[
+ ['En İyi Model',best?best.model:'Yeterli veri yok','y'],['Model Skoru',best?best.score+'/100':'-','y'],['Expectancy',fmt(o.avgR,3)+'R',cls(o.avgR)],['Profit Factor',fmt(o.profitFactor,2),o.profitFactor>=1?'g':'r'],['Max DD',fmt(o.maxDrawdownR,2)+'R','r'],['Ort. MFE',fmt(o.avgMfeR,2)+'R','g'],['Ort. MAE',fmt(o.avgMaeR,2)+'R','r'],['Haftalık R',fmt((st.stats||{}).weeklyR,2)+'R',cls((st.stats||{}).weeklyR)]
+ ].map(c=>'<div class="card"><div class="k">'+c[0]+'</div><div class="v '+c[2]+'">'+c[1]+'</div></div>').join('');
+ const ranks=(st.strategyRanking||[]).map((x,i)=>'<tr><td>'+(i+1)+'. '+x.model+(x.eligible?'':' <span class="tag">az veri</span>')+'</td><td>'+fmt(x.score,0)+'</td><td>'+fmt(x.trades,0)+'</td><td>'+pct(x.winrate)+'</td><td class="'+cls(x.expectancy)+'">'+fmt(x.expectancy,3)+'R</td><td>'+fmt(x.profitFactor,2)+'</td><td>'+fmt(x.maxDrawdownR,2)+'R</td><td>'+(x.walkForward&&x.walkForward.robust?'✓':'—')+'</td></tr>');
+ document.getElementById('ranking').innerHTML=table(['Model','Skor','İşlem','WR','Beklenti','PF','DD','WF'],ranks);
+ const hs=['Grup','İşlem','WR','Toplam R','Ort. R','PF','DD'];
+ document.getElementById('sessions').innerHTML=table(hs,statRows(p.sessions));
+ document.getElementById('regimes').innerHTML=table(hs,statRows(p.regimes));
+ document.getElementById('timeframes').innerHTML=table(hs,statRows(p.timeframes));
+ document.getElementById('sides').innerHTML=table(hs,statRows(p.sides));
+ const rej=(st.riskRejections||[]).slice(0,20).map(x=>'<tr><td>'+new Date(x.t).toLocaleString('tr-TR')+'</td><td>'+x.symbol+'</td><td>'+x.side+'</td><td><span class="tag">'+x.reason+'</span></td><td>'+fmt(x.weekR,2)+'</td><td>'+fmt(x.totalRiskUSD,2)+'</td><td>'+fmt(x.correlated,0)+'</td></tr>');
+ document.getElementById('rejections').innerHTML=table(['Zaman','Sembol','Yön','Neden','Hafta R','Risk $','Korelasyon'],rej);
+}
+load();setInterval(load,60000);
+</script>
 </body>
 </html>
