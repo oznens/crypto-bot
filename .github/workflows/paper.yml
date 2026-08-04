@@ -13,8 +13,6 @@ on:
       - 'paper_health.js'
       - 'analysis.js'
       - 'core/**'
-      - 'scripts/migrate_paper_engine_v53.js'
-      - 'scripts/apply_v5_4_risk_rejection_dedupe.js'
       - 'test/paper_health.test.js'
       - 'test/paper_trade_policy.test.js'
       - 'test/paper_analytics.test.js'
@@ -36,12 +34,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: V5.3 motor politikasını uygula
-        run: node scripts/migrate_paper_engine_v53.js
-
-      - name: V5.4 risk reddi tekrar engelini uygula
-        run: node scripts/apply_v5_4_risk_rejection_dedupe.js
-
       - name: Sağlık testlerini çalıştır
         run: node test/paper_health.test.js
 
@@ -55,6 +47,7 @@ jobs:
         run: |
           node --check paper_engine.js
           node --check paper_analytics.js
+          node --check paper_health.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
@@ -80,8 +73,8 @@ jobs:
         run: |
           git config user.name "paper-bot"
           git config user.email "actions@github.com"
-          git add paper_engine.js paper_state.json docs/paper_state.json
+          git add paper_state.json docs/paper_state.json
           if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
-          git commit -m "paper: V5.5 analitik, durum ve sağlık güncellendi [skip ci]"
+          git commit -m "paper: durum, analitik ve sağlık güncellendi [skip ci]"
           git pull --rebase origin main || true
           git push
