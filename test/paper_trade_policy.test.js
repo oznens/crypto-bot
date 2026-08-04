@@ -32,4 +32,13 @@ const Policy = require('../core/paper_trade_policy');
   assert.equal(trade.maeR, 0.5);
 }
 
+{
+  const now = 1_800_000_000_000;
+  const candidate = { symbol: 'BTC_USDT', side: 'LONG', tf: '15m', reason: 'TOTAL_RISK_LIMIT' };
+  const recent = [{ ...candidate, t: now - 5 * 60 * 1000 }];
+  assert.equal(Policy.shouldRecordRiskRejection(recent, candidate, { now }), false);
+  assert.equal(Policy.shouldRecordRiskRejection(recent, candidate, { now: now + 6 * 60 * 60 * 1000 }), true);
+  assert.equal(Policy.shouldRecordRiskRejection(recent, { ...candidate, reason: 'WEEKLY_LOSS_LIMIT' }, { now }), true);
+}
+
 console.log('paper_trade_policy tests passed');
