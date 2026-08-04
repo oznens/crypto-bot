@@ -75,8 +75,26 @@ function applyExcursion(trade, candle, options) {
   return result;
 }
 
+function shouldRecordRiskRejection(rejections, candidate, options = {}) {
+  const list = Array.isArray(rejections) ? rejections : [];
+  const now = n(options.now, Date.now());
+  const dedupeMs = Math.max(0, n(options.dedupeMs, 6 * 60 * 60 * 1000));
+  const recent = list.find(item =>
+    item &&
+    item.symbol === candidate.symbol &&
+    item.side === candidate.side &&
+    item.tf === candidate.tf &&
+    item.reason === candidate.reason
+  );
+
+  if (!recent) return true;
+  const age = now - n(recent.t);
+  return age < 0 || age >= dedupeMs;
+}
+
 module.exports = {
   calculatePosition,
   excursionForCandle,
-  applyExcursion
+  applyExcursion,
+  shouldRecordRiskRejection
 };
