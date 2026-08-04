@@ -27,7 +27,7 @@ function writeState(state) {
 }
 
 function normalizedTrades(closed) {
-  return closed
+  return (Array.isArray(closed) ? closed : [])
     .map(trade => ({
       ...trade,
       resultR: Number.isFinite(Number(trade.resultR))
@@ -37,20 +37,35 @@ function normalizedTrades(closed) {
     .sort((a, b) => (Number(a.closedAt) || 0) - (Number(b.closedAt) || 0));
 }
 
-function buildAnalytics(state) {
-  const trades = normalizedTrades(state.closed);
+function enrichStats(stats, overall) {
+  const source = overall || {};
+  return {
+    ...(stats || {}),
+    expectancyR: Number.isFinite(Number(source.avgR)) ? Number(source.avgR) : 0,
+    profitFactor: Number.isFinite(Number(source.profitFactor)) ? Number(source.profitFactor) : 0,
+    maxDrawdownR: Number.isFinite(Number(source.maxDrawdownR)) ? Number(source.maxDrawdownR) : 0,
+    avgMfeR: Number.isFinite(Number(source.avgMfeR)) ? Number(source.avgMfeR) : 0,
+    avgMaeR: Number.isFinite(Number(source.avgMaeR)) ? Number(source.avgMaeR) : 0
+  };
+}
+
+function buildAnalytics(state, options = {}) {
+  const minTrades = Math.max(1, Number(options.minTrades || MIN_TRADES));
+  const generatedAt = Number(options.generatedAt) || Date.now();
+  const trades = normalizedTrades(state && state.closed);
   const performance = Performance.analyzeTrades(trades);
-  const strategyRanking = Ranking.rankStrategies(trades, { minTrades: MIN_TRADES });
+  const strategyRanking = Ranking.rankStrategies(trades, { minTrades });
 
   return {
     performance,
     strategyRanking,
     bestStrategy: strategyRanking.find(item => item.eligible) || null,
+    stats: enrichStats(state && state.stats, performance.overall),
     analyticsMeta: {
-      generatedAt: Date.now(),
+      generatedAt,
       closedTrades: trades.length,
-      rankingMinTrades: MIN_TRADES,
-      version: '4.9'
+      rankingMinTrades: minTrades,
+      version: '5.5'
     }
   };
 }
@@ -68,4 +83,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { normalizedTrades, buildAnalytics };
+module.exports = { normalizedTrades, enrichStats, buildAnalytics };
