@@ -21,10 +21,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Motoru çalıştır
         run: node paper_engine.js
+
       - name: Performans analitiğini üret
         run: node paper_analytics.js
+
+      - name: State dosyasını doğrula ve Pages'a kopyala
+        run: |
+          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem');"
+          mkdir -p docs
+          cp paper_state.json docs/paper_state.json
+          node -e "JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));console.log('docs/paper_state.json doğrulandı');"
+
       - name: Durumu commit'le
         run: |
           git config user.name "paper-bot"
