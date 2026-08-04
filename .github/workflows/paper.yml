@@ -14,6 +14,7 @@ on:
       - 'analysis.js'
       - 'core/**'
       - 'test/paper_health.test.js'
+      - 'test/paper_trade_policy.test.js'
 
 permissions:
   contents: write
@@ -34,6 +35,9 @@ jobs:
 
       - name: Sağlık testlerini çalıştır
         run: node test/paper_health.test.js
+
+      - name: İşlem politikası testlerini çalıştır
+        run: node test/paper_trade_policy.test.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
