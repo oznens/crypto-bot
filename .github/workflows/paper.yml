@@ -23,12 +23,14 @@ jobs:
           node-version: 20
       - name: Motoru çalıştır
         run: node paper_engine.js
+      - name: Performans analitiğini üret
+        run: node paper_analytics.js
       - name: Durumu commit'le
         run: |
           git config user.name "paper-bot"
           git config user.email "actions@github.com"
           git add paper_state.json docs/paper_state.json
           if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
-          git commit -m "paper: durum güncellendi [skip ci]"
+          git commit -m "paper: durum ve analitik güncellendi [skip ci]"
           git pull --rebase origin main || true
           git push
