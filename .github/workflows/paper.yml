@@ -13,6 +13,7 @@ on:
       - 'paper_health.js'
       - 'analysis.js'
       - 'core/**'
+      - 'test/paper_health.test.js'
 
 permissions:
   contents: write
@@ -31,6 +32,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Sağlık testlerini çalıştır
+        run: node test/paper_health.test.js
+
       - name: Motoru çalıştır
         run: node paper_engine.js
 
@@ -39,6 +43,10 @@ jobs:
 
       - name: State sağlığını ölç
         run: node paper_health.js
+
+      - name: Sağlık kalite kapısı
+        run: |
+          node -e "const s=JSON.parse(require('fs').readFileSync('paper_state.json','utf8'));const h=s.health;if(!h)throw new Error('state sağlık sonucu eksik');console.log('sağlık:',h.status,'state yaşı:',h.stateAgeMinutes,'dk','analitik yaşı:',h.analyticsAgeMinutes,'dk');if(!h.ok||h.status!=='HEALTHY')throw new Error('paper state sağlıksız: '+(h.issues||[]).join(','));"
 
       - name: State dosyasını doğrula ve Pages'a kopyala
         run: |
