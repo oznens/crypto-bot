@@ -1,5 +1,5 @@
 // V4 Risk Engine
-// Portfolio safety layer: daily loss, weekly loss, directional exposure,
+// Portfolio safety layer: weekly loss, directional exposure,
 // correlation groups and trade admission checks.
 
 const CORR_GROUPS = {
@@ -37,7 +37,7 @@ function canOpen(state, candidate, limits={}){
   if(directionalRisk(state.open,candidate.side)+candidate.riskUSD>maxDirectional)
     return {ok:false,reason:'directional_risk'};
 
-  if(groupCount(state.open,candidate.symbol)>=maxGroupTrades)
+  if(groupCount(state.open, candidate.symbol)>=maxGroupTrades)
     return {ok:false,reason:'correlation_group'};
 
   return {ok:true};
@@ -45,14 +45,11 @@ function canOpen(state, candidate, limits={}){
 
 function lossGuard(state){
   const now=Date.now();
-  const day=state.closed.filter(t=>now-t.closedAt<86400000)
-    .reduce((a,t)=>a+(t.r||0),0);
   const week=state.closed.filter(t=>now-t.closedAt<604800000)
     .reduce((a,t)=>a+(t.r||0),0);
 
   return {
-    blocked: day<=-2 || week<=-5,
-    dayR:day,
+    blocked: week<=-5,
     weekR:week
   };
 }
