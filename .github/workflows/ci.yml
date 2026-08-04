@@ -1,0 +1,59 @@
+name: code-quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/paper.yml'
+      - 'paper_engine.js'
+      - 'paper_analytics.js'
+      - 'paper_health.js'
+      - 'analysis.js'
+      - 'core/**'
+      - 'test/**'
+  pull_request:
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/paper.yml'
+      - 'paper_engine.js'
+      - 'paper_analytics.js'
+      - 'paper_health.js'
+      - 'analysis.js'
+      - 'core/**'
+      - 'test/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Testleri çalıştır
+        run: |
+          node test/paper_health.test.js
+          node test/paper_trade_policy.test.js
+          node test/paper_analytics.test.js
+          node tests/risk_engine.test.js
+          node tests/performance_engine.test.js
+
+      - name: Sözdizimini doğrula
+        run: |
+          node --check paper_engine.js
+          node --check paper_analytics.js
+          node --check paper_health.js
+          node --check core/paper_trade_policy.js
+          node --check core/risk_engine.js
+          node --check core/performance_engine.js
+          node --check core/strategy_ranking_engine.js
