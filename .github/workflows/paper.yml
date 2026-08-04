@@ -28,12 +28,15 @@ jobs:
       - name: Performans analitiğini üret
         run: node paper_analytics.js
 
+      - name: State sağlığını ölç
+        run: node paper_health.js
+
       - name: State dosyasını doğrula ve Pages'a kopyala
         run: |
-          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem');"
+          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');if(!s.health||!s.health.status)throw new Error('state sağlık sonucu eksik');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status);"
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
-          node -e "JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));console.log('docs/paper_state.json doğrulandı');"
+          node -e "const s=JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));if(!s.health)throw new Error('docs state sağlık sonucu eksik');console.log('docs/paper_state.json doğrulandı');"
 
       - name: Durumu commit'le
         run: |
