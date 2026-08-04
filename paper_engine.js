@@ -277,18 +277,25 @@ async function manageOpen(state) {
 }
 
 function recordRiskRejection(state, symbol, side, timeframe, decision) {
-  state.riskRejections.unshift({
-    t: Date.now(),
+  const now = Date.now();
+  const candidate = {
     symbol,
     side,
     tf: timeframe,
-    reason: decision.reason,
+    reason: decision.reason
+  };
+  if (!TradePolicy.shouldRecordRiskRejection(state.riskRejections, candidate, { now })) return false;
+
+  state.riskRejections.unshift({
+    t: now,
+    ...candidate,
     weekR: decision.weekR == null ? null : rnd(decision.weekR, 2),
     totalRiskUSD: decision.totalRiskUSD == null ? null : rnd(decision.totalRiskUSD, 2),
     directionalRiskUSD: decision.directionalRiskUSD == null ? null : rnd(decision.directionalRiskUSD, 2),
     correlated: decision.correlated == null ? null : decision.correlated
   });
   if (state.riskRejections.length > 100) state.riskRejections.length = 100;
+  return true;
 }
 
 function tryOpen(state, symbol, analysis, marketPrice, timeframe) {
