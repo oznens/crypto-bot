@@ -24,14 +24,22 @@ const openTrade = {
   side: 'LONG',
   entry: 100,
   qty: 1,
+  qty0: 1,
   riskUSD: 10,
+  sl: 99,
+  tp1: 101,
+  tpF: 103,
   openedAt: NOW - 5000,
   status: 'open'
 };
 const closedTrade = {
   id: 'ETHUSDT-1',
   resultR: 1.5,
+  riskUSD: 10,
+  openedAt: NOW - 5000,
   closedAt: NOW - 2000,
+  mfeR: 2,
+  maeR: 0.5,
   status: 'closed'
 };
 
@@ -43,7 +51,7 @@ assert.ok(V.validateState({ ...valid, analyticsMeta: { ...valid.analyticsMeta, v
 assert.ok(V.validateState({ ...valid, analyticsMeta: { ...valid.analyticsMeta, closedTrades: -1 } }, OPTIONS).issues.includes('ANALYTICS_CLOSED_COUNT_INVALID'));
 assert.ok(V.validateState({
   ...valid,
-  closed: [{ resultR: 1 }],
+  closed: [{ ...closedTrade }],
   analyticsMeta: { ...valid.analyticsMeta, closedTrades: 0 }
 }, OPTIONS).issues.includes('ANALYTICS_CLOSED_COUNT_MISMATCH'));
 assert.ok(V.validateState({
@@ -65,9 +73,15 @@ assert.equal(V.validateState({
 assert.deepEqual(V.validateTradeCollections([openTrade], [closedTrade]), []);
 assert.ok(V.validateTradeCollections([{ ...openTrade, entry: 0 }], []).includes('OPEN_TRADE_ENTRY_INVALID'));
 assert.ok(V.validateTradeCollections([{ ...openTrade, qty: 0 }], []).includes('OPEN_TRADE_QTY_INVALID'));
+assert.ok(V.validateTradeCollections([{ ...openTrade, qty: 2 }], []).includes('OPEN_TRADE_QTY_EXCEEDS_INITIAL'));
 assert.ok(V.validateTradeCollections([{ ...openTrade, side: 'BUY' }], []).includes('OPEN_TRADE_SIDE_INVALID'));
+assert.ok(V.validateTradeCollections([{ ...openTrade, sl: 101 }], []).includes('OPEN_TRADE_PRICE_GEOMETRY_INVALID'));
+assert.ok(V.validateTradeCollections([{ ...openTrade, side: 'SHORT', sl: 99, tp1: 101, tpF: 103 }], []).includes('OPEN_TRADE_PRICE_GEOMETRY_INVALID'));
 assert.ok(V.validateTradeCollections([openTrade], [{ ...closedTrade, id: openTrade.id }]).includes('DUPLICATE_TRADE_ID'));
 assert.ok(V.validateTradeCollections([], [{ ...closedTrade, resultR: null }]).includes('CLOSED_TRADE_RESULT_INVALID'));
+assert.ok(V.validateTradeCollections([], [{ ...closedTrade, closedAt: closedTrade.openedAt - 1 }]).includes('CLOSED_TRADE_TIME_ORDER_INVALID'));
+assert.ok(V.validateTradeCollections([], [{ ...closedTrade, mfeR: -0.1 }]).includes('CLOSED_TRADE_MFE_INVALID'));
+assert.ok(V.validateTradeCollections([], [{ ...closedTrade, maeR: -0.1 }]).includes('CLOSED_TRADE_MAE_INVALID'));
 assert.throws(() => V.assertState({ ...valid, open: null }, OPTIONS), /OPEN_NOT_ARRAY/);
 
 console.log('paper_state_validator tests passed');
