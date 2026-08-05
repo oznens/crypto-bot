@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');
+const Q=require('../core/market_data_quality_engine');
+const rows=[];for(let i=0;i<60;i++)rows.push({t:i*60000,o:100,h:101,l:99,c:100.5});
+assert.equal(Q.evaluate(rows).valid,true);
+const duplicate=[...rows];duplicate[20]={...duplicate[19]};
+assert.equal(Q.evaluate(duplicate).valid,false);
+const invalid=[...rows];invalid[10]={...invalid[10],h:98};
+assert.equal(Q.evaluate(invalid).reason,'INVALID_OHLC');
+assert.equal(Q.evaluate(rows.slice(0,10)).reason,'INSUFFICIENT_BARS');
+console.log('market_data_quality_engine tests passed');
