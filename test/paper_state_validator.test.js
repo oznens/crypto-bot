@@ -39,7 +39,11 @@ assert.ok(V.validateState({
   ...valid,
   analyticsMeta: { ...valid.analyticsMeta, generatedAt: NOW + 120_001 }
 }, OPTIONS).issues.includes('ANALYTICS_TIME_IN_FUTURE'));
-assert.equal(V.validateState({ ...valid, lastRun: NOW + 120_000 }, OPTIONS).ok, true);
+assert.equal(V.validateState({
+  ...valid,
+  lastRun: NOW + 120_000,
+  analyticsMeta: { ...valid.analyticsMeta, generatedAt: NOW + 120_000 }
+}, OPTIONS).ok, true);
 assert.throws(() => V.assertState({ ...valid, open: null }, OPTIONS), /OPEN_NOT_ARRAY/);
 
 console.log('paper_state_validator tests passed');
