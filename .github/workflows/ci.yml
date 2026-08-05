@@ -13,6 +13,7 @@ on:
       - 'core/**'
       - 'scripts/**'
       - 'docs/summary.html'
+      - 'docs/strategy.html'
       - 'test/**'
   pull_request:
     paths:
@@ -25,6 +26,7 @@ on:
       - 'core/**'
       - 'scripts/**'
       - 'docs/summary.html'
+      - 'docs/strategy.html'
       - 'test/**'
 
 permissions:
@@ -52,6 +54,7 @@ jobs:
           node test/paper_state_validator.test.js
           node test/validate_paper_state_cli.test.js
           node test/paper_summary.test.js
+          node test/strategy_allocator.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -66,5 +69,7 @@ jobs:
           node --check core/risk_engine.js
           node --check core/performance_engine.js
           node --check core/strategy_ranking_engine.js
+          node --check core/strategy_allocator.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
+          node --check scripts/build_strategy_allocation.js
