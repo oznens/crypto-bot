@@ -2,6 +2,8 @@
 
 const Ranking = require('./strategy_ranking_engine');
 const Decay = require('./strategy_decay_engine');
+const Robustness = require('./strategy_robustness_engine');
+const Stability = require('./parameter_stability_engine');
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -28,6 +30,19 @@ function riskMultiplier(row, status) {
   return +clamp(0.7 + scoreComponent * 0.35 + expectancyComponent * 0.2 + robustnessBonus, 0.7, 1.25).toFixed(2);
 }
 
+function chunkExpectancies(trades, chunks = 5) {
+  const rows = [...(trades || [])].sort((a, b) => Number(a.closedAt || 0) - Number(b.closedAt || 0));
+  if (!rows.length) return [];
+  const size = Math.max(1, Math.floor(rows.length / chunks));
+  const out = [];
+  for (let i = 0; i < rows.length; i += size) {
+    const part = rows.slice(i, i + size);
+    const expectancy = part.reduce((sum, trade) => sum + Number(trade.resultR ?? trade.r ?? 0), 0) / part.length;
+    out.push({ score: expectancy });
+  }
+  return out.slice(0, chunks);
+}
+
 function buildAllocation(trades, options = {}) {
   const rows = Array.isArray(trades) ? trades : [];
   const modelKey = options.modelKey || 'model';
@@ -40,24 +55,39 @@ function buildAllocation(trades, options = {}) {
 
   const rankings = Ranking.rankStrategies(rows, options);
   const enriched = rankings.map(row => {
-    const decay = Decay.evaluate(groups.get(row.model) || [], options.decay || {});
+    const modelTrades = groups.get(row.model) || [];
+    const decay = Decay.evaluate(modelTrades, options.decay || {});
+    const robustness = Robustness.evaluate(modelTrades, options.robustness || {});
+    const stability = Stability.evaluate(chunkExpectancies(modelTrades, options.stabilityChunks || 5), options.stability || {});
     let status = classify(row, options);
-    if (decay.status === 'DECAY_SEVERE') status = 'PAUSED';
-    else if (decay.status === 'DECAY_WARNING' && status === 'ACTIVE') status = 'WATCH';
+
+    if (decay.status === 'DECAY_SEVERE' || robustness.status === 'FRAGILE') status = 'PAUSED';
+    else if (
+      (decay.status === 'DECAY_WARNING' || robustness.status === 'CAUTION' || stability.status === 'FRAGILE') &&
+      status === 'ACTIVE'
+    ) status = 'WATCH';
 
     const reason = decay.status === 'DECAY_SEVERE'
       ? 'yakın dönem performansı ciddi biçimde bozuldu'
-      : decay.status === 'DECAY_WARNING'
-        ? 'yakın dönem performans zayıflaması izleniyor'
-        : status === 'PAUSED'
-          ? 'negatif beklenti veya yüksek düşüş'
-          : status === 'WATCH'
-            ? (row.trades < (Number(options.minTrades) || 20) ? 'örneklem yetersiz' : 'dayanıklılık teyidi bekleniyor')
-            : 'performans ve dayanıklılık uygun';
+      : robustness.status === 'FRAGILE'
+        ? 'Monte Carlo stresinde strateji kırılgan'
+        : decay.status === 'DECAY_WARNING'
+          ? 'yakın dönem performans zayıflaması izleniyor'
+          : robustness.status === 'CAUTION'
+            ? 'Monte Carlo sonucu temkinli risk gerektiriyor'
+            : stability.status === 'FRAGILE'
+              ? 'dönemler arası performans kararsız'
+              : status === 'PAUSED'
+                ? 'negatif beklenti veya yüksek düşüş'
+                : status === 'WATCH'
+                  ? (row.trades < (Number(options.minTrades) || 20) ? 'örneklem yetersiz' : 'dayanıklılık teyidi bekleniyor')
+                  : 'performans, dayanıklılık ve istikrar uygun';
 
     return {
       ...row,
       decay,
+      robustness,
+      stability,
       status,
       riskMultiplier: riskMultiplier(row, status),
       reason
@@ -74,7 +104,7 @@ function buildAllocation(trades, options = {}) {
   }));
 
   return {
-    version: '16.0',
+    version: '24.0',
     generatedAt: Number.isFinite(Number(options.now)) ? Number(options.now) : Date.now(),
     modelKey,
     minTrades: Number.isFinite(Number(options.minTrades)) ? Number(options.minTrades) : 20,
@@ -90,4 +120,4 @@ function multiplierFor(allocation, model) {
   return row ? row.riskMultiplier : 0.5;
 }
 
-module.exports = { clamp, classify, riskMultiplier, buildAllocation, multiplierFor };
+module.exports = { clamp, classify, riskMultiplier, chunkExpectancies, buildAllocation, multiplierFor };
