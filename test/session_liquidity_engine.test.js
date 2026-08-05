@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');
+const S=require('../core/session_liquidity_engine');
+const rows=[];
+for(let i=0;i<6;i++)rows.push({t:Date.UTC(2026,0,6,0,i*10),h:105,l:95,c:100});
+rows.push({t:Date.UTC(2026,0,6,8,0),h:101,l:94,c:97});
+const r=S.evaluate(rows,'LONG');
+assert.equal(r.valid,true);
+assert.equal(r.judas,true);
+assert.equal(S.evaluate([], 'LONG').reason,'NO_CANDLES');
+console.log('session_liquidity_engine tests passed');
