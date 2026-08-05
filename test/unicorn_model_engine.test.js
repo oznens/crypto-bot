@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('assert');
+const U=require('../core/unicorn_model_engine');
+const a={bottom:100,top:103},b={bottom:102,top:105};
+assert.deepEqual(U.overlap(a,b),{bottom:102,top:103,mid:102.5});
+const rows=[];for(let i=0;i<20;i++)rows.push({o:100,h:101,l:99,c:100});
+rows.push({o:100.5,h:101,l:99.5,c:100});
+rows.push({o:101,h:103,l:100.8,c:102.8});
+rows.push({o:104,h:105,l:103.5,c:104.5});
+rows.push({o:104,h:104.2,l:102.5,c:103.5});
+const r=U.evaluate(rows,'LONG');
+assert.ok(['UNICORN_RETEST_CONFIRMED','UNICORN_WAITING_RETEST','UNICORN_OVERLAP_MISSING'].includes(r.reason));
+assert.equal(U.evaluate([], 'LONG').valid,false);
+console.log('unicorn_model_engine tests passed');
