@@ -12,20 +12,26 @@ const decaying = [
   ...trades('DECAY', Array(20).fill(-0.4), 100)
 ];
 const rows = [
-  ...trades('STRONG', Array(30).fill(0).map((_, i) => i % 3 === 0 ? -0.5 : 1)),
-  ...trades('WEAK', Array(30).fill(-0.25)),
+  ...trades('STRONG', Array(40).fill(0).map((_, i) => i % 4 === 0 ? -0.4 : 0.9)),
+  ...trades('WEAK', Array(40).fill(-0.25)),
   ...trades('NEW', [1, -0.5, 0.2]),
   ...decaying
 ];
-const result = A.buildAllocation(rows, { minTrades: 20, now: 123 });
+const result = A.buildAllocation(rows, {
+  minTrades: 20,
+  now: 123,
+  robustness: { simulations: 150, seed: 7, minTrades: 30 }
+});
 const strong = result.allocations.find(x => x.model === 'STRONG');
 const weak = result.allocations.find(x => x.model === 'WEAK');
 const fresh = result.allocations.find(x => x.model === 'NEW');
 const decay = result.allocations.find(x => x.model === 'DECAY');
 
-assert.equal(result.version, '16.0');
+assert.equal(result.version, '24.0');
 assert.equal(result.generatedAt, 123);
 assert.equal(strong.status, 'ACTIVE');
+assert.equal(strong.robustness.available, true);
+assert.ok(strong.stability.available);
 assert.ok(strong.riskMultiplier >= 0.7 && strong.riskMultiplier <= 1.25);
 assert.ok(strong.portfolioWeightPct > 0);
 assert.equal(weak.status, 'PAUSED');
