@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');
+const R=require('../core/strategy_robustness_engine');
+const strong=[];for(let i=0;i<50;i++)strong.push({resultR:i%4===0?-0.5:0.8});
+const r=R.evaluate(strong,{simulations:200,seed:7,minTrades:30});
+assert.equal(r.available,true);
+assert.ok(['ROBUST','CAUTION'].includes(r.status));
+assert.ok(r.maxDrawdownR_P95>=0);
+assert.equal(R.evaluate(strong.slice(0,10)).status,'INSUFFICIENT_DATA');
+assert.equal(R.maxDrawdown([1,-0.5,-1,2]),1.5);
+console.log('strategy_robustness_engine tests passed');
