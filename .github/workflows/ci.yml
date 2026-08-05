@@ -45,6 +45,7 @@ jobs:
           node test/paper_health.test.js
           node test/paper_trade_policy.test.js
           node test/paper_analytics.test.js
+          node test/paper_state_validator.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -54,6 +55,7 @@ jobs:
           node --check paper_analytics.js
           node --check paper_health.js
           node --check core/paper_trade_policy.js
+          node --check core/paper_state_validator.js
           node --check core/risk_engine.js
           node --check core/performance_engine.js
           node --check core/strategy_ranking_engine.js
