@@ -34,6 +34,8 @@ jobs:
           node test/validate_paper_state_cli.test.js
           node test/paper_summary.test.js
           node test/strategy_allocator.test.js
+          node test/strategy_trade_policy.test.js
+          node test/strategy_execution_adapter.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -43,17 +45,20 @@ jobs:
           node --check core/paper_state_validator.js
           node --check core/paper_summary.js
           node --check core/strategy_allocator.js
+          node --check core/strategy_trade_policy.js
+          node --check core/strategy_execution_adapter.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
+          node --check scripts/run_paper_v8.js
 
-      - name: Motoru çalıştır
-        run: node paper_engine.js
+      - name: V8 tahsis kontrollü motoru çalıştır
+        run: node scripts/run_paper_v8.js
 
       - name: Performans analitiğini üret
         run: node paper_analytics.js
 
-      - name: V7 strateji tahsisini üret
+      - name: V7 strateji tahsisini yenile
         run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
 
       - name: State sağlığını ölç
@@ -92,7 +97,7 @@ jobs:
               exit 0
             fi
 
-            git commit -m "paper: V7 strateji tahsisi ve izlenebilirlik güncellendi [skip ci]"
+            git commit -m "paper: V8 tahsis kontrollü yürütme güncellendi [skip ci]"
             if git push origin HEAD:main; then
               echo "state push başarılı (deneme $attempt)"
               exit 0
