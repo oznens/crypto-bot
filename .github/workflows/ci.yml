@@ -12,9 +12,9 @@ on:
       - 'analysis.js'
       - 'core/**'
       - 'scripts/**'
-      - 'docs/summary.html'
-      - 'docs/strategy.html'
+      - 'docs/**'
       - 'test/**'
+      - 'tests/**'
   pull_request:
     paths:
       - '.github/workflows/ci.yml'
@@ -25,9 +25,9 @@ on:
       - 'analysis.js'
       - 'core/**'
       - 'scripts/**'
-      - 'docs/summary.html'
-      - 'docs/strategy.html'
+      - 'docs/**'
       - 'test/**'
+      - 'tests/**'
 
 permissions:
   contents: read
@@ -84,6 +84,7 @@ jobs:
           node test/market_data_quality_engine.test.js
           node test/trading_circuit_breaker.test.js
           node test/strategy_incubator.test.js
+          node test/setup_journal.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -92,44 +93,4 @@ jobs:
           node --check paper_engine.js
           node --check paper_analytics.js
           node --check paper_health.js
-          node --check core/paper_trade_policy.js
-          node --check core/paper_state_validator.js
-          node --check core/paper_summary.js
-          node --check core/risk_engine.js
-          node --check core/performance_engine.js
-          node --check core/strategy_ranking_engine.js
-          node --check core/strategy_allocator.js
-          node --check core/strategy_trade_policy.js
-          node --check core/strategy_execution_adapter.js
-          node --check core/strategy_ensemble.js
-          node --check core/killzone_fvg_engine.js
-          node --check core/smt_divergence_engine.js
-          node --check core/liquidity_map_engine.js
-          node --check core/adaptive_exit_engine.js
-          node --check core/strategy_context_pipeline.js
-          node --check core/multi_timeframe_alignment.js
-          node --check core/confluence_score_engine.js
-          node --check core/strategy_decay_engine.js
-          node --check core/ict_pattern_pack.js
-          node --check core/wyckoff_phase_engine.js
-          node --check core/quarterly_theory_engine.js
-          node --check core/mmxm_curve_engine.js
-          node --check core/sbs_engine.js
-          node --check core/session_liquidity_engine.js
-          node --check core/strategy_robustness_engine.js
-          node --check core/parameter_stability_engine.js
-          node --check core/execution_cost_engine.js
-          node --check core/portfolio_correlation_engine.js
-          node --check core/bige_tdi_engine.js
-          node --check core/unicorn_model_engine.js
-          node --check core/nine_stars_engine.js
-          node --check core/hps_zone_engine.js
-          node --check core/market_data_quality_engine.js
-          node --check core/trading_circuit_breaker.js
-          node --check core/strategy_incubator.js
-          node --check scripts/validate_paper_state.js
-          node --check scripts/build_paper_summary.js
-          node --check scripts/build_strategy_allocation.js
-          node --check scripts/build_strategy_incubator.js
-          node --check scripts/run_paper_v9.js
-          node --check scripts/run_paper_v13.js
+          for f in core/*.js scripts/*.js; do node --check "$f"; done
