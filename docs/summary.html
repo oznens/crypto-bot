@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DREYKO V6 İzlenebilirlik</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e13;--p:#141922;--line:#2b3442;--txt:#e6edf3;--dim:#8b949e;--g:#5fd99a;--r:#f08a8a;--b:#79c0ff;--y:#e8c34a}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--txt);font:14px Arial,sans-serif}h1{margin:0 0 4px;font-size:21px}.sub{color:var(--dim);margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}.card,.panel{background:var(--p);border:1px solid var(--line);border-radius:10px;padding:12px}.k{font-size:11px;color:var(--dim)}.v{font-size:20px;font-weight:700;margin-top:5px}.g{color:var(--g)}.r{color:var(--r)}.b{color:var(--b)}.y{color:var(--y)}.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-top:12px}h2{font-size:14px;margin:0 0 10px}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:7px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--dim)}.ok{display:inline-block;padding:3px 8px;border-radius:999px;background:#173727;color:var(--g)}.bad{background:#3a2023;color:var(--r)}a{color:var(--b)}
+</style>
+</head><body>
+<h1>DREYKO V6 İzlenebilirlik</h1><div class="sub" id="sub">rapor yükleniyor…</div>
+<div class="grid" id="cards"></div><div class="panels"><section class="panel"><h2>Risk reddetmeleri</h2><div id="risk"></div></section><section class="panel"><h2>Strateji sıralaması</h2><div id="rank"></div></section></div>
+<p><a href="./">Ayrıntılı paper işlem paneline dön</a></p>
+<script>
+const f=(n,d=2)=>Number.isFinite(+n)?(+n).toLocaleString('tr-TR',{maximumFractionDigits:d}):'-';
+async function load(){try{const r=await fetch('paper_summary.json?t='+Date.now());if(!r.ok)throw new Error('HTTP '+r.status);const s=await r.json();const age=s.sourceLastRun?Math.round((Date.now()-s.sourceLastRun)/60000):null;document.getElementById('sub').innerHTML='<span class="'+(s.health.ok?'ok':'ok bad')+'">'+s.health.status+'</span> · V'+s.schemaVersion+' · son motor '+(age==null?'-':age+' dk önce')+' · analitik '+(s.meta.analyticsVersion||'-');const a=s.account,p=s.positions,x=s.performance;document.getElementById('cards').innerHTML=[['Özkaynak',f(a.equity)+' $',a.pnl>=0?'g':'r'],['Net PnL',(a.pnl>=0?'+':'')+f(a.pnl)+' $',a.pnl>=0?'g':'r'],['Getiri',(a.returnPct>=0?'+':'')+f(a.returnPct)+'%',a.returnPct>=0?'g':'r'],['Açık',p.open+' ('+p.risky+' riskli / '+p.breakeven+' BE)','y'],['Açık risk',f(p.totalRiskUSD)+' $','y'],['Kapanan',x.closed,'b'],['Win rate','%'+f(x.winRate),'b'],['Expectancy',f(x.expectancyR)+'R',x.expectancyR>=0?'g':'r'],['Profit factor',f(x.profitFactor),x.profitFactor>=1?'g':'r'],['Max DD',f(x.maxDrawdownR)+'R','r']].map(c=>'<div class="card"><div class="k">'+c[0]+'</div><div class="v '+c[2]+'">'+c[1]+'</div></div>').join('');const rr=Object.entries(s.risk.rejectionCounts||{}).sort((a,b)=>b[1]-a[1]);document.getElementById('risk').innerHTML=rr.length?'<table>'+rr.map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('')+'</table>':'Reddedilen işlem yok.';const ranks=s.rankings||[];document.getElementById('rank').innerHTML=ranks.length?'<table><tr><th>Strateji</th><th>Skor</th></tr>'+ranks.map(x=>'<tr><td>'+(x.key||x.name||x.strategy||'-')+'</td><td>'+f(x.score,1)+'</td></tr>').join('')+'</table>':'Sıralama için yeterli veri yok.';}catch(e){document.getElementById('sub').textContent='Rapor yüklenemedi: '+e.message;}}
+load();setInterval(load,60000);
+</script></body></html>
