@@ -8,6 +8,9 @@ const Confluence = require('./confluence_score_engine');
 const ICT = require('./ict_pattern_pack');
 const Wyckoff = require('./wyckoff_phase_engine');
 const Quarterly = require('./quarterly_theory_engine');
+const MMXM = require('./mmxm_curve_engine');
+const SBS = require('./sbs_engine');
+const SessionLiquidity = require('./session_liquidity_engine');
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,Number(v)||0));}
 
@@ -29,10 +32,15 @@ function enhance(result, options = {}) {
   const ict = ICT.evaluate(result.candles, side);
   const wyckoff = Wyckoff.evaluate(result.candles);
   const quarterly = Quarterly.evaluate(result.candles);
+  const mmxm = MMXM.evaluate(result.candles);
+  const sbs = SBS.evaluate(result.candles, side, options.sbs);
+  const sessionLiquidity = SessionLiquidity.evaluate(result.candles, side);
 
   const wyckoffAligned = !wyckoff.valid || wyckoff.bias === 'NEUTRAL' || wyckoff.bias === side;
   const quarterlyAligned = !quarterly.valid || quarterly.side === side;
   const ictAligned = !ict.valid || Object.values(ict.patterns).some(x => x.valid && (!x.side || x.side === side));
+  const mmxmAligned = !mmxm.valid || mmxm.bias === 'NEUTRAL' || mmxm.bias === side;
+  const sessionAligned = !sessionLiquidity.judas || sessionLiquidity.side === side;
 
   const confluence = Confluence.score({
     structure: !!result.structures?.trend,
@@ -42,16 +50,16 @@ function enhance(result, options = {}) {
     orderBlock: !!(setup.ob || setup.orderBlock),
     htfAlignment: mtf.score / 100,
     smt: smt.available ? smt.confirmed : null,
-    session: killzone.valid,
+    session: killzone.valid || sessionLiquidity.valid,
     regime: result.intelligence?.regime && result.intelligence.regime !== 'UNKNOWN'
   }, { minScore: options.minConfluence || 55 });
 
   const context = {
-    version:'19.0', killzone, smt, liquidity, mtf, confluence,
-    ict, wyckoff, quarterly
+    version:'22.0', killzone, smt, liquidity, mtf, confluence,
+    ict, wyckoff, quarterly, mmxm, sbs, sessionLiquidity
   };
   const timeSensitive = /silver|fvg|killzone|time/i.test(String(setup.model || ''));
-  const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned;
+  const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned || !mmxmAligned || !sessionAligned;
   if ((timeSensitive && !killzone.valid) || hardConflict || !confluence.valid) {
     return {
       ...result,
@@ -69,7 +77,11 @@ function enhance(result, options = {}) {
                 ? 'QUARTERLY_DIRECTION_CONFLICT'
                 : !ictAligned
                   ? 'ICT_PATTERN_DIRECTION_CONFLICT'
-                  : 'CONFLUENCE_TOO_LOW'
+                  : !mmxmAligned
+                    ? 'MMXM_DIRECTION_CONFLICT'
+                    : !sessionAligned
+                      ? 'SESSION_LIQUIDITY_DIRECTION_CONFLICT'
+                      : 'CONFLUENCE_TOO_LOW'
       }
     };
   }
@@ -85,13 +97,19 @@ function enhance(result, options = {}) {
     (smt.confirmed ? 4 : 0) +
     Math.min(6, ict.confirmed * 2) +
     (wyckoff.valid && wyckoff.bias === side ? 3 : 0) +
-    (quarterly.valid && quarterly.side === side ? 3 : 0)
+    (quarterly.valid && quarterly.side === side ? 3 : 0) +
+    (mmxm.valid && mmxm.bias === side ? 4 : 0) +
+    (sbs.valid ? 5 : 0) +
+    (sessionLiquidity.valid ? 5 : 0)
   );
   setup.confidence = clamp(Math.round((+setup.confidence || 0) + adjustment), 0, 100);
   setup.grade = confluence.grade;
   setup.ictPatterns = ict;
   setup.wyckoff = wyckoff;
   setup.quarterly = quarterly;
+  setup.mmxm = mmxm;
+  setup.sbs = sbs;
+  setup.sessionLiquidity = sessionLiquidity;
   setup.context = { ...context, confidenceAdjustment:adjustment };
   return {
     ...result,
