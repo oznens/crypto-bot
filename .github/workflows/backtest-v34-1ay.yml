@@ -1,0 +1,69 @@
+name: backtest-v34-1ay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-v34-1ay.yml'
+      - 'backtest_v34.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-v34-1ay
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: V34 güncel motorla son 30 gün backtest
+        env:
+          GUN: 30
+          SYMS: 30
+          BACKTEST_MIN_CONFLUENCE: 55
+          BACKTEST_ENSEMBLE_MIN_CONSENSUS: 0.58
+          BACKTEST_ENSEMBLE_MIN_SCORE: 55
+        run: node backtest_v34.js
+
+      - name: Sonuç dosyalarını hazırla
+        run: |
+          mkdir -p /tmp/v34-backtest
+          cp backtest3ay_sonuc.txt /tmp/v34-backtest/backtest_v34_1ay_sonuc.txt
+          cp backtest3ay_islemler.json /tmp/v34-backtest/backtest_v34_1ay_islemler.json
+          cp backtest_v34_filter_stats.json /tmp/v34-backtest/backtest_v34_1ay_filtreler.json
+
+      - name: Sonuçları main dalına güvenli kaydet
+        run: |
+          set -euo pipefail
+          git config user.name "backtest-bot"
+          git config user.email "actions@github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p docs
+            cp /tmp/v34-backtest/backtest_v34_1ay_sonuc.txt docs/
+            cp /tmp/v34-backtest/backtest_v34_1ay_islemler.json docs/
+            cp /tmp/v34-backtest/backtest_v34_1ay_filtreler.json docs/
+            git add docs/backtest_v34_1ay_sonuc.txt docs/backtest_v34_1ay_islemler.json docs/backtest_v34_1ay_filtreler.json
+            if git diff --cached --quiet; then
+              echo "Sonuç değişmedi"
+              exit 0
+            fi
+            git commit -m "backtest: V34 son 30 gün sonuçları [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          exit 1
