@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const N=require('../core/nine_stars_engine');
+const rows=[];
+for(let i=0;i<8;i++)rows.push({o:100+i,h:101.2+i,l:99.8+i,c:101+i});
+rows.push({o:108,h:109.5,l:107.8,c:109.4});
+const r=N.evaluate(rows);
+assert.equal(r.valid,true);
+assert.equal(r.side,'LONG');
+assert.equal(r.mode,'CONTINUATION');
+assert.equal(N.evaluate(rows.slice(0,5)).reason,'INSUFFICIENT_DATA');
+console.log('nine_stars_engine tests passed');
