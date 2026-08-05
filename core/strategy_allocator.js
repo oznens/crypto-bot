@@ -1,6 +1,7 @@
 'use strict';
 
 const Ranking = require('./strategy_ranking_engine');
+const Decay = require('./strategy_decay_engine');
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -28,24 +29,44 @@ function riskMultiplier(row, status) {
 }
 
 function buildAllocation(trades, options = {}) {
-  const rankings = Ranking.rankStrategies(trades, options);
-  const rows = rankings.map(row => {
-    const status = classify(row, options);
+  const rows = Array.isArray(trades) ? trades : [];
+  const modelKey = options.modelKey || 'model';
+  const groups = new Map();
+  for (const trade of rows) {
+    const model = trade?.[modelKey] || 'UNKNOWN';
+    if (!groups.has(model)) groups.set(model, []);
+    groups.get(model).push(trade);
+  }
+
+  const rankings = Ranking.rankStrategies(rows, options);
+  const enriched = rankings.map(row => {
+    const decay = Decay.evaluate(groups.get(row.model) || [], options.decay || {});
+    let status = classify(row, options);
+    if (decay.status === 'DECAY_SEVERE') status = 'PAUSED';
+    else if (decay.status === 'DECAY_WARNING' && status === 'ACTIVE') status = 'WATCH';
+
+    const reason = decay.status === 'DECAY_SEVERE'
+      ? 'yakın dönem performansı ciddi biçimde bozuldu'
+      : decay.status === 'DECAY_WARNING'
+        ? 'yakın dönem performans zayıflaması izleniyor'
+        : status === 'PAUSED'
+          ? 'negatif beklenti veya yüksek düşüş'
+          : status === 'WATCH'
+            ? (row.trades < (Number(options.minTrades) || 20) ? 'örneklem yetersiz' : 'dayanıklılık teyidi bekleniyor')
+            : 'performans ve dayanıklılık uygun';
+
     return {
       ...row,
+      decay,
       status,
       riskMultiplier: riskMultiplier(row, status),
-      reason: status === 'PAUSED'
-        ? 'negatif beklenti veya yüksek düşüş'
-        : status === 'WATCH'
-          ? (row.trades < (Number(options.minTrades) || 20) ? 'örneklem yetersiz' : 'dayanıklılık teyidi bekleniyor')
-          : 'performans ve dayanıklılık uygun'
+      reason
     };
   });
 
-  const active = rows.filter(row => row.status === 'ACTIVE');
+  const active = enriched.filter(row => row.status === 'ACTIVE');
   const total = active.reduce((sum, row) => sum + row.riskMultiplier, 0);
-  const allocations = rows.map(row => ({
+  const allocations = enriched.map(row => ({
     ...row,
     portfolioWeightPct: row.status === 'ACTIVE' && total > 0
       ? +((row.riskMultiplier / total) * 100).toFixed(2)
@@ -53,9 +74,9 @@ function buildAllocation(trades, options = {}) {
   }));
 
   return {
-    version: '7.0',
+    version: '16.0',
     generatedAt: Number.isFinite(Number(options.now)) ? Number(options.now) : Date.now(),
-    modelKey: options.modelKey || 'model',
+    modelKey,
     minTrades: Number.isFinite(Number(options.minTrades)) ? Number(options.minTrades) : 20,
     activeCount: allocations.filter(row => row.status === 'ACTIVE').length,
     watchCount: allocations.filter(row => row.status === 'WATCH').length,
