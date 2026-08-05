@@ -1,0 +1,12 @@
+'use strict';
+const assert = require('assert');
+const L = require('../core/liquidity_map_engine');
+const c=[];
+for(let i=0;i<12;i++) c.push({t:i,h:[100,101,105,101,100,101,105.05,101,100,101,99,98][i],l:[99,98,97,98,99,98,97.02,98,99,98,96,97][i],c:100});
+const map=L.build(c,{span:1,tolerancePct:0.001});
+assert.ok(map.buySide.some(x=>x.touches>=2));
+assert.ok(map.sellSide.some(x=>x.touches>=2));
+assert.equal(L.chooseTarget(map,'LONG',100).valid,true);
+assert.equal(L.chooseTarget(map,'SHORT',100).valid,true);
+assert.equal(L.chooseTarget({buySide:[],sellSide:[]},'LONG',100).reason,'LIQUIDITY_TARGET_MISSING');
+console.log('liquidity_map_engine tests passed');
