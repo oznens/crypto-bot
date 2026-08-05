@@ -40,29 +40,31 @@ function createExecutionAdapter(options = {}) {
 
   function calculate(args = {}) {
     const decision = StrategyPolicy.decide(allocation, currentModel, options.policyOptions);
+    const contextMultiplier = currentContextMultiplier;
+    currentContextMultiplier = 1;
     telemetry.evaluated++;
-    const combinedMultiplier = +(decision.multiplier * currentContextMultiplier).toFixed(4);
+    const combinedMultiplier = +(decision.multiplier * contextMultiplier).toFixed(4);
     telemetry.lastDecision = {
       model: currentModel,
       status: decision.status,
       allocationMultiplier: decision.multiplier,
-      contextMultiplier: currentContextMultiplier,
+      contextMultiplier,
       multiplier: combinedMultiplier,
-      allowed: decision.allowed && currentContextMultiplier > 0,
-      reason: currentContextMultiplier <= 0 ? 'PORTFOLIO_CONTEXT_BLOCKED' : decision.reason
+      allowed: decision.allowed && contextMultiplier > 0,
+      reason: contextMultiplier <= 0 ? 'PORTFOLIO_CONTEXT_BLOCKED' : decision.reason
     };
 
-    if (!decision.allowed || currentContextMultiplier <= 0) {
+    if (!decision.allowed || contextMultiplier <= 0) {
       telemetry.paused++;
       return {
         valid: false,
-        reason: currentContextMultiplier <= 0 ? 'PORTFOLIO_CONTEXT_BLOCKED' : 'STRATEGY_PAUSED',
+        reason: contextMultiplier <= 0 ? 'PORTFOLIO_CONTEXT_BLOCKED' : 'STRATEGY_PAUSED',
         qty: 0,
         plannedRiskUSD: 0,
         actualRiskUSD: 0,
         riskDist: Math.abs(Number(args.entry) - Number(args.stop)),
         strategyDecision: decision,
-        contextRiskMultiplier: currentContextMultiplier
+        contextRiskMultiplier: contextMultiplier
       };
     }
 
@@ -72,18 +74,17 @@ function createExecutionAdapter(options = {}) {
     else telemetry.unranked++;
     if (combinedMultiplier < 1) telemetry.reducedRisk++;
     if (combinedMultiplier > 1) telemetry.increasedRisk++;
-    if (currentContextMultiplier < 1) telemetry.contextReducedRisk++;
+    if (contextMultiplier < 1) telemetry.contextReducedRisk++;
 
     const allocationAdjustedRiskPct = StrategyPolicy.adjustedRiskPct(args.riskPct, decision);
-    const adjustedRiskPct = +(allocationAdjustedRiskPct * currentContextMultiplier).toFixed(8);
+    const adjustedRiskPct = +(allocationAdjustedRiskPct * contextMultiplier).toFixed(8);
     const result = calculatePosition({ ...args, riskPct: adjustedRiskPct });
-    currentContextMultiplier = 1;
     return {
       ...result,
       baseRiskPct: Number(args.riskPct) || 0,
       allocationAdjustedRiskPct,
       adjustedRiskPct,
-      contextRiskMultiplier: telemetry.lastDecision.contextMultiplier,
+      contextRiskMultiplier: contextMultiplier,
       strategyDecision: decision
     };
   }
