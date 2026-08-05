@@ -15,12 +15,14 @@ const { detect: detectRegime } = require('./core/regime_detector');
 
 const originalAnalyze = Analysis.analyze;
 const stats = {
-  version: '34.0',
+  version: '34.1',
   evaluated: 0,
+  rawSetups: 0,
   qualityRejected: 0,
   contextRejected: 0,
   ensembleRejected: 0,
   accepted: 0,
+  compatibilityAdapted: 0,
   reasons: {}
 };
 
@@ -46,6 +48,7 @@ Analysis.analyze = function analyzeV34(candles, options = {}) {
   }
 
   const raw = originalAnalyze.call(this, candles, options);
+  if (raw?.setup) stats.rawSetups++;
   const withCandles = raw && raw.candles ? raw : { ...raw, candles };
   const contextual = Context.enhance(withCandles, {
     peerCandles: options.peerCandles,
@@ -81,11 +84,24 @@ Analysis.analyze = function analyzeV34(candles, options = {}) {
 
   stats.accepted++;
   const model = decision.winnerModel || contextual.setup.model || 'UNKNOWN';
+  const curve = contextual.strategyContext?.mmxm || null;
+  const legacyMmxm = contextual.setup.mmxm?.valid
+    ? contextual.setup.mmxm
+    : {
+        valid: true,
+        score: curve?.bias === contextual.setup.side ? 5 : 4,
+        phase: curve?.phase || 'V34_CONTEXT_ACCEPTED',
+        bias: curve?.bias || 'NEUTRAL',
+        source: 'V34_COMPATIBILITY_ADAPTER'
+      };
+  if (!contextual.setup.mmxm?.valid) stats.compatibilityAdapted++;
+
   return {
     ...contextual,
     setup: {
       ...contextual.setup,
       model,
+      mmxm: legacyMmxm,
       confidence: Math.round((Number(contextual.setup.confidence || 0) + Number(decision.blendedConfidence || 0)) / 2),
       ensemble: decision
     },
