@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('assert');
+const I=require('../core/strategy_incubator');
+const rows=[];
+for(let i=0;i<35;i++)rows.push({model:'READY',resultR:i%5===0?-0.5:0.4,closedAt:i});
+for(let i=0;i<20;i++)rows.push({model:'BAD',resultR:-0.2,closedAt:100+i});
+for(let i=0;i<5;i++)rows.push({model:'NEW',resultR:0.3,closedAt:200+i});
+const r=I.evaluate(rows,{now:1,minPromotionTrades:30,minShadowTrades:15});
+assert.equal(r.version,'33.0');
+assert.equal(r.ready[0].model,'READY');
+assert.equal(r.rejected[0].model,'BAD');
+assert.ok(r.challengers.some(x=>x.model==='NEW'));
+assert.equal(I.summarize(rows.filter(x=>x.model==='READY')).trades,35);
+console.log('strategy_incubator tests passed');
