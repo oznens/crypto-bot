@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('assert');
+const P=require('../core/parameter_stability_engine');
+const stable=P.evaluate([{score:1},{score:1.1},{score:0.9},{score:1.05}]);
+assert.equal(stable.status,'STABLE');
+assert.equal(stable.valid,true);
+const fragile=P.evaluate([{score:1},{score:-1},{score:3},{score:-2}]);
+assert.equal(fragile.status,'FRAGILE');
+assert.equal(P.evaluate([{score:1}]).status,'INSUFFICIENT_DATA');
+console.log('parameter_stability_engine tests passed');
