@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('assert');
+const C=require('../core/trading_circuit_breaker');
+const now=Date.UTC(2026,0,5,12);
+const loss={closedAt:now-1000,resultR:-1};
+const d=C.evaluate({closed:[loss,loss,loss,loss]},{now,maxLosingStreak:4});
+assert.equal(d.blocked,true);
+assert.equal(d.reason,'DAILY_LOSS_LIMIT');
+const streak=C.evaluate({closed:[{closedAt:now-2*86400000,resultR:-1},{closedAt:now-3*86400000,resultR:-1},{closedAt:now-4*86400000,resultR:-1},{closedAt:now-5*86400000,resultR:-1}]},{now,dailyLossLimitR:10,maxLosingStreak:4});
+assert.equal(streak.reason,'LOSING_STREAK_LIMIT');
+const ok=C.evaluate({closed:[{closedAt:now-1000,resultR:1}]},{now});assert.equal(ok.allowed,true);
+const state={};C.apply(state,d,now);assert.equal(state.circuitBreaker.version,'32.0');
+console.log('trading_circuit_breaker tests passed');
