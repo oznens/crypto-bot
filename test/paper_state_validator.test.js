@@ -30,6 +30,7 @@ const openTrade = {
   tp1: 101,
   tpF: 103,
   openedAt: NOW - 5000,
+  fills: [],
   status: 'open'
 };
 const closedTrade = {
@@ -40,6 +41,10 @@ const closedTrade = {
   closedAt: NOW - 2000,
   mfeR: 2,
   maeR: 0.5,
+  fills: [
+    { t: NOW - 3000, px: 101, part: 0.5, why: 'TP1-derisk', pnl: 5 },
+    { t: NOW - 2000, px: 103, part: 1, why: 'TP-final', pnl: 10 }
+  ],
   status: 'closed'
 };
 
@@ -82,6 +87,19 @@ assert.ok(V.validateTradeCollections([], [{ ...closedTrade, resultR: null }]).in
 assert.ok(V.validateTradeCollections([], [{ ...closedTrade, closedAt: closedTrade.openedAt - 1 }]).includes('CLOSED_TRADE_TIME_ORDER_INVALID'));
 assert.ok(V.validateTradeCollections([], [{ ...closedTrade, mfeR: -0.1 }]).includes('CLOSED_TRADE_MFE_INVALID'));
 assert.ok(V.validateTradeCollections([], [{ ...closedTrade, maeR: -0.1 }]).includes('CLOSED_TRADE_MAE_INVALID'));
+
+assert.deepEqual(V.validateFills(closedTrade, 'CLOSED'), []);
+assert.ok(V.validateFills({ ...closedTrade, fills: null }, 'CLOSED').includes('CLOSED_TRADE_FILLS_NOT_ARRAY'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: NOW - 3000, px: 0, part: 1, why: 'SL', pnl: -10 }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_PRICE_INVALID'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: NOW - 3000, px: 99, part: 1.1, why: 'SL', pnl: -10 }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_PART_INVALID'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: NOW - 3000, px: 99, part: 1, why: 'SL', pnl: null }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_PNL_INVALID'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: NOW - 3000, px: 99, part: 1, why: '', pnl: -10 }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_REASON_INVALID'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [
+  { t: NOW - 2000, px: 101, part: 0.5, why: 'TP1', pnl: 5 },
+  { t: NOW - 3000, px: 103, part: 1, why: 'TP', pnl: 10 }
+] }, 'CLOSED').includes('CLOSED_TRADE_FILL_TIME_ORDER_INVALID'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: closedTrade.openedAt - 1, px: 99, part: 1, why: 'SL', pnl: -10 }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_BEFORE_OPEN'));
+assert.ok(V.validateFills({ ...closedTrade, fills: [{ t: closedTrade.closedAt + 1, px: 99, part: 1, why: 'SL', pnl: -10 }] }, 'CLOSED').includes('CLOSED_TRADE_FILL_AFTER_CLOSE'));
 assert.throws(() => V.assertState({ ...valid, open: null }, OPTIONS), /OPEN_NOT_ARRAY/);
 
 console.log('paper_state_validator tests passed');
