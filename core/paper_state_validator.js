@@ -6,6 +6,11 @@ function finiteNumber(value) {
 
 function validateState(state, options = {}) {
   const expectedAnalyticsVersion = options.analyticsVersion || '5.5';
+  const now = finiteNumber(options.now) ? Number(options.now) : Date.now();
+  const futureToleranceMs = finiteNumber(options.futureToleranceMs)
+    ? Math.max(0, Number(options.futureToleranceMs))
+    : 120_000;
+  const latestAllowedTime = now + futureToleranceMs;
   const issues = [];
 
   if (!state || typeof state !== 'object' || Array.isArray(state)) {
@@ -19,6 +24,10 @@ function validateState(state, options = {}) {
   if (!closedValid) issues.push('CLOSED_NOT_ARRAY');
   if (!finiteNumber(state.equity) || Number(state.equity) <= 0) issues.push('INVALID_EQUITY');
 
+  if (finiteNumber(state.lastRun) && Number(state.lastRun) > latestAllowedTime) {
+    issues.push('LAST_RUN_IN_FUTURE');
+  }
+
   if (!state.health || typeof state.health !== 'object') issues.push('HEALTH_MISSING');
   else {
     if (state.health.ok !== true) issues.push('HEALTH_NOT_OK');
@@ -30,6 +39,7 @@ function validateState(state, options = {}) {
   } else {
     if (state.analyticsMeta.version !== expectedAnalyticsVersion) issues.push('ANALYTICS_VERSION_INVALID');
     if (!finiteNumber(state.analyticsMeta.generatedAt)) issues.push('ANALYTICS_TIME_INVALID');
+    else if (Number(state.analyticsMeta.generatedAt) > latestAllowedTime) issues.push('ANALYTICS_TIME_IN_FUTURE');
 
     if (!Number.isInteger(Number(state.analyticsMeta.closedTrades)) || Number(state.analyticsMeta.closedTrades) < 0) {
       issues.push('ANALYTICS_CLOSED_COUNT_INVALID');
