@@ -1,70 +1,59 @@
-DREYKO SON 30 GÜN BACKTEST RAPORU
 
-Dönem: 2026-07-06 21:46 → 2026-08-05 21:54
-Evren: Güncel hacme göre top 30 MEXC perpetual sembol
-Zaman dilimleri: 1D / 4H / 1H / 15M
-İşlem yönetimi: 5M
-Başlangıç kasa: 10,000 USD
-Risk: İşlem başına %1
-Maliyetler: Market giriş kayması %0.05, taker %0.02, maker %0.01
-Aynı mumda SL ve TP görülürse SL kabul edilmiştir.
+================ SONUÇ ================
+Dönem: 2026-07-06 21:56 → 2026-08-05 22:05 (30 gün) · 30 sembol · 2136 API isteği
+Aday sinyal: 89 | portföy kurallarıyla açılan: 75 | kapanan: 70 | hâlâ açık: 5
+KASA: 10000$ → 11562.96$  (net +1562.96$ = %15.6)
+Toplam R: +15.56 | Win Rate: %51.4 | işlem/ay: 75
+Maks drawdown: %6.2 | ortalama R/işlem: 0.22
 
-GENEL SONUÇ
-Aday sinyal: 89
-Portföy kurallarıyla açılan: 75
-Kapanan: 70
-Hâlâ açık: 5
-Bitiş kasa: 11,562.96 USD
-Net kâr: +1,562.96 USD
-Getiri: +%15.6
-Toplam R: +15.56R
-Win rate: %51.4
-Maksimum drawdown: %6.2
-Ortalama R/işlem: +0.22R
-İşlem/ay: 75
+--- SONUÇ TÜRÜ ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  SL             34     0   -1.05    -35.8     -3928      0
+  TP             20   100    2.00     40.0      4293     70
+  BE             16   100    0.71     11.4      1198    100
 
-SONUÇ TÜRÜ
-SL: 34 işlem, -35.8R, -3,928 USD
-TP: 20 işlem, +40.0R, +4,293 USD
-BE: 16 işlem, +11.4R, +1,198 USD
-TP1 gören: 30/70 (%43); TP1 gören işlemlerin tamamı pozitif kapandı.
+--- TF ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  15m            43    58    0.32     13.8      1334     47
+  60m            15    53    0.50      7.5       857     47
+  4h              9    33   -0.30     -2.7      -312     33
+  1d              3     0   -1.02     -3.1      -316      0
 
-ZAMAN DİLİMİ
-15M: 43 işlem, WR %58, ortalama +0.32R, toplam +13.8R, +1,334 USD
-1H: 15 işlem, WR %53, ortalama +0.50R, toplam +7.5R, +857 USD
-4H: 9 işlem, WR %33, ortalama -0.30R, toplam -2.7R, -312 USD
-1D: 3 işlem, WR %0, ortalama -1.02R, toplam -3.1R, -316 USD
+--- GÜVEN ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  95-99          46    50    0.18      8.1       808     41
+  75-84          24    54    0.31      7.5       755     46
 
-YÖN
-LONG: 29 işlem, WR %59, ortalama +0.45R, toplam +13.0R, +1,380 USD
-SHORT: 41 işlem, WR %46, ortalama +0.06R, toplam +2.5R, +183 USD
+--- YÖN ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  SHORT          41    46    0.06      2.5       183     39
+  LONG           29    59    0.45     13.0      1380     48
 
-GÜVEN
-95-99: 46 işlem, WR %50, ortalama +0.18R, toplam +8.1R
-75-84: 24 işlem, WR %54, ortalama +0.31R, toplam +7.5R
+--- AY ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  2026-07        57    54    0.30     17.3      1779     46
+  2026-08        13    38   -0.13     -1.7      -216     31
 
-MMXM SKORU
-Skor 5: 23 işlem, WR %70, ortalama +0.65R, toplam +15.0R
-Skor 4: 34 işlem, WR %50, ortalama +0.19R, toplam +6.5R
-Skor 3: 13 işlem, WR %23, ortalama -0.46R, toplam -6.0R
+--- MMxM skor ---
+  grup            n   WR%    ortR     topR         $   TP1%
+  skor 4         34    50    0.19      6.5       701     44
+  skor 5         23    70    0.65     15.0      1517     52
+  skor 3         13    23   -0.46     -6.0      -655     23
 
-AYLIK DAĞILIM
-2026-07: 57 işlem, WR %54, toplam +17.3R, +1,779 USD
-2026-08: 13 işlem, WR %38, toplam -1.7R, -216 USD
+TP1(1.5R) gören: 30/70 (%43) → hepsi pozitif mi: true
 
-EN İYİ 5
-PEPE_USDT 1H LONG: +3.58R — 2026-07-25 09:00
-SKHYNIXSTOCK_USDT 15M SHORT: +2.73R — 2026-07-09 14:00
-SKHYNIXSTOCK_USDT 15M LONG: +2.69R — 2026-07-24 23:45
-SKHYSTOCK_USDT 1H SHORT: +2.59R — 2026-07-23 13:00
-BLESS_USDT 15M LONG: +2.52R — 2026-07-15 05:30
+EN İYİ 5:
+  PEPE_USDT      60m LONG  R  3.58  2026-07-25 09:00
+  SKHYNIXSTOCK_USDT15m SHORT R  2.73  2026-07-09 14:00
+  SKHYNIXSTOCK_USDT15m LONG  R  2.69  2026-07-24 23:45
+  SKHYSTOCK_USDT 60m SHORT R  2.59  2026-07-23 13:00
+  BLESS_USDT     15m LONG  R  2.52  2026-07-15 05:30
+EN KÖTÜ 5:
+  BTC_USDT       15m SHORT R -1.11  2026-07-28 17:00
+  XAU_USDT       15m SHORT R -1.11  2026-08-04 17:45
+  SNDKSTOCK_USDT 15m SHORT R -1.11  2026-07-19 21:45
+  SPCXSTOCK_USDT 15m SHORT R -1.10  2026-07-09 01:30
+  USOIL_USDT     15m SHORT R -1.09  2026-08-04 05:45
 
-EN KÖTÜ 5
-BTC_USDT 15M SHORT: -1.11R — 2026-07-28 17:00
-XAU_USDT 15M SHORT: -1.11R — 2026-08-04 17:45
-SNDKSTOCK_USDT 15M SHORT: -1.11R — 2026-07-19 21:45
-SPCXSTOCK_USDT 15M SHORT: -1.10R — 2026-07-09 01:30
-USOIL_USDT 15M SHORT: -1.09R — 2026-08-04 05:45
-
-ÖNEMLİ SINIRLAMA
-Semboller test döneminin başındaki tarihsel hacme göre değil, bugünkü hacme göre seçilmiştir. Bu nedenle seçim yanlılığı vardır. Sonuç ileriye dönük garanti değildir.
+NOT: semboller BUGÜNKÜ hacim top-30'i (seçim yanlılığı); giriş = reclaim barı kapanışı;
+yönetim 5m barlarla, aynı barda SL+TP → SL (muhafazakâr); komisyon+kayma dahil.
