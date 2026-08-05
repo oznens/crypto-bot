@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('assert');
+const Q=require('../core/quarterly_theory_engine');
+const q=Q.quarterFor(Date.UTC(2026,0,1,3,10));
+assert.equal(q.index,2);
+const rows=[];
+for(let i=0;i<6;i++)rows.push({t:Date.UTC(2026,0,1,1,i*10),o:100,h:105,l:95,c:100});
+rows.push({t:Date.UTC(2026,0,1,2,0),o:96,h:101,l:94,c:97});
+const r=Q.evaluate(rows);
+assert.equal(r.valid,true);
+assert.equal(r.side,'LONG');
+assert.equal(Q.evaluate([]).reason,'NO_CANDLES');
+console.log('quarterly_theory_engine tests passed');
