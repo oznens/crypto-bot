@@ -30,7 +30,7 @@ function enhance(result, options = {}) {
   const wyckoff = Wyckoff.evaluate(result.candles);
   const quarterly = Quarterly.evaluate(result.candles);
 
-  const wyckoffAligned = wyckoff.bias === 'NEUTRAL' || wyckoff.bias === side;
+  const wyckoffAligned = !wyckoff.valid || wyckoff.bias === 'NEUTRAL' || wyckoff.bias === side;
   const quarterlyAligned = !quarterly.valid || quarterly.side === side;
   const ictAligned = !ict.valid || Object.values(ict.patterns).some(x => x.valid && (!x.side || x.side === side));
 
@@ -84,7 +84,7 @@ function enhance(result, options = {}) {
     (confluence.score - 70) * 0.25 +
     (smt.confirmed ? 4 : 0) +
     Math.min(6, ict.confirmed * 2) +
-    (wyckoff.bias === side ? 3 : 0) +
+    (wyckoff.valid && wyckoff.bias === side ? 3 : 0) +
     (quarterly.valid && quarterly.side === side ? 3 : 0)
   );
   setup.confidence = clamp(Math.round((+setup.confidence || 0) + adjustment), 0, 100);
