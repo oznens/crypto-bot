@@ -58,6 +58,7 @@ jobs:
           node test/strategy_allocator.test.js
           node test/strategy_trade_policy.test.js
           node test/strategy_execution_adapter.test.js
+          node test/strategy_ensemble.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -75,7 +76,8 @@ jobs:
           node --check core/strategy_allocator.js
           node --check core/strategy_trade_policy.js
           node --check core/strategy_execution_adapter.js
+          node --check core/strategy_ensemble.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
-          node --check scripts/run_paper_v8.js
+          node --check scripts/run_paper_v9.js
