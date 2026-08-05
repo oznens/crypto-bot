@@ -5,6 +5,9 @@ const SMT = require('./smt_divergence_engine');
 const Liquidity = require('./liquidity_map_engine');
 const MTF = require('./multi_timeframe_alignment');
 const Confluence = require('./confluence_score_engine');
+const ICT = require('./ict_pattern_pack');
+const Wyckoff = require('./wyckoff_phase_engine');
+const Quarterly = require('./quarterly_theory_engine');
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,Number(v)||0));}
 
@@ -23,6 +26,13 @@ function enhance(result, options = {}) {
     mtfTrend: result.structures?.trend,
     ltfBias: result.ltfBias || result.ltf?.bias
   });
+  const ict = ICT.evaluate(result.candles, side);
+  const wyckoff = Wyckoff.evaluate(result.candles);
+  const quarterly = Quarterly.evaluate(result.candles);
+
+  const wyckoffAligned = wyckoff.bias === 'NEUTRAL' || wyckoff.bias === side;
+  const quarterlyAligned = !quarterly.valid || quarterly.side === side;
+  const ictAligned = !ict.valid || Object.values(ict.patterns).some(x => x.valid && (!x.side || x.side === side));
 
   const confluence = Confluence.score({
     structure: !!result.structures?.trend,
@@ -36,9 +46,13 @@ function enhance(result, options = {}) {
     regime: result.intelligence?.regime && result.intelligence.regime !== 'UNKNOWN'
   }, { minScore: options.minConfluence || 55 });
 
-  const context = { version:'15.0', killzone, smt, liquidity, mtf, confluence };
+  const context = {
+    version:'19.0', killzone, smt, liquidity, mtf, confluence,
+    ict, wyckoff, quarterly
+  };
   const timeSensitive = /silver|fvg|killzone|time/i.test(String(setup.model || ''));
-  if ((timeSensitive && !killzone.valid) || mtf.opposed > 0 || !confluence.valid) {
+  const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned;
+  if ((timeSensitive && !killzone.valid) || hardConflict || !confluence.valid) {
     return {
       ...result,
       setup: null,
@@ -49,7 +63,13 @@ function enhance(result, options = {}) {
           ? killzone.reason
           : mtf.opposed > 0
             ? mtf.reason
-            : 'CONFLUENCE_TOO_LOW'
+            : !wyckoffAligned
+              ? 'WYCKOFF_DIRECTION_CONFLICT'
+              : !quarterlyAligned
+                ? 'QUARTERLY_DIRECTION_CONFLICT'
+                : !ictAligned
+                  ? 'ICT_PATTERN_DIRECTION_CONFLICT'
+                  : 'CONFLUENCE_TOO_LOW'
       }
     };
   }
@@ -60,9 +80,18 @@ function enhance(result, options = {}) {
     if (validTarget) setup.tps = [...setup.tps.slice(0,-1), target];
   }
 
-  const adjustment = Math.round((confluence.score - 70) * 0.25 + (smt.confirmed ? 4 : 0));
+  const adjustment = Math.round(
+    (confluence.score - 70) * 0.25 +
+    (smt.confirmed ? 4 : 0) +
+    Math.min(6, ict.confirmed * 2) +
+    (wyckoff.bias === side ? 3 : 0) +
+    (quarterly.valid && quarterly.side === side ? 3 : 0)
+  );
   setup.confidence = clamp(Math.round((+setup.confidence || 0) + adjustment), 0, 100);
   setup.grade = confluence.grade;
+  setup.ictPatterns = ict;
+  setup.wyckoff = wyckoff;
+  setup.quarterly = quarterly;
   setup.context = { ...context, confidenceAdjustment:adjustment };
   return {
     ...result,
