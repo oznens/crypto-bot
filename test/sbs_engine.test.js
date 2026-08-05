@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const S=require('../core/sbs_engine');
+const rows=[];for(let i=0;i<20;i++)rows.push({h:101,l:99,c:100});
+rows.push({h:103,l:100,c:102});
+rows.push({h:102,l:100.9,c:101.2});
+rows.push({h:103,l:101,c:102.5});
+const r=S.evaluate(rows,'LONG',{lookback:20,tolerancePct:0.002});
+assert.equal(r.valid,true);
+assert.equal(r.firstTap,true);
+assert.equal(S.evaluate(rows.slice(0,10),'LONG').reason,'INSUFFICIENT_DATA');
+console.log('sbs_engine tests passed');
