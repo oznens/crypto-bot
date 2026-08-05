@@ -31,6 +31,7 @@ jobs:
           node test/paper_analytics.test.js
           node test/paper_state_validator.test.js
           node test/validate_paper_state_cli.test.js
+          node test/paper_summary.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -38,7 +39,9 @@ jobs:
           node --check paper_analytics.js
           node --check paper_health.js
           node --check core/paper_state_validator.js
+          node --check core/paper_summary.js
           node --check scripts/validate_paper_state.js
+          node --check scripts/build_paper_summary.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
@@ -49,11 +52,12 @@ jobs:
       - name: State sağlığını ölç
         run: node paper_health.js
 
-      - name: State ve Pages kopyasını doğrula
+      - name: State, Pages kopyası ve V6 özetini üret
         run: |
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
           node scripts/validate_paper_state.js --same paper_state.json docs/paper_state.json
+          node scripts/build_paper_summary.js paper_state.json docs/paper_summary.json
 
       - name: Durumu güvenli biçimde commit'le
         run: |
@@ -63,6 +67,7 @@ jobs:
 
           cp paper_state.json /tmp/paper_state.json
           cp docs/paper_state.json /tmp/docs_paper_state.json
+          cp docs/paper_summary.json /tmp/paper_summary.json
 
           for attempt in 1 2 3; do
             git fetch origin main
@@ -70,14 +75,15 @@ jobs:
             cp /tmp/paper_state.json paper_state.json
             mkdir -p docs
             cp /tmp/docs_paper_state.json docs/paper_state.json
-            git add paper_state.json docs/paper_state.json
+            cp /tmp/paper_summary.json docs/paper_summary.json
+            git add paper_state.json docs/paper_state.json docs/paper_summary.json
 
             if git diff --cached --quiet; then
               echo "değişiklik yok"
               exit 0
             fi
 
-            git commit -m "paper: durum, analitik ve sağlık güncellendi [skip ci]"
+            git commit -m "paper: durum ve V6 izlenebilirlik özeti güncellendi [skip ci]"
             if git push origin HEAD:main; then
               echo "state push başarılı (deneme $attempt)"
               exit 0
