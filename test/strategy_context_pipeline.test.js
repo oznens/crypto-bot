@@ -25,7 +25,7 @@ const conflict=P.enhance({
 });
 assert.equal(conflict.setup,null);
 const blocked=P.enhance({
- candles: candles.map((c,i)=>({...c,t:Date.UTC(2026,0,5,4,i)})),
+ candles: candles.map((c,i)=>({...c,t:Date.UTC(2026,0,5,17,i)})),
  htfBias:'Bullish',structures:{trend:'UP',displacement:true},
  setup:{side:'LONG',model:'Silver Bullet FVG',confidence:90,entry:107,tps:[109],fvg:true,orderBlock:true}
 });
