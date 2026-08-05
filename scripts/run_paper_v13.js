@@ -7,6 +7,8 @@ const TradePolicy = require('../core/paper_trade_policy');
 const Context = require('../core/strategy_context_pipeline');
 const AdaptiveExit = require('../core/adaptive_exit_engine');
 const PortfolioCorrelation = require('../core/portfolio_correlation_engine');
+const DataQuality = require('../core/market_data_quality_engine');
+const CircuitBreaker = require('../core/trading_circuit_breaker');
 
 const statePath = process.env.PAPER_STATE
   ? path.resolve(process.env.PAPER_STATE)
@@ -19,19 +21,42 @@ function readState() {
 }
 
 const initialState = readState();
+const circuitDecision = CircuitBreaker.evaluate(initialState, {
+  dailyLossLimitR: Number(process.env.PAPER_DAILY_LOSS_LIMIT_R || 3),
+  maxLosingStreak: Number(process.env.PAPER_MAX_LOSING_STREAK || 4),
+  cooldownMs: Number(process.env.PAPER_COOLDOWN_MS || 21600000)
+});
 const telemetry = {
-  version: '26.0', generatedAt: null,
+  version: '33.0', generatedAt: null,
   contextEvaluated: 0, contextAccepted: 0, contextRejected: 0,
+  dataQualityEvaluated: 0, dataQualityRejected: 0,
+  circuitBlocked: circuitDecision.blocked,
   killzoneConfirmed: 0, smtConfirmed: 0, liquidityTargets: 0,
   correlationEvaluated: 0, correlationBlocked: 0, correlationReduced: 0,
   adaptiveEvaluated: 0, adaptiveChanged: 0,
-  lastContext: null, lastCorrelation: null, lastExit: null
+  lastDataQuality: null, lastContext: null, lastCorrelation: null, lastExit: null
 };
 
 const originalAnalyze = Analysis.analyze;
-Analysis.analyze = function v26Analyze(...args) {
-  const raw = originalAnalyze.apply(this, args);
-  let result = Context.enhance(raw, { peerCandles: args[1]?.peerCandles });
+Analysis.analyze = function v33Analyze(candles, options = {}) {
+  const quality = DataQuality.evaluate(candles, {
+    minBars: Number(process.env.PAPER_MIN_QUALITY_BARS || 50),
+    maxGapMultiplier: Number(process.env.PAPER_MAX_GAP_MULTIPLIER || 2.5)
+  });
+  telemetry.dataQualityEvaluated++;
+  telemetry.lastDataQuality = { symbol: options.symbol || 'UNKNOWN', interval: options.interval || null, ...quality };
+  if (!quality.valid) {
+    telemetry.dataQualityRejected++;
+    return {
+      candles,
+      setup: null,
+      dataQuality: quality,
+      rejectedReason: quality.reason
+    };
+  }
+
+  const raw = originalAnalyze.call(this, candles, options);
+  let result = Context.enhance(raw, { peerCandles: options.peerCandles });
   if (raw?.setup) {
     telemetry.contextEvaluated++;
     if (result?.setup) telemetry.contextAccepted++; else telemetry.contextRejected++;
@@ -42,7 +67,7 @@ Analysis.analyze = function v26Analyze(...args) {
   }
 
   if (result?.setup) {
-    const symbol = args[1]?.symbol || result.setup.symbol || raw?.symbol || 'UNKNOWN';
+    const symbol = options.symbol || result.setup.symbol || raw?.symbol || 'UNKNOWN';
     const correlation = PortfolioCorrelation.evaluate(
       initialState.open || [],
       symbol,
@@ -56,21 +81,24 @@ Analysis.analyze = function v26Analyze(...args) {
     if (!correlation.valid) telemetry.correlationBlocked++;
     else if (correlation.riskMultiplier < 1) telemetry.correlationReduced++;
     telemetry.lastCorrelation = { symbol, side: result.setup.side, ...correlation };
+    const portfolioRiskMultiplier = circuitDecision.blocked ? 0 : correlation.riskMultiplier;
     result = {
       ...result,
       setup: {
         ...result.setup,
-        portfolioRiskMultiplier: correlation.riskMultiplier,
-        portfolioCorrelation: correlation
+        portfolioRiskMultiplier,
+        portfolioCorrelation: correlation,
+        circuitBreaker: circuitDecision
       },
-      portfolioCorrelation: correlation
+      portfolioCorrelation: correlation,
+      circuitBreaker: circuitDecision
     };
   }
   return result;
 };
 
 const originalExcursion = TradePolicy.applyExcursion;
-TradePolicy.applyExcursion = function v26Excursion(trade, candle, options) {
+TradePolicy.applyExcursion = function v33Excursion(trade, candle, options) {
   const base = originalExcursion(trade, candle, options);
   telemetry.adaptiveEvaluated++;
   const decision = AdaptiveExit.apply(trade, candle, { regime: trade.regime });
@@ -83,6 +111,7 @@ function persist() {
   const state = readState();
   telemetry.generatedAt = Date.now();
   state.strategyContextExecution = telemetry;
+  CircuitBreaker.apply(state, circuitDecision, telemetry.generatedAt);
   const serialized = JSON.stringify(state, null, 1);
   fs.writeFileSync(statePath, serialized);
   if (!process.env.PAPER_STATE) {
