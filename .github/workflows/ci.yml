@@ -59,6 +59,11 @@ jobs:
           node test/strategy_trade_policy.test.js
           node test/strategy_execution_adapter.test.js
           node test/strategy_ensemble.test.js
+          node test/killzone_fvg_engine.test.js
+          node test/smt_divergence_engine.test.js
+          node test/liquidity_map_engine.test.js
+          node test/adaptive_exit_engine.test.js
+          node test/strategy_context_pipeline.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -77,7 +82,13 @@ jobs:
           node --check core/strategy_trade_policy.js
           node --check core/strategy_execution_adapter.js
           node --check core/strategy_ensemble.js
+          node --check core/killzone_fvg_engine.js
+          node --check core/smt_divergence_engine.js
+          node --check core/liquidity_map_engine.js
+          node --check core/adaptive_exit_engine.js
+          node --check core/strategy_context_pipeline.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
           node --check scripts/run_paper_v9.js
+          node --check scripts/run_paper_v13.js
