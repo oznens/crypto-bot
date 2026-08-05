@@ -37,6 +37,7 @@ jobs:
           node --check paper_analytics.js
           node --check paper_health.js
           node --check core/paper_state_validator.js
+          node --check scripts/validate_paper_state.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
@@ -47,15 +48,11 @@ jobs:
       - name: State sağlığını ölç
         run: node paper_health.js
 
-      - name: State kalite kapısı
-        run: |
-          node -e "const fs=require('fs');const V=require('./core/paper_state_validator');const s=JSON.parse(fs.readFileSync('paper_state.json','utf8'));V.assertState(s,{analyticsVersion:'5.5'});console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status,'analytics',s.analyticsMeta.version);"
-
-      - name: Pages state kopyasını doğrula
+      - name: State ve Pages kopyasını doğrula
         run: |
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
-          node -e "const fs=require('fs');const V=require('./core/paper_state_validator');const s=JSON.parse(fs.readFileSync('docs/paper_state.json','utf8'));V.assertState(s,{analyticsVersion:'5.5'});console.log('docs/paper_state.json doğrulandı');"
+          node scripts/validate_paper_state.js paper_state.json docs/paper_state.json
 
       - name: Durumu güvenli biçimde commit'le
         run: |
