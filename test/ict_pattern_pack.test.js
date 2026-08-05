@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const I=require('../core/ict_pattern_pack');
+const base=[];for(let i=0;i<25;i++)base.push({t:i,o:100,h:102,l:98,c:100});
+const crt=[...base.slice(0,-2),{t:23,o:100,h:105,l:95,c:101},{t:24,o:100,h:103,l:94,c:97}];
+assert.equal(I.crt(crt).side,'LONG');
+const turtle=[...base,{t:26,o:99,h:101,l:97,c:99}];
+assert.equal(I.turtleSoup(turtle,20).valid,true);
+const oteRows=[];for(let i=0;i<30;i++)oteRows.push({h:120,l:100,c:i===29?106:110});
+assert.equal(I.ote(oteRows,'LONG').valid,true);
+assert.ok(I.evaluate(crt,'LONG').score>=25);
+console.log('ict_pattern_pack tests passed');
