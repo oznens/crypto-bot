@@ -32,6 +32,7 @@ jobs:
           node test/paper_state_validator.test.js
           node test/validate_paper_state_cli.test.js
           node test/paper_summary.test.js
+          node test/strategy_allocator.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -40,14 +41,19 @@ jobs:
           node --check paper_health.js
           node --check core/paper_state_validator.js
           node --check core/paper_summary.js
+          node --check core/strategy_allocator.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
+          node --check scripts/build_strategy_allocation.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
 
       - name: Performans analitiğini üret
         run: node paper_analytics.js
+
+      - name: V7 strateji tahsisini üret
+        run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
 
       - name: State sağlığını ölç
         run: node paper_health.js
@@ -68,6 +74,7 @@ jobs:
           cp paper_state.json /tmp/paper_state.json
           cp docs/paper_state.json /tmp/docs_paper_state.json
           cp docs/paper_summary.json /tmp/paper_summary.json
+          cp docs/strategy_allocation.json /tmp/strategy_allocation.json
 
           for attempt in 1 2 3; do
             git fetch origin main
@@ -76,14 +83,15 @@ jobs:
             mkdir -p docs
             cp /tmp/docs_paper_state.json docs/paper_state.json
             cp /tmp/paper_summary.json docs/paper_summary.json
-            git add paper_state.json docs/paper_state.json docs/paper_summary.json
+            cp /tmp/strategy_allocation.json docs/strategy_allocation.json
+            git add paper_state.json docs/paper_state.json docs/paper_summary.json docs/strategy_allocation.json
 
             if git diff --cached --quiet; then
               echo "değişiklik yok"
               exit 0
             fi
 
-            git commit -m "paper: durum ve V6 izlenebilirlik özeti güncellendi [skip ci]"
+            git commit -m "paper: V7 strateji tahsisi ve izlenebilirlik güncellendi [skip ci]"
             if git push origin HEAD:main; then
               echo "state push başarılı (deneme $attempt)"
               exit 0
