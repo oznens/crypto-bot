@@ -73,6 +73,10 @@ jobs:
           node test/mmxm_curve_engine.test.js
           node test/sbs_engine.test.js
           node test/session_liquidity_engine.test.js
+          node test/strategy_robustness_engine.test.js
+          node test/parameter_stability_engine.test.js
+          node test/execution_cost_engine.test.js
+          node test/portfolio_correlation_engine.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -105,6 +109,10 @@ jobs:
           node --check core/mmxm_curve_engine.js
           node --check core/sbs_engine.js
           node --check core/session_liquidity_engine.js
+          node --check core/strategy_robustness_engine.js
+          node --check core/parameter_stability_engine.js
+          node --check core/execution_cost_engine.js
+          node --check core/portfolio_correlation_engine.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
