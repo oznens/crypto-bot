@@ -30,6 +30,7 @@ jobs:
           node test/paper_trade_policy.test.js
           node test/paper_analytics.test.js
           node test/paper_state_validator.test.js
+          node test/validate_paper_state_cli.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -52,7 +53,7 @@ jobs:
         run: |
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
-          node scripts/validate_paper_state.js paper_state.json docs/paper_state.json
+          node scripts/validate_paper_state.js --same paper_state.json docs/paper_state.json
 
       - name: Durumu güvenli biçimde commit'le
         run: |
