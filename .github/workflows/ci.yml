@@ -67,6 +67,9 @@ jobs:
           node test/multi_timeframe_alignment.test.js
           node test/confluence_score_engine.test.js
           node test/strategy_decay_engine.test.js
+          node test/ict_pattern_pack.test.js
+          node test/wyckoff_phase_engine.test.js
+          node test/quarterly_theory_engine.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -93,6 +96,9 @@ jobs:
           node --check core/multi_timeframe_alignment.js
           node --check core/confluence_score_engine.js
           node --check core/strategy_decay_engine.js
+          node --check core/ict_pattern_pack.js
+          node --check core/wyckoff_phase_engine.js
+          node --check core/quarterly_theory_engine.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
