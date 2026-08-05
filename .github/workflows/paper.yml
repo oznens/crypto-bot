@@ -2,7 +2,7 @@ name: paper-trading
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # GitHub yoğunluğunda gecikebilir
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -36,6 +36,7 @@ jobs:
           node test/strategy_allocator.test.js
           node test/strategy_trade_policy.test.js
           node test/strategy_execution_adapter.test.js
+          node test/strategy_ensemble.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -47,24 +48,25 @@ jobs:
           node --check core/strategy_allocator.js
           node --check core/strategy_trade_policy.js
           node --check core/strategy_execution_adapter.js
+          node --check core/strategy_ensemble.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
-          node --check scripts/run_paper_v8.js
+          node --check scripts/run_paper_v9.js
 
-      - name: V8 tahsis kontrollü motoru çalıştır
-        run: node scripts/run_paper_v8.js
+      - name: V9 ensemble kontrollü motoru çalıştır
+        run: node scripts/run_paper_v9.js
 
       - name: Performans analitiğini üret
         run: node paper_analytics.js
 
-      - name: V7 strateji tahsisini yenile
+      - name: Strateji tahsisini yenile
         run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
 
       - name: State sağlığını ölç
         run: node paper_health.js
 
-      - name: State, Pages kopyası ve V6 özetini üret
+      - name: State ve raporları üret
         run: |
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
@@ -97,15 +99,10 @@ jobs:
               exit 0
             fi
 
-            git commit -m "paper: V8 tahsis kontrollü yürütme güncellendi [skip ci]"
+            git commit -m "paper: V9 ensemble ve tahsis sonuçları güncellendi [skip ci]"
             if git push origin HEAD:main; then
-              echo "state push başarılı (deneme $attempt)"
               exit 0
             fi
-
-            echo "push çakıştı; güncel main üzerine yeniden uygulanıyor ($attempt/3)"
             sleep $((attempt * 3))
           done
-
-          echo "state üç denemede push edilemedi"
           exit 1
