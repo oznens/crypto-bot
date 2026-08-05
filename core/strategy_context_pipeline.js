@@ -11,6 +11,7 @@ const Quarterly = require('./quarterly_theory_engine');
 const MMXM = require('./mmxm_curve_engine');
 const SBS = require('./sbs_engine');
 const SessionLiquidity = require('./session_liquidity_engine');
+const ExecutionCost = require('./execution_cost_engine');
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,Number(v)||0));}
 
@@ -36,6 +37,18 @@ function enhance(result, options = {}) {
   const sbs = SBS.evaluate(result.candles, side, options.sbs);
   const sessionLiquidity = SessionLiquidity.evaluate(result.candles, side);
 
+  const target = Array.isArray(setup.tps) && setup.tps.length ? +setup.tps.at(-1) : +setup.tpF || +setup.tp;
+  const stop = +setup.sl || +setup.stop;
+  const hasExecutionGeometry = Number.isFinite(entry) && Number.isFinite(stop) && Number.isFinite(target) && entry > 0;
+  const executionCost = hasExecutionGeometry
+    ? ExecutionCost.evaluate({
+        side, entry, stop, target,
+        feeBps: result.market?.feeBps ?? options.executionCost?.feeBps,
+        slippageBps: result.market?.slippageBps ?? options.executionCost?.slippageBps,
+        spreadBps: result.market?.spreadBps ?? options.executionCost?.spreadBps
+      }, options.executionCost)
+    : { available:false, valid:true, reason:'EXECUTION_GEOMETRY_UNAVAILABLE' };
+
   const wyckoffAligned = !wyckoff.valid || wyckoff.bias === 'NEUTRAL' || wyckoff.bias === side;
   const quarterlyAligned = !quarterly.valid || quarterly.side === side;
   const ictAligned = !ict.valid || Object.values(ict.patterns).some(x => x.valid && (!x.side || x.side === side));
@@ -55,12 +68,12 @@ function enhance(result, options = {}) {
   }, { minScore: options.minConfluence || 55 });
 
   const context = {
-    version:'22.0', killzone, smt, liquidity, mtf, confluence,
-    ict, wyckoff, quarterly, mmxm, sbs, sessionLiquidity
+    version:'25.0', killzone, smt, liquidity, mtf, confluence,
+    ict, wyckoff, quarterly, mmxm, sbs, sessionLiquidity, executionCost
   };
   const timeSensitive = /silver|fvg|killzone|time/i.test(String(setup.model || ''));
   const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned || !mmxmAligned || !sessionAligned;
-  if ((timeSensitive && !killzone.valid) || hardConflict || !confluence.valid) {
+  if ((timeSensitive && !killzone.valid) || hardConflict || !confluence.valid || !executionCost.valid) {
     return {
       ...result,
       setup: null,
@@ -81,15 +94,17 @@ function enhance(result, options = {}) {
                     ? 'MMXM_DIRECTION_CONFLICT'
                     : !sessionAligned
                       ? 'SESSION_LIQUIDITY_DIRECTION_CONFLICT'
-                      : 'CONFLUENCE_TOO_LOW'
+                      : !executionCost.valid
+                        ? executionCost.reason
+                        : 'CONFLUENCE_TOO_LOW'
       }
     };
   }
 
   if (liquidity.valid && Array.isArray(setup.tps) && setup.tps.length) {
-    const target = liquidity.target.price;
-    const validTarget = side === 'LONG' ? target > entry : target < entry;
-    if (validTarget) setup.tps = [...setup.tps.slice(0,-1), target];
+    const liquidityTarget = liquidity.target.price;
+    const validTarget = side === 'LONG' ? liquidityTarget > entry : liquidityTarget < entry;
+    if (validTarget) setup.tps = [...setup.tps.slice(0,-1), liquidityTarget];
   }
 
   const adjustment = Math.round(
@@ -100,7 +115,8 @@ function enhance(result, options = {}) {
     (quarterly.valid && quarterly.side === side ? 3 : 0) +
     (mmxm.valid && mmxm.bias === side ? 4 : 0) +
     (sbs.valid ? 5 : 0) +
-    (sessionLiquidity.valid ? 5 : 0)
+    (sessionLiquidity.valid ? 5 : 0) +
+    (executionCost.available !== false && executionCost.netRR >= 2 ? 3 : 0)
   );
   setup.confidence = clamp(Math.round((+setup.confidence || 0) + adjustment), 0, 100);
   setup.grade = confluence.grade;
@@ -110,6 +126,7 @@ function enhance(result, options = {}) {
   setup.mmxm = mmxm;
   setup.sbs = sbs;
   setup.sessionLiquidity = sessionLiquidity;
+  setup.executionCost = executionCost;
   setup.context = { ...context, confidenceAdjustment:adjustment };
   return {
     ...result,
