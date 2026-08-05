@@ -1,0 +1,10 @@
+'use strict';
+const assert = require('assert');
+const C = require('../core/confluence_score_engine');
+const strong=C.score({structure:true,liquidity:true,displacement:true,fvg:true,orderBlock:true,htfAlignment:true,smt:true,session:true,regime:true});
+assert.equal(strong.grade,'A+');
+assert.equal(strong.valid,true);
+const weak=C.score({structure:true,liquidity:false,displacement:false,fvg:false},{minScore:70});
+assert.equal(weak.valid,false);
+assert.ok(Array.isArray(strong.breakdown));
+console.log('confluence_score_engine tests passed');
