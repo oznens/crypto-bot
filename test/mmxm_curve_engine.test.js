@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('assert');
+const M=require('../core/mmxm_curve_engine');
+const up=[];for(let i=0;i<60;i++)up.push({h:101+i,l:99+i,c:100+i});
+const r=M.evaluate(up);
+assert.equal(r.valid,true);
+assert.equal(r.bias,'LONG');
+assert.ok(r.curvePosition>0.9);
+assert.equal(M.evaluate(up.slice(0,10)).phase,'UNKNOWN');
+console.log('mmxm_curve_engine tests passed');
