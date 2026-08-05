@@ -43,11 +43,21 @@ jobs:
           set -euo pipefail
           git config user.name "backtest-bot"
           git config user.email "actions@github.com"
+
+          cp docs/backtest_1ay_sonuc.txt /tmp/backtest_1ay_sonuc.txt
+          cp docs/backtest_1ay_islemler.json /tmp/backtest_1ay_islemler.json
+
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p docs
+          cp /tmp/backtest_1ay_sonuc.txt docs/backtest_1ay_sonuc.txt
+          cp /tmp/backtest_1ay_islemler.json docs/backtest_1ay_islemler.json
           git add docs/backtest_1ay_sonuc.txt docs/backtest_1ay_islemler.json
+
           if git diff --cached --quiet; then
             echo "Sonuç değişmedi"
             exit 0
           fi
+
           git commit -m "backtest: son 30 gün sonuçları [skip ci]"
-          git pull --rebase origin main
           git push origin HEAD:main
