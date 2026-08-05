@@ -59,6 +59,9 @@ jobs:
           node test/unicorn_model_engine.test.js
           node test/nine_stars_engine.test.js
           node test/hps_zone_engine.test.js
+          node test/market_data_quality_engine.test.js
+          node test/trading_circuit_breaker.test.js
+          node test/strategy_incubator.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -93,13 +96,17 @@ jobs:
           node --check core/unicorn_model_engine.js
           node --check core/nine_stars_engine.js
           node --check core/hps_zone_engine.js
+          node --check core/market_data_quality_engine.js
+          node --check core/trading_circuit_breaker.js
+          node --check core/strategy_incubator.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
+          node --check scripts/build_strategy_incubator.js
           node --check scripts/run_paper_v9.js
           node --check scripts/run_paper_v13.js
 
-      - name: V30 tam strateji motorunu çalıştır
+      - name: V33 tam strateji motorunu çalıştır
         run: node scripts/run_paper_v13.js
 
       - name: Performans analitiğini üret
@@ -107,6 +114,9 @@ jobs:
 
       - name: Strateji tahsisini ve dayanıklılığı yenile
         run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
+
+      - name: Champion challenger inkübasyonunu yenile
+        run: node scripts/build_strategy_incubator.js paper_state.json docs/strategy_incubator.json
 
       - name: State sağlığını ölç
         run: node paper_health.js
@@ -128,6 +138,7 @@ jobs:
           cp docs/paper_state.json /tmp/docs_paper_state.json
           cp docs/paper_summary.json /tmp/paper_summary.json
           cp docs/strategy_allocation.json /tmp/strategy_allocation.json
+          cp docs/strategy_incubator.json /tmp/strategy_incubator.json
 
           for attempt in 1 2 3; do
             git fetch origin main
@@ -137,14 +148,15 @@ jobs:
             cp /tmp/docs_paper_state.json docs/paper_state.json
             cp /tmp/paper_summary.json docs/paper_summary.json
             cp /tmp/strategy_allocation.json docs/strategy_allocation.json
-            git add paper_state.json docs/paper_state.json docs/paper_summary.json docs/strategy_allocation.json
+            cp /tmp/strategy_incubator.json docs/strategy_incubator.json
+            git add paper_state.json docs/paper_state.json docs/paper_summary.json docs/strategy_allocation.json docs/strategy_incubator.json
 
             if git diff --cached --quiet; then
               echo "değişiklik yok"
               exit 0
             fi
 
-            git commit -m "paper: V30 strateji kalite sonuçları güncellendi [skip ci]"
+            git commit -m "paper: V33 kalite circuit breaker ve inkübasyon güncellendi [skip ci]"
             if git push origin HEAD:main; then
               exit 0
             fi
