@@ -12,6 +12,10 @@ const MMXM = require('./mmxm_curve_engine');
 const SBS = require('./sbs_engine');
 const SessionLiquidity = require('./session_liquidity_engine');
 const ExecutionCost = require('./execution_cost_engine');
+const BigE = require('./bige_tdi_engine');
+const Unicorn = require('./unicorn_model_engine');
+const NineStars = require('./nine_stars_engine');
+const HPS = require('./hps_zone_engine');
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,Number(v)||0));}
 
@@ -19,6 +23,7 @@ function enhance(result, options = {}) {
   if (!result || !result.setup || !Array.isArray(result.candles)) return result;
   const setup = { ...result.setup };
   const side = setup.side;
+  const modelName = String(setup.model || '');
   const killzone = Killzone.evaluate(result.candles, side, options.killzone);
   const liquidityMap = Liquidity.build(result.candles, options.liquidity);
   const entry = +setup.entry || +result.lastPrice || +result.candles.at(-1)?.c;
@@ -36,6 +41,15 @@ function enhance(result, options = {}) {
   const mmxm = MMXM.evaluate(result.candles);
   const sbs = SBS.evaluate(result.candles, side, options.sbs);
   const sessionLiquidity = SessionLiquidity.evaluate(result.candles, side);
+  const bigE = BigE.evaluate(result.candles, options.bigE);
+  const unicorn = Unicorn.evaluate(result.candles, side);
+  const nineStars = NineStars.evaluate(result.candles, options.nineStars);
+  const hpsZone = (setup.zone && typeof setup.zone === 'object')
+    ? setup.zone
+    : (result.structures?.hob && typeof result.structures.hob === 'object' ? result.structures.hob : null);
+  const hps = hpsZone
+    ? HPS.evaluate(hpsZone, result.candles, side, options.hps)
+    : { valid:false, available:false, reason:'ZONE_DATA_MISSING', score:0 };
 
   const target = Array.isArray(setup.tps) && setup.tps.length ? +setup.tps.at(-1) : +setup.tpF || +setup.tp;
   const stop = +setup.sl || +setup.stop;
@@ -54,13 +68,17 @@ function enhance(result, options = {}) {
   const ictAligned = !ict.valid || Object.values(ict.patterns).some(x => x.valid && (!x.side || x.side === side));
   const mmxmAligned = !mmxm.valid || mmxm.bias === 'NEUTRAL' || mmxm.bias === side;
   const sessionAligned = !sessionLiquidity.judas || sessionLiquidity.side === side;
+  const nineStarsAligned = !nineStars.valid || nineStars.side === side;
+  const bigERequired = /bige|tdi|trading made simple/i.test(modelName);
+  const unicornRequired = /unicorn/i.test(modelName);
+  const hpsRequired = /hps|high probability supply|high probability demand/i.test(modelName);
 
   const confluence = Confluence.score({
     structure: !!result.structures?.trend,
     liquidity: liquidity.valid,
     displacement: !!(result.structures?.displacement || setup.displacement),
-    fvg: !!(killzone.fvg || setup.fvg),
-    orderBlock: !!(setup.ob || setup.orderBlock),
+    fvg: !!(killzone.fvg || setup.fvg || unicorn.fvg),
+    orderBlock: hps.available === false ? !!(setup.ob || setup.orderBlock || result.structures?.hob) : hps.valid,
     htfAlignment: mtf.score / 100,
     smt: smt.available ? smt.confirmed : null,
     session: killzone.valid || sessionLiquidity.valid,
@@ -68,12 +86,17 @@ function enhance(result, options = {}) {
   }, { minScore: options.minConfluence || 55 });
 
   const context = {
-    version:'25.0', killzone, smt, liquidity, mtf, confluence,
-    ict, wyckoff, quarterly, mmxm, sbs, sessionLiquidity, executionCost
+    version:'30.0', killzone, smt, liquidity, mtf, confluence,
+    ict, wyckoff, quarterly, mmxm, sbs, sessionLiquidity,
+    executionCost, bigE, unicorn, nineStars, hps
   };
-  const timeSensitive = /silver|fvg|killzone|time/i.test(String(setup.model || ''));
-  const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned || !mmxmAligned || !sessionAligned;
-  if ((timeSensitive && !killzone.valid) || hardConflict || !confluence.valid || !executionCost.valid) {
+  const timeSensitive = /silver|fvg|killzone|time/i.test(modelName);
+  const hardConflict = mtf.opposed > 0 || !wyckoffAligned || !quarterlyAligned || !ictAligned || !mmxmAligned || !sessionAligned || !nineStarsAligned;
+  const modelRequirementFailed = (bigERequired && (!bigE.valid || bigE.side !== side)) ||
+    (unicornRequired && !unicorn.valid) ||
+    (hpsRequired && !hps.valid);
+
+  if ((timeSensitive && !killzone.valid) || hardConflict || modelRequirementFailed || !confluence.valid || !executionCost.valid) {
     return {
       ...result,
       setup: null,
@@ -94,9 +117,17 @@ function enhance(result, options = {}) {
                     ? 'MMXM_DIRECTION_CONFLICT'
                     : !sessionAligned
                       ? 'SESSION_LIQUIDITY_DIRECTION_CONFLICT'
-                      : !executionCost.valid
-                        ? executionCost.reason
-                        : 'CONFLUENCE_TOO_LOW'
+                      : !nineStarsAligned
+                        ? 'NINE_STARS_DIRECTION_CONFLICT'
+                        : bigERequired && (!bigE.valid || bigE.side !== side)
+                          ? 'BIGE_MODEL_NOT_CONFIRMED'
+                          : unicornRequired && !unicorn.valid
+                            ? 'UNICORN_MODEL_NOT_CONFIRMED'
+                            : hpsRequired && !hps.valid
+                              ? 'HPS_ZONE_NOT_CONFIRMED'
+                              : !executionCost.valid
+                                ? executionCost.reason
+                                : 'CONFLUENCE_TOO_LOW'
       }
     };
   }
@@ -116,7 +147,11 @@ function enhance(result, options = {}) {
     (mmxm.valid && mmxm.bias === side ? 4 : 0) +
     (sbs.valid ? 5 : 0) +
     (sessionLiquidity.valid ? 5 : 0) +
-    (executionCost.available !== false && executionCost.netRR >= 2 ? 3 : 0)
+    (executionCost.available !== false && executionCost.netRR >= 2 ? 3 : 0) +
+    (bigE.valid && bigE.side === side ? 4 : 0) +
+    (unicorn.valid ? 5 : 0) +
+    (nineStars.valid && nineStars.side === side ? 3 : 0) +
+    (hps.valid ? Math.round(hps.score / 20) : 0)
   );
   setup.confidence = clamp(Math.round((+setup.confidence || 0) + adjustment), 0, 100);
   setup.grade = confluence.grade;
@@ -127,6 +162,10 @@ function enhance(result, options = {}) {
   setup.sbs = sbs;
   setup.sessionLiquidity = sessionLiquidity;
   setup.executionCost = executionCost;
+  setup.bigE = bigE;
+  setup.unicorn = unicorn;
+  setup.nineStars = nineStars;
+  setup.hps = hps;
   setup.context = { ...context, confidenceAdjustment:adjustment };
   return {
     ...result,
