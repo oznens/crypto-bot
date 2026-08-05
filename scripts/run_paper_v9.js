@@ -33,8 +33,9 @@ const execution = createExecutionAdapter({
   calculatePosition: TradePolicy.calculatePosition
 });
 const telemetry = {
-  version: '9.0', evaluated: 0, accepted: 0, rejected: 0,
-  long: 0, short: 0, conflictRejected: 0, lastDecision: null
+  version: '26.0', evaluated: 0, accepted: 0, rejected: 0,
+  long: 0, short: 0, conflictRejected: 0, portfolioBlocked: 0,
+  portfolioReduced: 0, lastDecision: null
 };
 
 const originalAnalyze = Analysis.analyze;
@@ -57,13 +58,28 @@ Analysis.analyze = function ensembleAnalyze(candles, options) {
 
   if (!result?.setup) {
     execution.setModel('UNKNOWN');
+    execution.setRiskMultiplier(1);
     return { ...result, ensemble: decision };
   }
-  if (!decision.accepted || decision.decision !== result.setup.side) {
+
+  const portfolioMultiplier = Number.isFinite(Number(result.setup.portfolioRiskMultiplier))
+    ? Number(result.setup.portfolioRiskMultiplier)
+    : 1;
+  execution.setRiskMultiplier(portfolioMultiplier);
+  if (portfolioMultiplier <= 0) telemetry.portfolioBlocked++;
+  else if (portfolioMultiplier < 1) telemetry.portfolioReduced++;
+
+  if (!decision.accepted || decision.decision !== result.setup.side || portfolioMultiplier <= 0) {
     telemetry.rejected++;
     if (decision.conflictPenalty > 0.35) telemetry.conflictRejected++;
     execution.setModel(decision.winnerModel || result.setup.model || 'UNKNOWN');
-    return { ...result, setup: null, rejectedSetup: result.setup, ensemble: decision };
+    return {
+      ...result,
+      setup: null,
+      rejectedSetup: result.setup,
+      ensemble: decision,
+      portfolioReason: portfolioMultiplier <= 0 ? 'CORRELATION_EXPOSURE_LIMIT' : null
+    };
   }
 
   telemetry.accepted++;
