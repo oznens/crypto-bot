@@ -24,20 +24,19 @@ jobs:
         with:
           node-version: 20
 
-      - name: Sağlık testlerini çalıştır
-        run: node test/paper_health.test.js
-
-      - name: İşlem politikası testlerini çalıştır
-        run: node test/paper_trade_policy.test.js
-
-      - name: Analitik testlerini çalıştır
-        run: node test/paper_analytics.test.js
+      - name: Testleri çalıştır
+        run: |
+          node test/paper_health.test.js
+          node test/paper_trade_policy.test.js
+          node test/paper_analytics.test.js
+          node test/paper_state_validator.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
           node --check paper_engine.js
           node --check paper_analytics.js
           node --check paper_health.js
+          node --check core/paper_state_validator.js
 
       - name: Motoru çalıştır
         run: node paper_engine.js
@@ -48,16 +47,15 @@ jobs:
       - name: State sağlığını ölç
         run: node paper_health.js
 
-      - name: Sağlık kalite kapısı
+      - name: State kalite kapısı
         run: |
-          node -e "const s=JSON.parse(require('fs').readFileSync('paper_state.json','utf8'));const h=s.health;if(!h)throw new Error('state sağlık sonucu eksik');console.log('sağlık:',h.status,'state yaşı:',h.stateAgeMinutes,'dk','analitik yaşı:',h.analyticsAgeMinutes,'dk');if(!h.ok||h.status!=='HEALTHY')throw new Error('paper state sağlıksız: '+(h.issues||[]).join(','));"
+          node -e "const fs=require('fs');const V=require('./core/paper_state_validator');const s=JSON.parse(fs.readFileSync('paper_state.json','utf8'));V.assertState(s,{analyticsVersion:'5.5'});console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status,'analytics',s.analyticsMeta.version);"
 
-      - name: State dosyasını doğrula ve Pages'a kopyala
+      - name: Pages state kopyasını doğrula
         run: |
-          node -e "const fs=require('fs');const p='paper_state.json';const raw=fs.readFileSync(p,'utf8').trim();if(!raw)throw new Error('paper_state.json boş');const s=JSON.parse(raw);if(!Array.isArray(s.open)||!Array.isArray(s.closed))throw new Error('paper_state.json şeması geçersiz');if(!s.health||!s.health.status)throw new Error('state sağlık sonucu eksik');if(!s.analyticsMeta||s.analyticsMeta.version!=='5.5')throw new Error('analytics sürümü geçersiz');console.log('state doğrulandı:',s.closed.length,'kapalı,',s.open.length,'açık işlem, sağlık',s.health.status,'analytics',s.analyticsMeta.version);"
           mkdir -p docs
           cp paper_state.json docs/paper_state.json
-          node -e "const s=JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));if(!s.health)throw new Error('docs state sağlık sonucu eksik');if(!s.analyticsMeta||s.analyticsMeta.version!=='5.5')throw new Error('docs analytics sürümü geçersiz');console.log('docs/paper_state.json doğrulandı');"
+          node -e "const fs=require('fs');const V=require('./core/paper_state_validator');const s=JSON.parse(fs.readFileSync('docs/paper_state.json','utf8'));V.assertState(s,{analyticsVersion:'5.5'});console.log('docs/paper_state.json doğrulandı');"
 
       - name: Durumu güvenli biçimde commit'le
         run: |
