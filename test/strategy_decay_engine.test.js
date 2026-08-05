@@ -1,0 +1,12 @@
+'use strict';
+const assert = require('assert');
+const D = require('../core/strategy_decay_engine');
+const rows=[];
+for(let i=0;i<30;i++) rows.push({resultR:0.3,closedAt:i});
+for(let i=30;i<50;i++) rows.push({resultR:-0.4,closedAt:i});
+const decay=D.evaluate(rows,{recentCount:20,minBaseline:20});
+assert.equal(decay.available,true);
+assert.equal(decay.status,'DECAY_SEVERE');
+assert.equal(D.evaluate(rows.slice(0,10)).status,'INSUFFICIENT_DATA');
+assert.ok(D.avg([{r:1},{resultR:-1}])===0);
+console.log('strategy_decay_engine tests passed');
