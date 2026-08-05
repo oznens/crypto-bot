@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');
+const P=require('../core/portfolio_correlation_engine');
+assert.equal(P.root('BTCUSDT'),'BTC');
+const blocked=P.evaluate([{symbol:'BTCUSDT',side:'LONG'}],'WBTCUSDT','LONG');
+assert.equal(blocked.valid,false);
+const reduced=P.evaluate([{symbol:'ETHUSDT',side:'LONG'},{symbol:'SOLUSDT',side:'LONG'}],'BTCUSDT','LONG');
+assert.equal(reduced.riskMultiplier,0.5);
+const ok=P.evaluate([],'BTCUSDT','SHORT');
+assert.equal(ok.valid,true);
+console.log('portfolio_correlation_engine tests passed');
