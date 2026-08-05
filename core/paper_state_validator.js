@@ -6,6 +6,43 @@ function finiteNumber(value) {
   return Number.isFinite(Number(value));
 }
 
+function validateFills(trade, prefix) {
+  const issues = [];
+  if (trade.fills === undefined) return issues;
+  if (!Array.isArray(trade.fills)) return [`${prefix}_TRADE_FILLS_NOT_ARRAY`];
+
+  let previousTime = null;
+  for (const fill of trade.fills) {
+    if (!fill || typeof fill !== 'object' || Array.isArray(fill)) {
+      issues.push(`${prefix}_TRADE_FILL_NOT_OBJECT`);
+      continue;
+    }
+
+    const timeValid = finiteNumber(fill.t);
+    if (!timeValid) issues.push(`${prefix}_TRADE_FILL_TIME_INVALID`);
+    if (!finiteNumber(fill.px) || Number(fill.px) <= 0) issues.push(`${prefix}_TRADE_FILL_PRICE_INVALID`);
+    if (!finiteNumber(fill.part) || Number(fill.part) <= 0 || Number(fill.part) > 1) {
+      issues.push(`${prefix}_TRADE_FILL_PART_INVALID`);
+    }
+    if (!finiteNumber(fill.pnl)) issues.push(`${prefix}_TRADE_FILL_PNL_INVALID`);
+    if (typeof fill.why !== 'string' || !fill.why.trim()) issues.push(`${prefix}_TRADE_FILL_REASON_INVALID`);
+
+    if (timeValid) {
+      const fillTime = Number(fill.t);
+      if (previousTime !== null && fillTime < previousTime) issues.push(`${prefix}_TRADE_FILL_TIME_ORDER_INVALID`);
+      if (finiteNumber(trade.openedAt) && fillTime < Number(trade.openedAt)) {
+        issues.push(`${prefix}_TRADE_FILL_BEFORE_OPEN`);
+      }
+      if (finiteNumber(trade.closedAt) && fillTime > Number(trade.closedAt)) {
+        issues.push(`${prefix}_TRADE_FILL_AFTER_CLOSE`);
+      }
+      previousTime = fillTime;
+    }
+  }
+
+  return issues;
+}
+
 function validateTradeCollections(openTrades, closedTrades) {
   const issues = [];
   const ids = new Set();
@@ -57,6 +94,7 @@ function validateTradeCollections(openTrades, closedTrades) {
       if (!geometryValid) issues.push('OPEN_TRADE_PRICE_GEOMETRY_INVALID');
     }
 
+    issues.push(...validateFills(trade, 'OPEN'));
     if (trade.status !== 'open') issues.push('OPEN_TRADE_STATUS_INVALID');
   }
 
@@ -75,6 +113,7 @@ function validateTradeCollections(openTrades, closedTrades) {
     ) issues.push('CLOSED_TRADE_TIME_ORDER_INVALID');
     if (finiteNumber(trade.mfeR) && Number(trade.mfeR) < 0) issues.push('CLOSED_TRADE_MFE_INVALID');
     if (finiteNumber(trade.maeR) && Number(trade.maeR) < 0) issues.push('CLOSED_TRADE_MAE_INVALID');
+    issues.push(...validateFills(trade, 'CLOSED'));
     if (trade.status !== 'closed') issues.push('CLOSED_TRADE_STATUS_INVALID');
   }
 
@@ -143,4 +182,4 @@ function assertState(state, options) {
   return result;
 }
 
-module.exports = { finiteNumber, validateTradeCollections, validateState, assertState };
+module.exports = { finiteNumber, validateFills, validateTradeCollections, validateState, assertState };
