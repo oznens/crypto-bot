@@ -43,15 +43,21 @@ function compactContext(context) {
   };
 }
 
-function setupGeometry(setup) {
+function setupGeometry(setup, marketPrice) {
   if (!setup) return null;
+  const stop = finite(setup.stop ?? setup.sl) ? Number(setup.stop ?? setup.sl) : null;
+  let entry = finite(setup.entry) ? Number(setup.entry) : null;
+  const fallback = finite(marketPrice) ? Number(marketPrice) : null;
+  if (fallback !== null && (entry === null || (stop !== null && Math.abs(entry - stop) <= Math.max(1e-12, Math.abs(stop) * 1e-10)))) {
+    entry = fallback;
+  }
   return {
     side: setup.side || null,
     model: setup.model || null,
     grade: setup.grade || null,
     confidence: finite(setup.confidence) ? Number(setup.confidence) : null,
-    entry: finite(setup.entry) ? Number(setup.entry) : null,
-    stop: finite(setup.stop ?? setup.sl) ? Number(setup.stop ?? setup.sl) : null,
+    entry,
+    stop,
     targets: Array.isArray(setup.tps) ? setup.tps.map(Number).filter(Number.isFinite) : [],
     rr: finite(setup.rr) ? Number(setup.rr) : null,
     reasons: Array.isArray(setup.reasons) ? setup.reasons.slice(0, 12) : [],
@@ -64,6 +70,7 @@ function upsert(journal, input, options = {}) {
   const now = finite(options.now) ? Number(options.now) : Date.now();
   const id = input.id || makeId(input);
   const existing = rows.find(row => row.id === id);
+  const marketPrice = finite(input.marketPrice) ? Number(input.marketPrice) : existing?.marketPrice ?? null;
   const next = {
     ...(existing || {}),
     id,
@@ -75,9 +82,9 @@ function upsert(journal, input, options = {}) {
     status: input.status || existing?.status || 'OBSERVED',
     decision: input.decision || existing?.decision || null,
     reason: input.reason || null,
-    setup: input.setup === undefined ? existing?.setup || null : setupGeometry(input.setup),
+    setup: input.setup === undefined ? existing?.setup || null : setupGeometry(input.setup, marketPrice),
     context: input.context === undefined ? existing?.context || null : compactContext(input.context),
-    marketPrice: finite(input.marketPrice) ? Number(input.marketPrice) : existing?.marketPrice ?? null,
+    marketPrice,
     anchor: finite(input.anchor) ? Number(input.anchor) : existing?.anchor ?? null,
     tradeId: input.tradeId || existing?.tradeId || null,
     closedAt: finite(input.closedAt) ? Number(input.closedAt) : existing?.closedAt ?? null,
@@ -105,6 +112,7 @@ function linkTrade(journal, journalId, trade) {
     closedAt: trade.closedAt,
     resultR: trade.resultR ?? trade.r,
     closeReason: trade.closeReason,
+    marketPrice: trade.entry,
     setup: {
       side: trade.side,
       model: trade.model,
