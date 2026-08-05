@@ -10,13 +10,19 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'paper-state-cli-'));
 const a = path.join(dir, 'a.json');
 const b = path.join(dir, 'b.json');
 const c = path.join(dir, 'c.json');
+const now = Date.now();
 
 const validState = {
   equity: 1000,
   open: [],
   closed: [],
+  lastRun: now - 1000,
   health: { ok: true, status: 'HEALTHY' },
-  analyticsMeta: { version: '5.5', generatedAt: Date.now() }
+  analyticsMeta: {
+    version: '5.5',
+    generatedAt: now,
+    closedTrades: 0
+  }
 };
 
 const payload = JSON.stringify(validState, null, 1);
