@@ -1,10 +1,10 @@
 'use strict';
 
 const WINDOWS_NY = {
-  LONDON: [2, 5],
-  NEW_YORK_AM: [7, 11],
   SILVER_BULLET_AM: [10, 11],
   SILVER_BULLET_PM: [14, 15],
+  LONDON: [2, 5],
+  NEW_YORK_AM: [7, 11],
   ASIA: [19, 24]
 };
 
