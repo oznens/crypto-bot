@@ -1,0 +1,13 @@
+'use strict';
+const assert = require('assert');
+const S = require('../core/smt_divergence_engine');
+const mk = lows => lows.map((l,i)=>({h:100+i,l,c:99+i}));
+const a = mk([95,94,93,92,90]);
+const b = mk([95,94,93,92,92]);
+const bull = S.evaluate(a,b,'LONG',{lookback:5});
+assert.equal(bull.available,true);
+assert.equal(bull.confirmed,true);
+assert.equal(bull.divergence,'BULLISH_SMT');
+assert.equal(S.evaluate([],b,'LONG').reason,'PEER_DATA_MISSING');
+assert.equal(S.evaluate(a,b,'SHORT').confirmed,false);
+console.log('smt_divergence_engine tests passed');
