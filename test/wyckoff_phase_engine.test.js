@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const W=require('../core/wyckoff_phase_engine');
+const rows=[];for(let i=0;i<40;i++)rows.push({h:110,l:100,c:105});
+for(let i=40;i<79;i++)rows.push({h:109,l:101,c:105});
+rows.push({h:108,l:98,c:103});
+const r=W.evaluate(rows,80);
+assert.equal(r.valid,true);
+assert.equal(r.phase,'ACCUMULATION_SPRING');
+assert.equal(r.bias,'LONG');
+assert.equal(W.evaluate(rows.slice(0,10)).phase,'UNKNOWN');
+console.log('wyckoff_phase_engine tests passed');
