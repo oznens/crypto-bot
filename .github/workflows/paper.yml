@@ -37,6 +37,11 @@ jobs:
           node test/strategy_trade_policy.test.js
           node test/strategy_execution_adapter.test.js
           node test/strategy_ensemble.test.js
+          node test/killzone_fvg_engine.test.js
+          node test/smt_divergence_engine.test.js
+          node test/liquidity_map_engine.test.js
+          node test/adaptive_exit_engine.test.js
+          node test/strategy_context_pipeline.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -49,13 +54,19 @@ jobs:
           node --check core/strategy_trade_policy.js
           node --check core/strategy_execution_adapter.js
           node --check core/strategy_ensemble.js
+          node --check core/killzone_fvg_engine.js
+          node --check core/smt_divergence_engine.js
+          node --check core/liquidity_map_engine.js
+          node --check core/adaptive_exit_engine.js
+          node --check core/strategy_context_pipeline.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
           node --check scripts/run_paper_v9.js
+          node --check scripts/run_paper_v13.js
 
-      - name: V9 ensemble kontrollü motoru çalıştır
-        run: node scripts/run_paper_v9.js
+      - name: V13 tam strateji motorunu çalıştır
+        run: node scripts/run_paper_v13.js
 
       - name: Performans analitiğini üret
         run: node paper_analytics.js
@@ -99,7 +110,7 @@ jobs:
               exit 0
             fi
 
-            git commit -m "paper: V9 ensemble ve tahsis sonuçları güncellendi [skip ci]"
+            git commit -m "paper: V13 strateji bağlamı ve adaptif çıkış güncellendi [skip ci]"
             if git push origin HEAD:main; then
               exit 0
             fi
