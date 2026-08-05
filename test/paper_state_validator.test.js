@@ -18,6 +18,23 @@ const valid = {
   }
 };
 
+const openTrade = {
+  id: 'BTCUSDT-1',
+  symbol: 'BTCUSDT',
+  side: 'LONG',
+  entry: 100,
+  qty: 1,
+  riskUSD: 10,
+  openedAt: NOW - 5000,
+  status: 'open'
+};
+const closedTrade = {
+  id: 'ETHUSDT-1',
+  resultR: 1.5,
+  closedAt: NOW - 2000,
+  status: 'closed'
+};
+
 assert.equal(V.validateState(valid, OPTIONS).ok, true);
 assert.deepEqual(V.validateState(null, OPTIONS).issues, ['STATE_NOT_OBJECT']);
 assert.ok(V.validateState({ ...valid, equity: 0 }, OPTIONS).issues.includes('INVALID_EQUITY'));
@@ -44,6 +61,13 @@ assert.equal(V.validateState({
   lastRun: NOW + 120_000,
   analyticsMeta: { ...valid.analyticsMeta, generatedAt: NOW + 120_000 }
 }, OPTIONS).ok, true);
+
+assert.deepEqual(V.validateTradeCollections([openTrade], [closedTrade]), []);
+assert.ok(V.validateTradeCollections([{ ...openTrade, entry: 0 }], []).includes('OPEN_TRADE_ENTRY_INVALID'));
+assert.ok(V.validateTradeCollections([{ ...openTrade, qty: 0 }], []).includes('OPEN_TRADE_QTY_INVALID'));
+assert.ok(V.validateTradeCollections([{ ...openTrade, side: 'BUY' }], []).includes('OPEN_TRADE_SIDE_INVALID'));
+assert.ok(V.validateTradeCollections([openTrade], [{ ...closedTrade, id: openTrade.id }]).includes('DUPLICATE_TRADE_ID'));
+assert.ok(V.validateTradeCollections([], [{ ...closedTrade, resultR: null }]).includes('CLOSED_TRADE_RESULT_INVALID'));
 assert.throws(() => V.assertState({ ...valid, open: null }, OPTIONS), /OPEN_NOT_ARRAY/);
 
 console.log('paper_state_validator tests passed');
