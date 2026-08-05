@@ -1,0 +1,10 @@
+'use strict';
+const assert = require('assert');
+const E = require('../core/adaptive_exit_engine');
+const base={side:'LONG',entry:100,sl:99,initialSL:99,initialRiskDist:1,openedAt:0,deriskDone:false};
+assert.equal(E.decide(base,{h:102.6,l:100,t:3600000}).action,'TRAIL');
+assert.equal(E.decide(base,{h:101.2,l:99.8,t:3600000}).action,'BREAKEVEN');
+assert.equal(E.decide(base,{h:100.2,l:99.5,t:25*3600000}).reason,'TIME_DECAY');
+const t={...base};E.apply(t,{h:102.6,l:100,t:3600000});assert.ok(t.sl>=101);
+const s={...base,side:'SHORT',entry:100,sl:101,initialSL:101};E.apply(s,{h:100,l:97.4,t:3600000});assert.ok(s.sl<=99);
+console.log('adaptive_exit_engine tests passed');
