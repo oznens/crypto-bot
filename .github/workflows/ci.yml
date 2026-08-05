@@ -81,6 +81,9 @@ jobs:
           node test/unicorn_model_engine.test.js
           node test/nine_stars_engine.test.js
           node test/hps_zone_engine.test.js
+          node test/market_data_quality_engine.test.js
+          node test/trading_circuit_breaker.test.js
+          node test/strategy_incubator.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -121,8 +124,12 @@ jobs:
           node --check core/unicorn_model_engine.js
           node --check core/nine_stars_engine.js
           node --check core/hps_zone_engine.js
+          node --check core/market_data_quality_engine.js
+          node --check core/trading_circuit_breaker.js
+          node --check core/strategy_incubator.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
+          node --check scripts/build_strategy_incubator.js
           node --check scripts/run_paper_v9.js
           node --check scripts/run_paper_v13.js
