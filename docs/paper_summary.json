@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "6.0",
+  "generatedAt": 1785953720143,
+  "sourceLastRun": 1785953719683,
+  "health": {
+    "ok": true,
+    "status": "HEALTHY"
+  },
+  "account": {
+    "startEquity": 10000,
+    "equity": 10301.58,
+    "pnl": 301.58,
+    "returnPct": 3.02
+  },
+  "positions": {
+    "open": 5,
+    "risky": 3,
+    "breakeven": 2,
+    "totalRiskUSD": 512.69
+  },
+  "performance": {
+    "closed": 56,
+    "wins": 22,
+    "losses": 34,
+    "winRate": 39.3,
+    "totalR": 1.95,
+    "expectancyR": 0.03,
+    "profitFactor": 1.06,
+    "maxDrawdownR": 6.92,
+    "avgMfeR": 0,
+    "avgMaeR": 0
+  },
+  "risk": {
+    "rejectionCount": 0,
+    "rejectionCounts": {}
+  },
+  "rankings": [
+    {
+      "model": "MM Buy Model",
+      "eligible": true,
+      "score": 32,
+      "trades": 42,
+      "winrate": 0,
+      "totalR": -0.09,
+      "expectancy": -0.0021,
+      "profitFactor": 0,
+      "maxDrawdownR": 0.09,
+      "walkForward": {
+        "train": {
+          "trades": 29,
+          "winrate": 0,
+          "totalR": -0.09,
+          "avgR": -0.003
+        },
+        "test": {
+          "trades": 13,
+          "winrate": 0,
+          "totalR": 0,
+          "avgR": 0
+        },
+        "robust": false
+      },
+      "decay": {
+        "available": true,
+        "status": "DECAY_SEVERE",
+        "score": 0,
+        "recentTrades": 20,
+        "baselineTrades": 22,
+        "recentExpectancy": -0.264,
+        "baselineExpectancy": 0.1945,
+        "drop": 0.4585,
+        "ratio": -1.357
+      },
+      "robustness": {
+        "available": true,
+        "status": "FRAGILE",
+        "score": 15,
+        "trades": 42,
+        "simulations": 500,
+        "lossProbability": 0.586,
+        "totalR_P05": -14.68,
+        "maxDrawdownR_P95": 17.92
+      },
+      "stability": {
+        "available": true,
+        "status": "FRAGILE",
+        "score": 15,
+        "valid": false,
+        "points": 5,
+        "mean": -0.0228,
+        "sd": 0.4768,
+        "cv": 20.958,
+        "positiveRatio": 0.4,
+        "best": 0.6087,
+        "worst": -0.5713
+      },
+      "status": "PAUSED",
+      "riskMultiplier": 0,
+      "reason": "yakın dönem performansı ciddi biçimde bozuldu",
+      "portfolioWeightPct": 0
+    },
+    {
+      "model": "MM Sell Model",
+      "eligible": false,
+      "score": 0,
+      "trades": 14,
+      "winrate": 0,
+      "totalR": -0.03,
+      "expectancy": -0.0021,
+      "profitFactor": 0,
+      "maxDrawdownR": 0.03,
+      "walkForward": {
+        "train": {
+          "trades": 9,
+          "winrate": 0,
+          "totalR": -0.03,
+          "avgR": -0.003
+        },
+        "test": {
+          "trades": 5,
+          "winrate": 0,
+          "totalR": 0,
+          "avgR": 0
+        },
+        "robust": false
+      },
+      "decay": {
+        "available": false,
+        "status": "INSUFFICIENT_DATA",
+        "score": 50,
+        "recentExpectancy": 0,
+        "baselineExpectancy": 0,
+        "drop": 0
+      },
+      "robustness": {
+        "available": false,
+        "status": "INSUFFICIENT_DATA",
+        "score": 50,
+        "trades": 14
+      },
+      "stability": {
+        "available": true,
+        "status": "FRAGILE",
+        "score": 15,
+        "valid": false,
+        "points": 5,
+        "mean": 0.1,
+        "sd": 1.1504,
+        "cv": 11.504,
+        "positiveRatio": 0.6,
+        "best": 2.09,
+        "worst": -1.03
+      },
+      "status": "WATCH",
+      "riskMultiplier": 0.5,
+      "reason": "dönemler arası performans kararsız",
+      "portfolioWeightPct": 0
+    }
+  ],
+  "meta": {
+    "analyticsVersion": "5.5",
+    "analyticsGeneratedAt": 1785953719786,
+    "runs": 366
+  }
+}
