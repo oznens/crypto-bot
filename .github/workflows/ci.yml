@@ -11,6 +11,7 @@ on:
       - 'paper_health.js'
       - 'analysis.js'
       - 'core/**'
+      - 'scripts/validate_paper_state.js'
       - 'test/**'
   pull_request:
     paths:
@@ -21,6 +22,7 @@ on:
       - 'paper_health.js'
       - 'analysis.js'
       - 'core/**'
+      - 'scripts/validate_paper_state.js'
       - 'test/**'
 
 permissions:
@@ -59,3 +61,4 @@ jobs:
           node --check core/risk_engine.js
           node --check core/performance_engine.js
           node --check core/strategy_ranking_engine.js
+          node --check scripts/validate_paper_state.js
