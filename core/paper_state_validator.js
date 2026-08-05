@@ -27,20 +27,54 @@ function validateTradeCollections(openTrades, closedTrades) {
   for (const trade of openTrades || []) {
     registerId(trade, 'OPEN');
     if (!trade || typeof trade !== 'object') continue;
+
+    const entryValid = finiteNumber(trade.entry) && Number(trade.entry) > 0;
+    const qtyValid = finiteNumber(trade.qty) && Number(trade.qty) > 0;
+    const qty0Valid = finiteNumber(trade.qty0) && Number(trade.qty0) > 0;
+    const stopValid = finiteNumber(trade.sl) && Number(trade.sl) > 0;
+    const tp1Valid = finiteNumber(trade.tp1) && Number(trade.tp1) > 0;
+    const tpFValid = finiteNumber(trade.tpF) && Number(trade.tpF) > 0;
+
     if (typeof trade.symbol !== 'string' || !trade.symbol.trim()) issues.push('OPEN_TRADE_SYMBOL_INVALID');
     if (!['LONG', 'SHORT'].includes(trade.side)) issues.push('OPEN_TRADE_SIDE_INVALID');
-    if (!finiteNumber(trade.entry) || Number(trade.entry) <= 0) issues.push('OPEN_TRADE_ENTRY_INVALID');
-    if (!finiteNumber(trade.qty) || Number(trade.qty) <= 0) issues.push('OPEN_TRADE_QTY_INVALID');
+    if (!entryValid) issues.push('OPEN_TRADE_ENTRY_INVALID');
+    if (!qtyValid) issues.push('OPEN_TRADE_QTY_INVALID');
+    if (!qty0Valid) issues.push('OPEN_TRADE_INITIAL_QTY_INVALID');
+    if (qtyValid && qty0Valid && Number(trade.qty) > Number(trade.qty0)) issues.push('OPEN_TRADE_QTY_EXCEEDS_INITIAL');
     if (!finiteNumber(trade.riskUSD) || Number(trade.riskUSD) <= 0) issues.push('OPEN_TRADE_RISK_INVALID');
     if (!finiteNumber(trade.openedAt)) issues.push('OPEN_TRADE_TIME_INVALID');
+    if (!stopValid) issues.push('OPEN_TRADE_STOP_INVALID');
+    if (!tp1Valid || !tpFValid) issues.push('OPEN_TRADE_TARGET_INVALID');
+
+    if (entryValid && stopValid && tp1Valid && tpFValid && ['LONG', 'SHORT'].includes(trade.side)) {
+      const entry = Number(trade.entry);
+      const stop = Number(trade.sl);
+      const tp1 = Number(trade.tp1);
+      const tpF = Number(trade.tpF);
+      const geometryValid = trade.side === 'LONG'
+        ? stop <= entry && tp1 >= entry && tpF >= tp1
+        : stop >= entry && tp1 <= entry && tpF <= tp1;
+      if (!geometryValid) issues.push('OPEN_TRADE_PRICE_GEOMETRY_INVALID');
+    }
+
     if (trade.status !== 'open') issues.push('OPEN_TRADE_STATUS_INVALID');
   }
 
   for (const trade of closedTrades || []) {
     registerId(trade, 'CLOSED');
     if (!trade || typeof trade !== 'object') continue;
+
     if (!finiteNumber(trade.resultR)) issues.push('CLOSED_TRADE_RESULT_INVALID');
+    if (!finiteNumber(trade.riskUSD) || Number(trade.riskUSD) <= 0) issues.push('CLOSED_TRADE_RISK_INVALID');
+    if (!finiteNumber(trade.openedAt)) issues.push('CLOSED_TRADE_OPEN_TIME_INVALID');
     if (!finiteNumber(trade.closedAt)) issues.push('CLOSED_TRADE_TIME_INVALID');
+    if (
+      finiteNumber(trade.openedAt) &&
+      finiteNumber(trade.closedAt) &&
+      Number(trade.closedAt) < Number(trade.openedAt)
+    ) issues.push('CLOSED_TRADE_TIME_ORDER_INVALID');
+    if (finiteNumber(trade.mfeR) && Number(trade.mfeR) < 0) issues.push('CLOSED_TRADE_MFE_INVALID');
+    if (finiteNumber(trade.maeR) && Number(trade.maeR) < 0) issues.push('CLOSED_TRADE_MAE_INVALID');
     if (trade.status !== 'closed') issues.push('CLOSED_TRADE_STATUS_INVALID');
   }
 
