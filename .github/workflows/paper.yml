@@ -42,6 +42,9 @@ jobs:
           node test/liquidity_map_engine.test.js
           node test/adaptive_exit_engine.test.js
           node test/strategy_context_pipeline.test.js
+          node test/multi_timeframe_alignment.test.js
+          node test/confluence_score_engine.test.js
+          node test/strategy_decay_engine.test.js
 
       - name: Kod sözdizimini doğrula
         run: |
@@ -59,19 +62,22 @@ jobs:
           node --check core/liquidity_map_engine.js
           node --check core/adaptive_exit_engine.js
           node --check core/strategy_context_pipeline.js
+          node --check core/multi_timeframe_alignment.js
+          node --check core/confluence_score_engine.js
+          node --check core/strategy_decay_engine.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
           node --check scripts/run_paper_v9.js
           node --check scripts/run_paper_v13.js
 
-      - name: V13 tam strateji motorunu çalıştır
+      - name: V16 tam strateji motorunu çalıştır
         run: node scripts/run_paper_v13.js
 
       - name: Performans analitiğini üret
         run: node paper_analytics.js
 
-      - name: Strateji tahsisini yenile
+      - name: Strateji tahsisini ve decay durumunu yenile
         run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
 
       - name: State sağlığını ölç
@@ -110,7 +116,7 @@ jobs:
               exit 0
             fi
 
-            git commit -m "paper: V13 strateji bağlamı ve adaptif çıkış güncellendi [skip ci]"
+            git commit -m "paper: V16 strateji kalite ve decay sonuçları güncellendi [skip ci]"
             if git push origin HEAD:main; then
               exit 0
             fi
