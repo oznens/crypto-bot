@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -57,12 +59,37 @@ jobs:
           cp paper_state.json docs/paper_state.json
           node -e "const s=JSON.parse(require('fs').readFileSync('docs/paper_state.json','utf8'));if(!s.health)throw new Error('docs state sağlık sonucu eksik');if(!s.analyticsMeta||s.analyticsMeta.version!=='5.5')throw new Error('docs analytics sürümü geçersiz');console.log('docs/paper_state.json doğrulandı');"
 
-      - name: Durumu commit'le
+      - name: Durumu güvenli biçimde commit'le
         run: |
+          set -euo pipefail
           git config user.name "paper-bot"
           git config user.email "actions@github.com"
-          git add paper_state.json docs/paper_state.json
-          if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
-          git commit -m "paper: durum, analitik ve sağlık güncellendi [skip ci]"
-          git pull --rebase origin main || true
-          git push
+
+          cp paper_state.json /tmp/paper_state.json
+          cp docs/paper_state.json /tmp/docs_paper_state.json
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/paper_state.json paper_state.json
+            mkdir -p docs
+            cp /tmp/docs_paper_state.json docs/paper_state.json
+            git add paper_state.json docs/paper_state.json
+
+            if git diff --cached --quiet; then
+              echo "değişiklik yok"
+              exit 0
+            fi
+
+            git commit -m "paper: durum, analitik ve sağlık güncellendi [skip ci]"
+            if git push origin HEAD:main; then
+              echo "state push başarılı (deneme $attempt)"
+              exit 0
+            fi
+
+            echo "push çakıştı; güncel main üzerine yeniden uygulanıyor ($attempt/3)"
+            sleep $((attempt * 3))
+          done
+
+          echo "state üç denemede push edilemedi"
+          exit 1
