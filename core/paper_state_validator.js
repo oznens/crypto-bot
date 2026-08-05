@@ -4,6 +4,47 @@ function finiteNumber(value) {
   return Number.isFinite(Number(value));
 }
 
+function validateTradeCollections(openTrades, closedTrades) {
+  const issues = [];
+  const ids = new Set();
+
+  function registerId(trade, prefix) {
+    if (!trade || typeof trade !== 'object' || Array.isArray(trade)) {
+      issues.push(`${prefix}_TRADE_NOT_OBJECT`);
+      return false;
+    }
+    if (typeof trade.id !== 'string' || !trade.id.trim()) {
+      issues.push(`${prefix}_TRADE_ID_INVALID`);
+      return false;
+    }
+    if (ids.has(trade.id)) issues.push('DUPLICATE_TRADE_ID');
+    ids.add(trade.id);
+    return true;
+  }
+
+  for (const trade of openTrades || []) {
+    registerId(trade, 'OPEN');
+    if (!trade || typeof trade !== 'object') continue;
+    if (typeof trade.symbol !== 'string' || !trade.symbol.trim()) issues.push('OPEN_TRADE_SYMBOL_INVALID');
+    if (!['LONG', 'SHORT'].includes(trade.side)) issues.push('OPEN_TRADE_SIDE_INVALID');
+    if (!finiteNumber(trade.entry) || Number(trade.entry) <= 0) issues.push('OPEN_TRADE_ENTRY_INVALID');
+    if (!finiteNumber(trade.qty) || Number(trade.qty) <= 0) issues.push('OPEN_TRADE_QTY_INVALID');
+    if (!finiteNumber(trade.riskUSD) || Number(trade.riskUSD) <= 0) issues.push('OPEN_TRADE_RISK_INVALID');
+    if (!finiteNumber(trade.openedAt)) issues.push('OPEN_TRADE_TIME_INVALID');
+    if (trade.status !== 'open') issues.push('OPEN_TRADE_STATUS_INVALID');
+  }
+
+  for (const trade of closedTrades || []) {
+    registerId(trade, 'CLOSED');
+    if (!trade || typeof trade !== 'object') continue;
+    if (!finiteNumber(trade.resultR)) issues.push('CLOSED_TRADE_RESULT_INVALID');
+    if (!finiteNumber(trade.closedAt)) issues.push('CLOSED_TRADE_TIME_INVALID');
+    if (trade.status !== 'closed') issues.push('CLOSED_TRADE_STATUS_INVALID');
+  }
+
+  return issues;
+}
+
 function validateState(state, options = {}) {
   const expectedAnalyticsVersion = options.analyticsVersion || '5.5';
   const now = finiteNumber(options.now) ? Number(options.now) : Date.now();
@@ -22,6 +63,7 @@ function validateState(state, options = {}) {
 
   if (!openValid) issues.push('OPEN_NOT_ARRAY');
   if (!closedValid) issues.push('CLOSED_NOT_ARRAY');
+  if (openValid && closedValid) issues.push(...validateTradeCollections(state.open, state.closed));
   if (!finiteNumber(state.equity) || Number(state.equity) <= 0) issues.push('INVALID_EQUITY');
 
   if (finiteNumber(state.lastRun) && Number(state.lastRun) > latestAllowedTime) {
@@ -65,4 +107,4 @@ function assertState(state, options) {
   return result;
 }
 
-module.exports = { finiteNumber, validateState, assertState };
+module.exports = { finiteNumber, validateTradeCollections, validateState, assertState };
