@@ -77,6 +77,10 @@ jobs:
           node test/parameter_stability_engine.test.js
           node test/execution_cost_engine.test.js
           node test/portfolio_correlation_engine.test.js
+          node test/bige_tdi_engine.test.js
+          node test/unicorn_model_engine.test.js
+          node test/nine_stars_engine.test.js
+          node test/hps_zone_engine.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -113,6 +117,10 @@ jobs:
           node --check core/parameter_stability_engine.js
           node --check core/execution_cost_engine.js
           node --check core/portfolio_correlation_engine.js
+          node --check core/bige_tdi_engine.js
+          node --check core/unicorn_model_engine.js
+          node --check core/nine_stars_engine.js
+          node --check core/hps_zone_engine.js
           node --check scripts/validate_paper_state.js
           node --check scripts/build_paper_summary.js
           node --check scripts/build_strategy_allocation.js
