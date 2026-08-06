@@ -1,0 +1,56 @@
+name: backtest-onceki-ay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-onceki-ay.yml'
+      - 'backtest_onceki_ay.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-onceki-ay
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Önceki 30 gün eski motor backtest
+        env:
+          OFFSET_DAYS: 30
+          GUN: 30
+          SYMS: 30
+        run: node backtest_onceki_ay.js
+
+      - name: Sonuçları hazırla
+        run: |
+          mkdir -p docs
+          cp backtest3ay_sonuc.txt docs/backtest_onceki_ay_sonuc.txt
+          cp backtest3ay_islemler.json docs/backtest_onceki_ay_islemler.json
+          rm -f backtest3ay_sonuc.txt backtest3ay_islemler.json
+
+      - name: Sonuçları main dalına kaydet
+        run: |
+          set -euo pipefail
+          git config user.name "backtest-bot"
+          git config user.email "actions@github.com"
+          git add docs/backtest_onceki_ay_sonuc.txt docs/backtest_onceki_ay_islemler.json
+          if git diff --cached --quiet; then
+            echo "Sonuç değişmedi"
+            exit 0
+          fi
+          git commit -m "backtest: önceki 30 gün eski motor sonuçları [skip ci]"
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main
