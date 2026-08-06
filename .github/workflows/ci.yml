@@ -10,6 +10,9 @@ on:
       - 'paper_analytics.js'
       - 'paper_health.js'
       - 'analysis.js'
+      - 'backtest/**'
+      - 'backtest3ay.js'
+      - 'backtest_v34.js'
       - 'core/**'
       - 'scripts/**'
       - 'docs/**'
@@ -23,6 +26,9 @@ on:
       - 'paper_analytics.js'
       - 'paper_health.js'
       - 'analysis.js'
+      - 'backtest/**'
+      - 'backtest3ay.js'
+      - 'backtest_v34.js'
       - 'core/**'
       - 'scripts/**'
       - 'docs/**'
@@ -85,6 +91,8 @@ jobs:
           node test/trading_circuit_breaker.test.js
           node test/strategy_incubator.test.js
           node test/setup_journal.test.js
+          node test/backtest_config.test.js
+          node test/backtest_engine_adapter.test.js
           node tests/risk_engine.test.js
           node tests/performance_engine.test.js
 
@@ -93,4 +101,4 @@ jobs:
           node --check paper_engine.js
           node --check paper_analytics.js
           node --check paper_health.js
-          for f in core/*.js scripts/*.js; do node --check "$f"; done
+          for f in core/*.js scripts/*.js backtest/*.js; do node --check "$f"; done
