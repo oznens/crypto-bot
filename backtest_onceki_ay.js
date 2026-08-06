@@ -4,6 +4,7 @@
  * Eski backtest motorunu bir önceki 30 günlük pencereye taşır.
  * Tarihsel bitiş = gerçek zaman - OFFSET_DAYS (varsayılan 30 gün)
  * Test süresi = GUN (varsayılan 30 gün)
+ * Bu dosyadaki değişiklik workflow'u tetikler.
  */
 const OFFSET_DAYS = Number(process.env.OFFSET_DAYS || 30);
 const realNow = Date.now.bind(Date);
