@@ -26,17 +26,18 @@ jobs:
         with:
           node-version: 24
 
-      - name: Son 30 gün backtest
+      - name: Önceki 30 gün backtest
         env:
+          OFFSET_DAYS: 30
           GUN: 30
           SYMS: 30
-        run: node backtest3ay.js
+        run: node backtest_onceki_ay.js
 
       - name: Sonuçları yayınla
         run: |
           mkdir -p docs
-          cp backtest3ay_sonuc.txt docs/backtest_1ay_sonuc.txt
-          cp backtest3ay_islemler.json docs/backtest_1ay_islemler.json
+          cp backtest3ay_sonuc.txt docs/backtest_onceki_ay_sonuc.txt
+          cp backtest3ay_islemler.json docs/backtest_onceki_ay_islemler.json
 
       - name: Sonuçları main dalına kaydet
         run: |
@@ -44,20 +45,20 @@ jobs:
           git config user.name "backtest-bot"
           git config user.email "actions@github.com"
 
-          cp docs/backtest_1ay_sonuc.txt /tmp/backtest_1ay_sonuc.txt
-          cp docs/backtest_1ay_islemler.json /tmp/backtest_1ay_islemler.json
+          cp docs/backtest_onceki_ay_sonuc.txt /tmp/backtest_onceki_ay_sonuc.txt
+          cp docs/backtest_onceki_ay_islemler.json /tmp/backtest_onceki_ay_islemler.json
 
           git fetch origin main
           git reset --hard origin/main
           mkdir -p docs
-          cp /tmp/backtest_1ay_sonuc.txt docs/backtest_1ay_sonuc.txt
-          cp /tmp/backtest_1ay_islemler.json docs/backtest_1ay_islemler.json
-          git add docs/backtest_1ay_sonuc.txt docs/backtest_1ay_islemler.json
+          cp /tmp/backtest_onceki_ay_sonuc.txt docs/backtest_onceki_ay_sonuc.txt
+          cp /tmp/backtest_onceki_ay_islemler.json docs/backtest_onceki_ay_islemler.json
+          git add docs/backtest_onceki_ay_sonuc.txt docs/backtest_onceki_ay_islemler.json
 
           if git diff --cached --quiet; then
             echo "Sonuç değişmedi"
             exit 0
           fi
 
-          git commit -m "backtest: son 30 gün sonuçları [skip ci]"
+          git commit -m "backtest: önceki 30 gün sonuçları [skip ci]"
           git push origin HEAD:main
