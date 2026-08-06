@@ -1,0 +1,142 @@
+name: V35 Backtest Control
+
+on:
+  workflow_dispatch:
+    inputs:
+      engine:
+        description: Backtest motoru
+        required: true
+        default: legacy
+        type: choice
+        options:
+          - legacy
+          - v34
+      start_date:
+        description: Başlangıç tarihi (YYYY-MM-DD)
+        required: true
+        default: '2026-06-07'
+        type: string
+      end_date:
+        description: Bitiş tarihi (YYYY-MM-DD)
+        required: true
+        default: '2026-07-07'
+        type: string
+      symbol_mode:
+        description: Sembol evreni
+        required: true
+        default: top30
+        type: choice
+        options:
+          - top10
+          - top30
+          - manual
+      manual_symbols:
+        description: Manuel semboller (virgülle, yalnız manual modunda)
+        required: false
+        default: BTCUSDT,ETHUSDT,SOLUSDT
+        type: string
+      capital:
+        description: Başlangıç sermayesi
+        required: true
+        default: '10000'
+        type: string
+      risk_percent:
+        description: İşlem başı risk yüzdesi (0-5)
+        required: true
+        default: '1'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v35-backtest-control
+  cancel-in-progress: false
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Backtest ayarını oluştur
+        env:
+          ENGINE: ${{ inputs.engine }}
+          START_DATE: ${{ inputs.start_date }}
+          END_DATE: ${{ inputs.end_date }}
+          SYMBOL_MODE: ${{ inputs.symbol_mode }}
+          MANUAL_SYMBOLS: ${{ inputs.manual_symbols }}
+          CAPITAL: ${{ inputs.capital }}
+          RISK_PERCENT: ${{ inputs.risk_percent }}
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const symbols = (process.env.MANUAL_SYMBOLS || '')
+            .split(',')
+            .map(v => v.trim().toUpperCase())
+            .filter(Boolean);
+
+          const config = {
+            engine: process.env.ENGINE,
+            startDate: process.env.START_DATE,
+            endDate: process.env.END_DATE,
+            capital: Number(process.env.CAPITAL),
+            riskPercent: Number(process.env.RISK_PERCENT),
+            symbols: {
+              mode: process.env.SYMBOL_MODE,
+              list: symbols
+            },
+            timeframes: ['15m', '1h', '4h', '1d'],
+            execution: {
+              fees: true,
+              slippage: true,
+              commissionRate: 0.00055,
+              slippagePercent: 0.0005
+            }
+          };
+
+          fs.writeFileSync('backtest/runtime-config.json', JSON.stringify(config, null, 2));
+          console.log(config);
+          NODE
+
+      - name: Config doğrulama testleri
+        run: |
+          node test/backtest_config.test.js
+          node test/backtest_engine_adapter.test.js
+
+      - name: Backtesti çalıştır
+        env:
+          BACKTEST_CONFIG: backtest/runtime-config.json
+        run: node backtest/runner.js
+
+      - name: Sonuçları site klasörüne aktar
+        run: |
+          mkdir -p docs/backtest_results
+          cp backtest_results/latest.json docs/backtest_results/latest.json
+          cp backtest_results/trades.json docs/backtest_results/trades.json
+          cp backtest_results/summary.txt docs/backtest_results/summary.txt
+
+      - name: Artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: v35-backtest-${{ github.run_number }}
+          path: backtest_results/
+          retention-days: 30
+
+      - name: Sonucu GitHub Pages için kaydet
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/backtest_results
+          if git diff --cached --quiet; then
+            echo 'Yayınlanacak sonuç değişikliği yok.'
+            exit 0
+          fi
+          git commit -m "chore(backtest): publish run #${{ github.run_number }}"
+          git push
