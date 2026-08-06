@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DREYKO V35 Backtest Control</title>
+<style>
+:root{--bg:#090c12;--panel:#121722;--line:#293241;--text:#edf2f7;--muted:#909bad;--g:#5fd99a;--r:#f08a8a;--y:#e8c34a;--b:#79c0ff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#080b10,#101623);color:var(--text);font:14px Arial,sans-serif;min-height:100vh}.shell{max-width:980px;margin:auto;padding:22px}.top{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}h1{margin:0 0 8px;font-size:25px}p{color:var(--muted);line-height:1.55}.nav{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}.nav a{color:var(--text);text-decoration:none;padding:10px 14px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}.panel{background:rgba(18,23,34,.95);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}input,select{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:#0b1018;color:var(--text)}button,.btn{display:inline-block;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;text-decoration:none}.primary{background:var(--g);color:#07110c}.secondary{background:#1b2636;color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.note{padding:12px;border-left:3px solid var(--y);background:#17170f;color:#d7d0ad;line-height:1.55;margin-top:15px}.status{white-space:pre-wrap;background:#090d14;border:1px solid var(--line);padding:14px;border-radius:9px;color:#cbd5e1;min-height:80px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.card{border:1px solid var(--line);border-radius:9px;padding:13px;background:#0d121b}.k{font-size:11px;color:var(--muted);text-transform:uppercase}.v{font-size:19px;font-weight:bold;margin-top:5px}.foot{text-align:center;color:var(--muted);font-size:11px;margin-top:24px}
+</style>
+</head>
+<body><main class="shell">
+<div class="top"><div><h1>🧪 DREYKO V35 Backtest Control</h1><p>Tarih, motor, sembol evreni, sermaye ve risk ayarlarını belirle. GitHub Actions ekranından backtesti çalıştır; tamamlandığında son sonuç bu sayfada görüntülenir.</p></div></div>
+<div class="nav"><a href="index.html">Ana Panel</a><a href="setups.html">Setup Journal</a><a href="analytics.html">Analitik</a><a href="https://github.com/oznens/crypto-bot/actions/workflows/backtest-control.yml" target="_blank">GitHub Actions</a></div>
+<section class="panel"><div class="grid">
+<div><label>Motor</label><select id="engine"><option value="legacy">Legacy</option><option value="v34">V34</option></select></div>
+<div><label>Başlangıç tarihi</label><input id="start" type="date" value="2026-06-07"></div>
+<div><label>Bitiş tarihi</label><input id="end" type="date" value="2026-07-07"></div>
+<div><label>Sembol modu</label><select id="mode"><option value="top10">Top 10</option><option value="top30" selected>Top 30</option><option value="manual">Manuel</option></select></div>
+<div><label>Manuel semboller</label><input id="symbols" value="BTCUSDT,ETHUSDT,SOLUSDT"></div>
+<div><label>Başlangıç sermayesi</label><input id="capital" type="number" min="100" value="10000"></div>
+<div><label>Risk yüzdesi</label><input id="risk" type="number" min="0.1" max="5" step="0.1" value="1"></div>
+</div><div class="actions"><button class="primary" id="run">GitHub Actions'ta Çalıştır</button><button class="secondary" id="copy">Ayarları Kopyala</button></div><div class="note">GitHub Pages güvenli biçimde GitHub hesabın adına workflow başlatamaz. Buton resmi Actions ekranını açar; orada <b>Run workflow</b> düğmesine basıp bu sayfadaki değerleri girmen gerekir.</div><div class="status" id="prepared">Ayarlar hazır.</div></section>
+<section class="panel"><h2>Son Backtest Sonucu</h2><div class="cards" id="cards"></div><div class="status" id="summary">Sonuç henüz yayınlanmadı.</div></section>
+<div class="foot">GitHub Pages · Paper trading · Yatırım tavsiyesi değildir.</div>
+</main>
+<script>
+const actionUrl='https://github.com/oznens/crypto-bot/actions/workflows/backtest-control.yml';
+function cfg(){return{engine:document.getElementById('engine').value,start_date:document.getElementById('start').value,end_date:document.getElementById('end').value,symbol_mode:document.getElementById('mode').value,manual_symbols:document.getElementById('symbols').value,capital:document.getElementById('capital').value,risk_percent:document.getElementById('risk').value}}
+function text(){const c=cfg();return Object.entries(c).map(([k,v])=>`${k}: ${v}`).join('\n')}
+document.getElementById('copy').onclick=async()=>{await navigator.clipboard.writeText(text());document.getElementById('prepared').textContent='Ayarlar panoya kopyalandı:\n\n'+text()};
+document.getElementById('run').onclick=async()=>{try{await navigator.clipboard.writeText(text())}catch(e){}document.getElementById('prepared').textContent='Ayarlar hazır ve mümkünse panoya kopyalandı:\n\n'+text()+'\n\nActions ekranında Run workflow düğmesine bas.';window.open(actionUrl,'_blank','noopener')};
+const card=(k,v)=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+async function load(){try{const r=await fetch('backtest_results/latest.json?t='+Date.now());if(!r.ok)throw new Error('no result');const d=await r.json(),c=d.config||{},s=d.summary||'';document.getElementById('cards').innerHTML=[card('Motor',c.engine||'—'),card('Başlangıç',c.startDate||'—'),card('Bitiş',c.endDate||'—'),card('Sermaye',c.capital??'—'),card('Risk','%'+(c.riskPercent??'—')),card('İşlem',Array.isArray(d.trades)?d.trades.length:'—')].join('');document.getElementById('summary').textContent=typeof s==='string'?s:JSON.stringify(s,null,2)}catch(e){document.getElementById('cards').innerHTML='';document.getElementById('summary').textContent='Henüz yayınlanmış backtest sonucu yok. İlk workflow tamamlandığında burada görünecek.'}}
+load();setInterval(load,60000);
+</script></body></html>
