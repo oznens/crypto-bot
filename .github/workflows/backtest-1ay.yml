@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/backtest-1ay.yml'
+      - 'backtest_live_exact_30d.js'
+      - 'backtest3ay.js'
+      - 'analysis.js'
   workflow_dispatch:
 
 permissions:
@@ -26,18 +29,17 @@ jobs:
         with:
           node-version: 24
 
-      - name: Önceki 30 gün backtest
+      - name: Son 30 gün birebir canlı motor backtest
         env:
-          OFFSET_DAYS: 30
           GUN: 30
           SYMS: 30
-        run: node backtest_onceki_ay.js
+        run: node backtest_live_exact_30d.js
 
       - name: Sonuçları yayınla
         run: |
           mkdir -p docs
-          cp backtest3ay_sonuc.txt docs/backtest_onceki_ay_sonuc.txt
-          cp backtest3ay_islemler.json docs/backtest_onceki_ay_islemler.json
+          cp backtest3ay_sonuc.txt docs/backtest_live_exact_30d_sonuc.txt
+          cp backtest3ay_islemler.json docs/backtest_live_exact_30d_islemler.json
 
       - name: Sonuçları main dalına kaydet
         run: |
@@ -45,20 +47,20 @@ jobs:
           git config user.name "backtest-bot"
           git config user.email "actions@github.com"
 
-          cp docs/backtest_onceki_ay_sonuc.txt /tmp/backtest_onceki_ay_sonuc.txt
-          cp docs/backtest_onceki_ay_islemler.json /tmp/backtest_onceki_ay_islemler.json
+          cp docs/backtest_live_exact_30d_sonuc.txt /tmp/backtest_live_exact_30d_sonuc.txt
+          cp docs/backtest_live_exact_30d_islemler.json /tmp/backtest_live_exact_30d_islemler.json
 
           git fetch origin main
           git reset --hard origin/main
           mkdir -p docs
-          cp /tmp/backtest_onceki_ay_sonuc.txt docs/backtest_onceki_ay_sonuc.txt
-          cp /tmp/backtest_onceki_ay_islemler.json docs/backtest_onceki_ay_islemler.json
-          git add docs/backtest_onceki_ay_sonuc.txt docs/backtest_onceki_ay_islemler.json
+          cp /tmp/backtest_live_exact_30d_sonuc.txt docs/backtest_live_exact_30d_sonuc.txt
+          cp /tmp/backtest_live_exact_30d_islemler.json docs/backtest_live_exact_30d_islemler.json
+          git add docs/backtest_live_exact_30d_sonuc.txt docs/backtest_live_exact_30d_islemler.json
 
           if git diff --cached --quiet; then
             echo "Sonuç değişmedi"
             exit 0
           fi
 
-          git commit -m "backtest: önceki 30 gün sonuçları [skip ci]"
+          git commit -m "backtest: live-exact son 30 gün sonuçları [skip ci]"
           git push origin HEAD:main
