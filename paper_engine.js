@@ -1,13 +1,12 @@
 /*
  * paper_engine.js — 7/24 KAĞIT (paper) işlem motoru.
- * En iyi 3 aylık lookahead'siz backtest ayarlarıyla hizalı:
  * - MEXC PERP hacme göre TOP 30
  * - 60m ana TF + 15m LTF onayı
  * - güven >= %75, sadece A/A+
  * - geçerli MMxM + HTF bias uyumu
  * - min stop mesafesi %1.2
  * - TP1 = 1.5R, %50 derisk + SL -> BE
- * - işlem başına risk %1, kaldıraç tavanı 10x
+ * - işlem başına risk %1; kaldıraç/notional tavanı YOK
  * - maksimum 6 açık pozisyon, koşum başına maksimum 2 yeni işlem
  */
 const https = require('https'), fs = require('fs'), path = require('path');
@@ -19,7 +18,6 @@ const MAX_SYMS = +(process.env.PAPER_MAX_SYMS || 30);
 const MIN_CONF = 75;
 const START_EQ = 10000;
 const RISK_PCT = 0.01;
-const LEV_CAP = 10;
 const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
 const TF = '60m', LTF = '15m';
 const MIN_RISK = 0.012;
@@ -168,8 +166,7 @@ function tryOpen(st, sym, a, mktPx) {
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
-  let qty = riskUSD / riskDist;
-  qty = Math.min(qty, st.equity * LEV_CAP / entry);
+  const qty = riskUSD / riskDist; // kaldıraç/notional tavanı yok; risk yalnız stop mesafesine göre
   if (!(qty > 0)) return null;
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
@@ -242,7 +239,8 @@ function tryOpen(st, sym, a, mktPx) {
     tp1R: TP1_R,
     maxOpen: MAX_OPEN,
     maxNewPerRun: MAX_NEW_PER_RUN,
-    minRiskPct: MIN_RISK
+    minRiskPct: MIN_RISK,
+    leverageCap: null
   };
   saveState(st);
   console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
