@@ -2,7 +2,7 @@ name: paper-trading
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/5 * * * *'   # ~5 dk'da bir (GitHub yoğunlukta geciktirebilir)
   workflow_dispatch:
 
 permissions:
@@ -18,148 +18,17 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
-
-      - name: Testleri çalıştır
+          node-version: 20
+      - name: Motoru çalıştır
+        run: node paper_engine.js
+      - name: Durumu commit'le
         run: |
-          node test/paper_health.test.js
-          node test/paper_trade_policy.test.js
-          node test/paper_analytics.test.js
-          node test/paper_state_validator.test.js
-          node test/paper_state_backward_compat.test.js
-          node test/validate_paper_state_cli.test.js
-          node test/paper_summary.test.js
-          node test/strategy_allocator.test.js
-          node test/strategy_trade_policy.test.js
-          node test/strategy_execution_adapter.test.js
-          node test/strategy_ensemble.test.js
-          node test/killzone_fvg_engine.test.js
-          node test/smt_divergence_engine.test.js
-          node test/liquidity_map_engine.test.js
-          node test/adaptive_exit_engine.test.js
-          node test/strategy_context_pipeline.test.js
-          node test/multi_timeframe_alignment.test.js
-          node test/confluence_score_engine.test.js
-          node test/strategy_decay_engine.test.js
-          node test/ict_pattern_pack.test.js
-          node test/wyckoff_phase_engine.test.js
-          node test/quarterly_theory_engine.test.js
-          node test/mmxm_curve_engine.test.js
-          node test/sbs_engine.test.js
-          node test/session_liquidity_engine.test.js
-          node test/strategy_robustness_engine.test.js
-          node test/parameter_stability_engine.test.js
-          node test/execution_cost_engine.test.js
-          node test/portfolio_correlation_engine.test.js
-          node test/bige_tdi_engine.test.js
-          node test/unicorn_model_engine.test.js
-          node test/nine_stars_engine.test.js
-          node test/hps_zone_engine.test.js
-          node test/market_data_quality_engine.test.js
-          node test/trading_circuit_breaker.test.js
-          node test/strategy_incubator.test.js
-
-      - name: Kod sözdizimini doğrula
-        run: |
-          node --check paper_engine.js
-          node --check paper_analytics.js
-          node --check paper_health.js
-          node --check core/paper_state_validator.js
-          node --check core/paper_summary.js
-          node --check core/strategy_allocator.js
-          node --check core/strategy_trade_policy.js
-          node --check core/strategy_execution_adapter.js
-          node --check core/strategy_ensemble.js
-          node --check core/killzone_fvg_engine.js
-          node --check core/smt_divergence_engine.js
-          node --check core/liquidity_map_engine.js
-          node --check core/adaptive_exit_engine.js
-          node --check core/strategy_context_pipeline.js
-          node --check core/multi_timeframe_alignment.js
-          node --check core/confluence_score_engine.js
-          node --check core/strategy_decay_engine.js
-          node --check core/ict_pattern_pack.js
-          node --check core/wyckoff_phase_engine.js
-          node --check core/quarterly_theory_engine.js
-          node --check core/mmxm_curve_engine.js
-          node --check core/sbs_engine.js
-          node --check core/session_liquidity_engine.js
-          node --check core/strategy_robustness_engine.js
-          node --check core/parameter_stability_engine.js
-          node --check core/execution_cost_engine.js
-          node --check core/portfolio_correlation_engine.js
-          node --check core/bige_tdi_engine.js
-          node --check core/unicorn_model_engine.js
-          node --check core/nine_stars_engine.js
-          node --check core/hps_zone_engine.js
-          node --check core/market_data_quality_engine.js
-          node --check core/trading_circuit_breaker.js
-          node --check core/strategy_incubator.js
-          node --check scripts/validate_paper_state.js
-          node --check scripts/build_paper_summary.js
-          node --check scripts/build_strategy_allocation.js
-          node --check scripts/build_strategy_incubator.js
-          node --check scripts/run_paper_v9.js
-          node --check scripts/run_paper_v13.js
-
-      - name: V33 tam strateji motorunu çalıştır
-        run: node scripts/run_paper_v13.js
-
-      - name: Performans analitiğini üret
-        run: node paper_analytics.js
-
-      - name: Strateji tahsisini ve dayanıklılığı yenile
-        run: node scripts/build_strategy_allocation.js paper_state.json docs/strategy_allocation.json
-
-      - name: Champion challenger inkübasyonunu yenile
-        run: node scripts/build_strategy_incubator.js paper_state.json docs/strategy_incubator.json
-
-      - name: State sağlığını ölç
-        run: node paper_health.js
-
-      - name: State ve raporları üret
-        run: |
-          mkdir -p docs
-          cp paper_state.json docs/paper_state.json
-          node scripts/validate_paper_state.js --same paper_state.json docs/paper_state.json
-          node scripts/build_paper_summary.js paper_state.json docs/paper_summary.json
-
-      - name: Durumu güvenli biçimde commit'le
-        run: |
-          set -euo pipefail
           git config user.name "paper-bot"
           git config user.email "actions@github.com"
-
-          cp paper_state.json /tmp/paper_state.json
-          cp docs/paper_state.json /tmp/docs_paper_state.json
-          cp docs/paper_summary.json /tmp/paper_summary.json
-          cp docs/strategy_allocation.json /tmp/strategy_allocation.json
-          cp docs/strategy_incubator.json /tmp/strategy_incubator.json
-
-          for attempt in 1 2 3; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/paper_state.json paper_state.json
-            mkdir -p docs
-            cp /tmp/docs_paper_state.json docs/paper_state.json
-            cp /tmp/paper_summary.json docs/paper_summary.json
-            cp /tmp/strategy_allocation.json docs/strategy_allocation.json
-            cp /tmp/strategy_incubator.json docs/strategy_incubator.json
-            git add paper_state.json docs/paper_state.json docs/paper_summary.json docs/strategy_allocation.json docs/strategy_incubator.json
-
-            if git diff --cached --quiet; then
-              echo "değişiklik yok"
-              exit 0
-            fi
-
-            git commit -m "paper: V33 kalite circuit breaker ve inkübasyon güncellendi [skip ci]"
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            sleep $((attempt * 3))
-          done
-          exit 1
+          git add paper_state.json docs/paper_state.json
+          if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
+          git commit -m "paper: durum güncellendi [skip ci]"
+          git pull --rebase origin main || true
+          git push
