@@ -59,7 +59,7 @@ summary{cursor:pointer;color:var(--dim);font-size:11px}
 <div class="wrap"><div id="open"></div></div>
 <h2>✅ Kapanan İşlemler (son 50)</h2>
 <div class="wrap"><div id="closed"></div></div>
-<div class="foot">MEXC perp · sinyal TF: 15m / 60m / 4sa / 1g (+LTF onayı) · <b>v2 filtreler:</b> güven ≥%75 + sadece A/A+ + GERÇEK MMxM ✓ + HTF bias uyumu + min stop mesafesi (TF'e göre %0.8-3) · maks 6 açık / koşumda 2 yeni · market giriş (kayma %0.05 + taker %0.02) · TP1=1.5R'de %50 derisk + SL→BE · risk %1 · tüm saatler <b>New York (NY)</b> · SANAL işlemdir, yatırım tavsiyesi değildir.</div>
+<div class="foot">MEXC perp · sinyal TF: 15m / 60m / 4sa / 1g (+LTF onayı) · <b>v2 filtreler:</b> güven ≥%75 + sadece A/A+ + GERÇEK MMxM ✓ + HTF bias uyumu + min stop mesafesi (TF'e göre %0.8-3) · maks 6 açık / koşumda 2 yeni · market giriş (kayma %0.05 + taker %0.02) · TP1=1.5R'de %50 derisk + SL→BE · risk %1 · grafik saatleri <b>Türkiye (TR)</b> · SANAL işlemdir, yatırım tavsiyesi değildir.</div>
 
 <div class="mod" id="mod" hidden>
   <div class="mbox">
@@ -75,6 +75,8 @@ const fmt=(v,d)=>v==null?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:
 const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+'dk':m<1440?(m/60).toFixed(1)+'sa':(m/1440).toFixed(1)+'g'};
 const NY=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
 const NYs=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',hour12:false}):'-';
+const TR=t=>t?new Date(t).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
+const TRs=t=>t?new Date(t).toLocaleString('tr-TR',{timeZone:'Europe/Istanbul',hour12:false}):'-';
 async function refreshLivePrices(){
   const map={};
   try{
@@ -133,16 +135,33 @@ function drawEq(h){
   ctx.fillStyle='#8b949e';ctx.font='10px Arial';
   ctx.fillText(fmt(mx,0),8,12);ctx.fillText(fmt(mn,0),8,H-4);
 }
-function showChart(kind,idx){
+async function fetchChartCandles(t){
+  const iv={ '5m':'Min5','15m':'Min15','60m':'Min60','4h':'Hour4','1d':'Day1' }[t.tf||'60m']||'Min60';
+  const sn=t.snap&&t.snap.candles;
+  const first=sn&&sn.length?sn[0][0]*1000:(t.openedAt-48*3600000);
+  const end=t.status==='closed'&&t.closedAt?t.closedAt:Date.now();
+  const start=Math.max(first,t.openedAt-48*3600000);
+  try{
+    const u='https://contract.mexc.com/api/v1/contract/kline/'+encodeURIComponent(t.symbol)+'?interval='+iv+'&start='+Math.floor(start/1000)+'&end='+Math.floor(end/1000);
+    const r=await fetch(u+'&_='+Date.now(),{cache:'no-store'});
+    if(!r.ok)return [];
+    const j=await r.json(),d=j.data||{};
+    if(!d.time||!d.time.length)return [];
+    return d.time.map((x,i)=>({t:+x*1000,o:+d.open[i],h:+d.high[i],l:+d.low[i],c:+d.close[i]})).filter(x=>isFinite(x.c)&&x.c>0);
+  }catch(e){return [];}
+}
+async function showChart(kind,idx){
   if(!ST) return;
   const t=(kind==='open'?ST.open:ST.closed)[idx];
   if(!t) return;
   document.getElementById('mtitle').textContent=t.symbol.replace('_','/')+' · '+(t.tf||'-')+' · '+t.side+' · güven %'+t.conf+' · '+t.grade+(t.mmxm?' · MMxM '+t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':''):'');
-  document.getElementById('mfoot').textContent='Giriş anı görüntüsü (NY '+NYs(t.openedAt)+') — mumlar girişten ÖNCEKİ dönem · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı, pozisyon artık kaybedemez)':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
+  document.getElementById('mfoot').textContent='Setup + giriş sonrası fiyat hareketi · Türkiye saati · giriş '+fmt(t.entry)+' · SL '+fmt(t.sl)+(t.deriskDone?' (BE — TP1\'de %50 kâr alındı)':'')+' · TP1 '+fmt(t.tp1)+' · TP-F '+fmt(t.tpF)+(t.fills&&t.fills.length?' · fill: '+t.fills.map(f=>f.why+'@'+fmt(f.px)).join(', '):'');
   document.getElementById('mod').hidden=false;
-  drawSnap(t);
+  drawSnap(t,[]);
+  const live=await fetchChartCandles(t);
+  if(!document.getElementById('mod').hidden) drawSnap(t,live);
 }
-function drawSnap(t){
+function drawSnap(t,liveCandles){
   const cv=document.getElementById('mcv'),ctx=cv.getContext('2d');
   const W=cv.clientWidth||820,H=380;
   cv.width=W*(devicePixelRatio||1);cv.height=H*(devicePixelRatio||1);
@@ -150,13 +169,17 @@ function drawSnap(t){
   ctx.fillStyle='#0b0e13';ctx.fillRect(0,0,W,H);
   const sn=t.snap;
   if(!sn||!sn.candles||!sn.candles.length){ctx.fillStyle='#8b949e';ctx.font='12px Arial';ctx.fillText('Bu işlem için grafik kaydı yok (eski işlem).',20,60);return;}
-  const cs=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
+  const base=sn.candles.map(a=>({t:a[0]*1000,o:a[1],h:a[2],l:a[3],c:a[4]}));
+  const byT=new Map(base.map(x=>[x.t,x]));
+  for(const x of (liveCandles||[])) if(x.t>=base[0].t) byT.set(x.t,x);
+  const cs=[...byT.values()].sort((a,b)=>a.t-b.t);
   const pL=6,pR=W-72,pT=10,pB=H-24;
   const origDist=(t.riskUSD&&t.qty)?t.riskUSD/t.qty:null;
   const origSL=origDist!=null?(t.side==='LONG'?t.entry-origDist:t.entry+origDist):null;
   let mn=Infinity,mx=-Infinity;
   for(const c of cs){if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h;}
-  [t.entry,t.sl,t.tp1,t.tpF,origSL].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
+  const cur=livePx(t);
+  [t.entry,t.sl,t.tp1,t.tpF,origSL,cur].forEach(v=>{if(v!=null){if(v<mn)mn=v;if(v>mx)mx=v;}});
   const sp=(mx-mn)||1;mn-=sp*.05;mx+=sp*.05;
   const X=i=>pL+(pR-pL)*(i+.5)/cs.length, Y=p=>pB-(p-mn)/(mx-mn)*(pB-pT);
   if(sn.manip){
@@ -201,9 +224,15 @@ function drawSnap(t){
   lvl(t.sl,'#e0444b',t.deriskDone?'SL→BE':'SL');
   lvl(t.tp1,'#26a269','TP1',[5,3]);
   if(t.tpF!==t.tp1) lvl(t.tpF,'#26a269','TP-F',[5,3]);
+  if(cur!=null){
+    const y=Y(cur);ctx.strokeStyle='#e8c34a';ctx.lineWidth=1;ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pR,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b89420';ctx.fillRect(pR,y-8,66,15);ctx.fillStyle='#fff';ctx.font='bold 9px Arial';ctx.textAlign='left';ctx.fillText('GÜNCEL '+fmt(cur,4),pR+3,y+3);
+  }
+  const entryX=cs.findIndex(x=>x.t>=t.openedAt);
+  if(entryX>=0){const x=X(entryX);ctx.strokeStyle='rgba(232,195,74,.45)';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,pT);ctx.lineTo(x,pB);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#e8c34a';ctx.font='9px Arial';ctx.textAlign='center';ctx.fillText('GİRİŞ',x,pT+9);}
   ctx.fillStyle='#8b949e';ctx.font='9px Arial';ctx.textAlign='left';
-  ctx.fillText(NY(cs[0].t)+' NY',pL+2,H-8);
-  ctx.textAlign='right';ctx.fillText(NY(cs[cs.length-1].t)+' NY',pR-2,H-8);
+  ctx.fillText(TR(cs[0].t)+' TR',pL+2,H-8);
+  ctx.textAlign='right';ctx.fillText(TR(cs[cs.length-1].t)+' TR',pR-2,H-8);
 }
 document.getElementById('mclose').onclick=()=>document.getElementById('mod').hidden=true;
 document.getElementById('mod').onclick=e=>{if(e.target.id==='mod')document.getElementById('mod').hidden=true;};
