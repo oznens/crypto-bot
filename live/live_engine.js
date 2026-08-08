@@ -216,6 +216,7 @@ async function manage() {
       try { c1 = await klines(tr.symbol, '1m', Math.min(600, Math.max(10, Math.ceil((Date.now() - tr.lastCheck) / 60000) + 5))); }
       catch (e) { continue; }
       const news = c1.filter(k => k.t > tr.lastCheck);
+      if (c1.length) tr.mkt = c1[c1.length - 1].c; // dashboard anlik PnL rengi icin son 1m fiyat
       for (const k of news) {
         const long = tr.side === 'LONG';
         if (long ? k.l <= tr.sl : k.h >= tr.sl) {
