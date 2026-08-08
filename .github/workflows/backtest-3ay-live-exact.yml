@@ -1,0 +1,67 @@
+name: backtest-3ay-live-exact
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-3ay-live-exact.yml'
+      - 'strategy_config.js'
+      - 'backtest_live_exact_30d.js'
+      - 'backtest3ay.js'
+      - 'analysis.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-3ay-live-exact
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Son 90 gün birebir paper sistem backtest
+        env:
+          GUN: 90
+          SYMS: 30
+        run: node backtest_live_exact_30d.js
+
+      - name: Sonuçları yayınla
+        run: |
+          mkdir -p docs
+          cp backtest3ay_sonuc.txt docs/backtest_live_exact_90d_sonuc.txt
+          cp backtest3ay_islemler.json docs/backtest_live_exact_90d_islemler.json
+
+      - name: Sonuçları main dalına kaydet
+        run: |
+          set -euo pipefail
+          git config user.name "backtest-bot"
+          git config user.email "actions@github.com"
+
+          cp docs/backtest_live_exact_90d_sonuc.txt /tmp/backtest_live_exact_90d_sonuc.txt
+          cp docs/backtest_live_exact_90d_islemler.json /tmp/backtest_live_exact_90d_islemler.json
+
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p docs
+          cp /tmp/backtest_live_exact_90d_sonuc.txt docs/backtest_live_exact_90d_sonuc.txt
+          cp /tmp/backtest_live_exact_90d_islemler.json docs/backtest_live_exact_90d_islemler.json
+          git add docs/backtest_live_exact_90d_sonuc.txt docs/backtest_live_exact_90d_islemler.json
+
+          if git diff --cached --quiet; then
+            echo "Sonuç değişmedi"
+            exit 0
+          fi
+
+          git commit -m "backtest: live-exact son 90 gün sonuçları [skip ci]"
+          git push origin HEAD:main
