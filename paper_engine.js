@@ -113,6 +113,7 @@ async function manageOpen(st) {
     let c5;
     try { c5 = await klines(tr.symbol, '5m', Math.min(900, Math.max(30, Math.ceil((Date.now() - tr.lastCheck) / 300000) + 10))); }
     catch (e) { continue; }
+    if (c5.length) tr.mkt = rnd(c5[c5.length - 1].c); // GitHub Pages açık işlem PnL rengi için güncel 5m fiyat
     const news = c5.filter(k => k.t > tr.lastCheck);
     for (const k of news) {
       const long = tr.side === 'LONG';
