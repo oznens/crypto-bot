@@ -1,0 +1,39 @@
+name: patch-chart-live-tr
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/patch_chart_live_tr.js'
+      - '.github/workflows/patch-chart-live-tr.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: patch-chart-live-tr
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Grafiği patchle
+        run: node tools/patch_chart_live_tr.js
+      - name: Değişikliği kaydet
+        run: |
+          set -euo pipefail
+          git config user.name "site-bot"
+          git config user.email "actions@github.com"
+          git add docs/index.html
+          if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
+          git commit -m "site: grafikte güncel hareket + TR saat [skip ci]"
+          git pull --rebase origin main || true
+          git push origin HEAD:main
