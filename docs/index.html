@@ -75,7 +75,7 @@ const fmt=(v,d)=>v==null?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:
 const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+'dk':m<1440?(m/60).toFixed(1)+'sa':(m/1440).toFixed(1)+'g'};
 const NY=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
 const NYs=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',hour12:false}):'-';
-const livePx=t=>{const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];if(t.mkt!=null&&isFinite(+t.mkt))return +t.mkt;return null;};
+const livePx=t=>{if(t.mkt!=null&&isFinite(+t.mkt))return +t.mkt;const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];return null;};
 const livePnl=t=>{const px=livePx(t);if(px==null||!t.entry)return null;const q=+t.qty||0;const openPnl=(t.side==='LONG'?px-t.entry:t.entry-px)*q;return (+t.realized||0)+openPnl;};
 const pnlClass=t=>{const pnl=livePnl(t);return pnl==null?'':pnl>0?'profit':pnl<0?'loss':'';};
 async function load(){
@@ -132,7 +132,6 @@ function drawEq(h){
   ctx.fillStyle='#8b949e';ctx.font='10px Arial';
   ctx.fillText(fmt(mx,0),8,12);ctx.fillText(fmt(mn,0),8,H-4);
 }
-// ---- setup grafiği modalı ----
 function showChart(kind,idx){
   if(!ST) return;
   const t=(kind==='open'?ST.open:ST.closed)[idx];
