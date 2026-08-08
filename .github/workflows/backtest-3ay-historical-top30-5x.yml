@@ -1,0 +1,60 @@
+name: backtest-3ay-historical-top30-5x
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-3ay-historical-top30-5x.yml'
+      - 'backtest_historical_top30_90d.js'
+      - 'backtest3ay.js'
+      - 'analysis.js'
+      - 'strategy_config.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-3ay-historical-top30-5x
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 90 gun tarihsel Top30 + toplam 5x backtest
+        env:
+          GUN: 90
+          BT_LEV_CAP: 5
+        run: node backtest_historical_top30_90d.js
+
+      - name: Sonuclari yayinla
+        run: |
+          mkdir -p docs
+          cp backtest3ay_sonuc.txt docs/backtest_historical_top30_5x_90d_sonuc.txt
+          cp backtest3ay_islemler.json docs/backtest_historical_top30_5x_90d_islemler.json
+
+      - name: Sonuclari main dalina kaydet
+        run: |
+          set -euo pipefail
+          git config user.name "backtest-bot"
+          git config user.email "actions@github.com"
+          cp docs/backtest_historical_top30_5x_90d_sonuc.txt /tmp/result.txt
+          cp docs/backtest_historical_top30_5x_90d_islemler.json /tmp/trades.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p docs
+          cp /tmp/result.txt docs/backtest_historical_top30_5x_90d_sonuc.txt
+          cp /tmp/trades.json docs/backtest_historical_top30_5x_90d_islemler.json
+          git add docs/backtest_historical_top30_5x_90d_sonuc.txt docs/backtest_historical_top30_5x_90d_islemler.json
+          if git diff --cached --quiet; then echo "Sonuc degismedi"; exit 0; fi
+          git commit -m "backtest: historical-top30 5x 90d results [skip ci]"
+          git push origin HEAD:main
