@@ -8,6 +8,7 @@ on:
       - 'backtest_live_exact_30d.js'
       - 'backtest3ay.js'
       - 'analysis.js'
+      - 'strategy_config.js'
   workflow_dispatch:
 
 permissions:
@@ -32,7 +33,6 @@ jobs:
       - name: Son 30 gün birebir canlı motor backtest
         env:
           GUN: 30
-          SYMS: 30
         run: node backtest_live_exact_30d.js
 
       - name: Sonuçları yayınla
