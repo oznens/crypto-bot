@@ -1,29 +1,23 @@
 /*
  * paper_engine.js — 7/24 KAĞIT (paper) işlem motoru.
- * - MEXC PERP hacme göre TOP 30
- * - 60m ana TF + 15m LTF onayı
- * - güven >= %75, sadece A/A+
- * - geçerli MMxM + HTF bias uyumu
- * - min stop mesafesi %1.2
- * - TP1 = 1.5R, %50 derisk + SL -> BE
- * - işlem başına risk %1; kaldıraç/notional tavanı YOK
- * - maksimum 6 açık pozisyon, koşum başına maksimum 2 yeni işlem
+ * Ana strateji parametreleri strategy_config.js ile live-exact backtest tarafından ortak kullanılır.
  */
 const https = require('https'), fs = require('fs'), path = require('path');
 const A = require('./analysis');
+const CFG = require('./strategy_config');
 
 const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
 const DOCS_F = path.join(__dirname, 'docs', 'paper_state.json');
-const MAX_SYMS = +(process.env.PAPER_MAX_SYMS || 30);
-const MIN_CONF = 75;
-const START_EQ = 10000;
-const RISK_PCT = 0.01;
-const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
-const TF = '60m', LTF = '15m';
-const MIN_RISK = 0.012;
-const MAX_OPEN = 6;
-const MAX_NEW_PER_RUN = 2;
-const TP1_R = 1.5;
+const MAX_SYMS = +(process.env.PAPER_MAX_SYMS || CFG.MAX_SYMS);
+const MIN_CONF = CFG.MIN_CONF;
+const START_EQ = CFG.START_EQ;
+const RISK_PCT = CFG.RISK_PCT;
+const FEE_TAKER = CFG.FEE_TAKER, FEE_MAKER = CFG.FEE_MAKER, SLIP = CFG.SLIP;
+const TF = CFG.TF, LTF = CFG.LTF;
+const MIN_RISK = CFG.MIN_RISK;
+const MAX_OPEN = CFG.MAX_OPEN;
+const MAX_NEW_PER_RUN = CFG.MAX_NEW_PER_RUN;
+const TP1_R = CFG.TP1_R;
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -113,7 +107,7 @@ async function manageOpen(st) {
     let c5;
     try { c5 = await klines(tr.symbol, '5m', Math.min(900, Math.max(30, Math.ceil((Date.now() - tr.lastCheck) / 300000) + 10))); }
     catch (e) { continue; }
-    if (c5.length) tr.mkt = rnd(c5[c5.length - 1].c); // GitHub Pages açık işlem PnL rengi için güncel 5m fiyat
+    if (c5.length) tr.mkt = rnd(c5[c5.length - 1].c);
     const news = c5.filter(k => k.t > tr.lastCheck);
     for (const k of news) {
       const long = tr.side === 'LONG';
@@ -167,7 +161,7 @@ function tryOpen(st, sym, a, mktPx) {
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
-  const qty = riskUSD / riskDist; // kaldıraç/notional tavanı yok; risk yalnız stop mesafesine göre
+  const qty = riskUSD / riskDist;
   if (!(qty > 0)) return null;
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
@@ -241,7 +235,8 @@ function tryOpen(st, sym, a, mktPx) {
     maxOpen: MAX_OPEN,
     maxNewPerRun: MAX_NEW_PER_RUN,
     minRiskPct: MIN_RISK,
-    leverageCap: null
+    leverageCap: null,
+    configSource: 'strategy_config.js'
   };
   saveState(st);
   console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
