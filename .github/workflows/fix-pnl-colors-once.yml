@@ -1,0 +1,49 @@
+name: Fix PnL Colors Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-pnl-colors-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch dashboard and live price state
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('docs/index.html')
+          s = p.read_text()
+          old = "const livePx=t=>{const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];return null;};"
+          new = "const livePx=t=>{const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];if(t.mkt!=null&&isFinite(+t.mkt))return +t.mkt;return null;};"
+          if old not in s:
+              raise SystemExit('docs/index.html livePx pattern not found')
+          p.write_text(s.replace(old, new, 1))
+
+          p = Path('live/live_engine.js')
+          s = p.read_text()
+          old = "      const news = c1.filter(k => k.t > tr.lastCheck);\n"
+          new = "      const news = c1.filter(k => k.t > tr.lastCheck);\n      if (c1.length) tr.mkt = c1[c1.length - 1].c; // dashboard anlik PnL rengi icin son 1m fiyat\n"
+          if old not in s:
+              raise SystemExit('live/live_engine.js manage pattern not found')
+          p.write_text(s.replace(old, new, 1))
+          PY
+          rm .github/workflows/fix-pnl-colors-once.yml
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/index.html live/live_engine.js .github/workflows/fix-pnl-colors-once.yml
+          git commit -m "fix: color open positions by current PnL"
+          git push origin HEAD:main
