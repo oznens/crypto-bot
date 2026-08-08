@@ -31,6 +31,9 @@ tr.row:hover td{background:#1a212c}
 .tag.sl{background:rgba(224,68,75,.25);color:#f08a8a}
 .tag.be{background:rgba(232,195,74,.2);color:var(--gold)}
 .tag.tf{background:#2a3350;color:#9db8e8}
+.pnlbtn{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:bold;border:1px solid var(--line);color:var(--text);background:#1a212c}
+.pnlbtn.profit{background:rgba(38,162,105,.22);border-color:rgba(38,162,105,.7);color:#5fd99a}
+.pnlbtn.loss{background:rgba(224,68,75,.22);border-color:rgba(224,68,75,.7);color:#f08a8a}
 .empty{color:var(--dim);padding:14px;text-align:center}
 .wrap{overflow-x:auto}
 details{margin-top:2px}
@@ -72,6 +75,8 @@ const fmt=(v,d)=>v==null?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:
 const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+'dk':m<1440?(m/60).toFixed(1)+'sa':(m/1440).toFixed(1)+'g'};
 const NY=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
 const NYs=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',hour12:false}):'-';
+const livePx=t=>{const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];return null;};
+const pnlClass=t=>{const px=livePx(t);if(px==null||!t.entry)return'';const pnl=(t.side==='LONG'?px-t.entry:t.entry-px);return pnl>0?'profit':pnl<0?'loss':'';};
 async function load(){
   let st=null;
   for(const u of ['paper_state.json','../paper_state.json']){
@@ -94,7 +99,7 @@ async function load(){
   const O=document.getElementById('open');
   if(!st.open.length) O.innerHTML='<div class="empty">Açık pozisyon yok — motor sinyal bekliyor.</div>';
   else O.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Giriş</th><th>SL</th><th>TP1</th><th>TP-F</th><th>Miktar</th><th>Risk$</th><th>Güven</th><th>Not</th><th>MMxM</th><th>Derisk</th><th>Açılış (NY)</th><th>Yaş</th></tr>'+
-    st.open.map((t,i)=>'<tr class="row" onclick="showChart(\'open\','+i+')"><td>'+t.symbol.replace('_','/')+'<details onclick="event.stopPropagation()"><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+
+    st.open.map((t,i)=>'<tr class="row" onclick="showChart(\'open\','+i+')"><td><span class="pnlbtn '+pnlClass(t)+'">'+t.symbol.replace('_','/')+'</span><details onclick="event.stopPropagation()"><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+
     '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
     '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td><td>'+fmt(t.entry)+'</td><td class="r">'+fmt(t.sl)+'</td><td class="g">'+fmt(t.tp1)+'</td><td class="g">'+fmt(t.tpF)+'</td>'+
     '<td>'+fmt(t.qty,4)+'</td><td>'+fmt(t.riskUSD,0)+'</td><td>%'+t.conf+'</td><td>'+t.grade+'</td><td>'+(t.mmxm?(t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':'')):'-')+'</td>'+
