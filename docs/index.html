@@ -70,23 +70,38 @@ summary{cursor:pointer;color:var(--dim);font-size:11px}
 </div>
 
 <script>
-let ST=null;
+let ST=null,LIVE_PRICES={};
 const fmt=(v,d)=>v==null?'-':(+v).toLocaleString('en-US',{maximumFractionDigits:d==null?6:d});
 const ago=t=>{if(!t)return'-';const m=(Date.now()-t)/60000;return m<60?Math.round(m)+'dk':m<1440?(m/60).toFixed(1)+'sa':(m/1440).toFixed(1)+'g'};
 const NY=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
 const NYs=t=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/New_York',hour12:false}):'-';
-const livePx=t=>{if(t.mkt!=null&&isFinite(+t.mkt))return +t.mkt;const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];return null;};
+async function refreshLivePrices(){
+  const map={};
+  try{
+    const r=await fetch('https://contract.mexc.com/api/v1/contract/ticker?t='+Date.now(),{cache:'no-store'});
+    if(r.ok){const j=await r.json();for(const x of (j.data||[])){const p=+(x.lastPrice??x.last_price??x.price??x.close);if(x.symbol&&isFinite(p)&&p>0)map[x.symbol]=p;}}
+  }catch(e){}
+  if(!Object.keys(map).length){
+    try{
+      const r=await fetch('https://api.mexc.com/api/v3/ticker/price?t='+Date.now(),{cache:'no-store'});
+      if(r.ok){const a=await r.json();for(const x of (a||[])){const p=+x.price;if(x.symbol&&isFinite(p)&&p>0){const s=x.symbol.endsWith('USDT')?x.symbol.slice(0,-4)+'_USDT':x.symbol;map[s]=p;}}}
+    }catch(e){}
+  }
+  if(Object.keys(map).length)LIVE_PRICES=map;
+}
+const livePx=t=>{const lp=LIVE_PRICES[t.symbol];if(lp!=null&&isFinite(+lp))return +lp;if(t.mkt!=null&&isFinite(+t.mkt))return +t.mkt;const c=t.snapLive&&t.snapLive.candles;if(c&&c.length)return +c[c.length-1][4];return null;};
 const livePnl=t=>{const px=livePx(t);if(px==null||!t.entry)return null;const q=+t.qty||0;const openPnl=(t.side==='LONG'?px-t.entry:t.entry-px)*q;return (+t.realized||0)+openPnl;};
 const pnlClass=t=>{const pnl=livePnl(t);return pnl==null?'':pnl>0?'profit':pnl<0?'loss':'';};
 async function load(){
   let st=null;
+  await refreshLivePrices();
   for(const u of ['paper_state.json','../paper_state.json']){
     try{const r=await fetch(u+'?t='+Date.now());if(r.ok){st=await r.json();break;}}catch(e){}
   }
   if(!st){document.getElementById('sub').textContent='paper_state.json bulunamadı — ilk koşum bekleniyor (Actions).';return;}
   ST=st;
   const s=st.stats||{};
-  document.getElementById('sub').textContent='Son koşum: '+NYs(st.lastRun)+' NY ('+ago(st.lastRun)+' önce) · koşum #'+(st.runs||0)+' · kaynak: '+(s.source||'-')+' · TF: '+(s.tf||'-')+' · eşik %'+(s.minConf||75);
+  document.getElementById('sub').textContent='Son koşum: '+NYs(st.lastRun)+' NY ('+ago(st.lastRun)+' önce) · koşum #'+(st.runs||0)+' · kaynak: '+(s.source||'-')+' · TF: '+(s.tf||'-')+' · eşik %'+(s.minConf||75)+' · fiyat: canlı MEXC';
   const eqPnl=st.equity-st.startEquity;
   document.getElementById('cards').innerHTML=[
     ['Özkaynak',fmt(st.equity,2)+' $',eqPnl>=0?'g':'r'],
@@ -99,25 +114,11 @@ async function load(){
   drawEq(st.equityHistory||[]);
   const O=document.getElementById('open');
   if(!st.open.length) O.innerHTML='<div class="empty">Açık pozisyon yok — motor sinyal bekliyor.</div>';
-  else O.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Giriş</th><th>SL</th><th>TP1</th><th>TP-F</th><th>Miktar</th><th>Risk$</th><th>Güven</th><th>Not</th><th>MMxM</th><th>Derisk</th><th>Açılış (NY)</th><th>Yaş</th></tr>'+
-    st.open.map((t,i)=>'<tr class="row" onclick="showChart(\'open\','+i+')"><td><span class="pnlbtn '+pnlClass(t)+'">'+t.symbol.replace('_','/')+'</span><details onclick="event.stopPropagation()"><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+
-    '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
-    '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td><td>'+fmt(t.entry)+'</td><td class="r">'+fmt(t.sl)+'</td><td class="g">'+fmt(t.tp1)+'</td><td class="g">'+fmt(t.tpF)+'</td>'+
-    '<td>'+fmt(t.qty,4)+'</td><td>'+fmt(t.riskUSD,0)+'</td><td>%'+t.conf+'</td><td>'+t.grade+'</td><td>'+(t.mmxm?(t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':'')):'-')+'</td>'+
-    '<td>'+(t.deriskDone?'✓ BE':'-')+'</td><td>'+NY(t.openedAt)+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
+  else O.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Giriş</th><th>SL</th><th>TP1</th><th>TP-F</th><th>Miktar</th><th>Risk$</th><th>Güven</th><th>Not</th><th>MMxM</th><th>Derisk</th><th>Açılış (NY)</th><th>Yaş</th></tr>'+st.open.map((t,i)=>'<tr class="row" onclick="showChart(\'open\','+i+')"><td><span class="pnlbtn '+pnlClass(t)+'">'+t.symbol.replace('_','/')+'</span><details onclick="event.stopPropagation()"><summary>gerekçe</summary><div class="rsn">'+(t.reasons||[]).join('<br>')+'</div></details></td>'+'<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+'<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td><td>'+fmt(t.entry)+'</td><td class="r">'+fmt(t.sl)+'</td><td class="g">'+fmt(t.tp1)+'</td><td class="g">'+fmt(t.tpF)+'</td>'+'<td>'+fmt(t.qty,4)+'</td><td>'+fmt(t.riskUSD,0)+'</td><td>%'+t.conf+'</td><td>'+t.grade+'</td><td>'+(t.mmxm?(t.mmxm.score+'/'+t.mmxm.max+(t.mmxm.valid?' ✓':'')):'-')+'</td>'+'<td>'+(t.deriskDone?'✓ BE':'-')+'</td><td>'+NY(t.openedAt)+'</td><td>'+ago(t.openedAt)+'</td></tr>').join('')+'</table>';
   const C=document.getElementById('closed');
   const cl=(st.closed||[]).slice(0,50);
   if(!cl.length) C.innerHTML='<div class="empty">Henüz kapanan işlem yok.</div>';
-  else C.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkışlar</th><th>PnL $</th><th>R</th><th>Güven</th><th>Süre</th><th>Kapanış (NY)</th></tr>'+
-    cl.map((t,i)=>{const cls=t.closeReason==='TP'?'tp':t.closeReason==='BE'?'be':'sl';
-    return '<tr class="row" onclick="showChart(\'closed\','+i+')"><td>'+t.symbol.replace('_','/')+'</td>'+
-    '<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+
-    '<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td>'+
-    '<td><span class="tag '+cls+'">'+t.closeReason+'</span></td><td>'+fmt(t.entry)+'</td>'+
-    '<td>'+(t.fills||[]).map(f=>f.why+'@'+fmt(f.px)).join(' · ')+'</td>'+
-    '<td class="'+(t.realized>=0?'g':'r')+'">'+(t.realized>=0?'+':'')+fmt(t.realized,2)+'</td>'+
-    '<td class="'+(t.r>=0?'g':'r')+'">'+(t.r>=0?'+':'')+fmt(t.r,2)+'</td><td>%'+t.conf+'</td>'+
-    '<td>'+((t.closedAt-t.openedAt)/3600000).toFixed(1)+'sa</td><td>'+NY(t.closedAt)+'</td></tr>';}).join('')+'</table>';
+  else C.innerHTML='<table><tr><th>Parite</th><th>TF</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkışlar</th><th>PnL $</th><th>R</th><th>Güven</th><th>Süre</th><th>Kapanış (NY)</th></tr>'+cl.map((t,i)=>{const cls=t.closeReason==='TP'?'tp':t.closeReason==='BE'?'be':'sl';return '<tr class="row" onclick="showChart(\'closed\','+i+')"><td>'+t.symbol.replace('_','/')+'</td>'+'<td><span class="tag tf">'+(t.tf||'-')+'</span></td>'+'<td><span class="tag '+(t.side==='LONG'?'L':'S')+'">'+t.side+'</span></td>'+'<td><span class="tag '+cls+'">'+t.closeReason+'</span></td><td>'+fmt(t.entry)+'</td>'+'<td>'+(t.fills||[]).map(f=>f.why+'@'+fmt(f.px)).join(' · ')+'</td>'+'<td class="'+(t.realized>=0?'g':'r')+'">'+(t.realized>=0?'+':'')+fmt(t.realized,2)+'</td>'+'<td class="'+(t.r>=0?'g':'r')+'">'+(t.r>=0?'+':'')+fmt(t.r,2)+'</td><td>%'+t.conf+'</td>'+'<td>'+((t.closedAt-t.openedAt)/3600000).toFixed(1)+'sa</td><td>'+NY(t.closedAt)+'</td></tr>';}).join('')+'</table>';
 }
 function drawEq(h){
   const cv=document.getElementById('eq'),ctx=cv.getContext('2d');
@@ -207,7 +208,7 @@ function drawSnap(t){
 document.getElementById('mclose').onclick=()=>document.getElementById('mod').hidden=true;
 document.getElementById('mod').onclick=e=>{if(e.target.id==='mod')document.getElementById('mod').hidden=true;};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('mod').hidden=true;});
-load();setInterval(load,60000);
+load();setInterval(load,15000);
 </script>
 </body>
 </html>
