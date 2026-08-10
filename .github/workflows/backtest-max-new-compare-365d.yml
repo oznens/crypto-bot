@@ -25,12 +25,23 @@ jobs:
         with:
           node-version: 24
 
+      - name: Eski backtest ciktilarini temizle
+        run: rm -f backtest3ay_sonuc.txt backtest3ay_islemler.json
+
       - name: 365 gun tarihsel Top30 + 5x · max yeni ${{ matrix.max_new }}
         env:
           GUN: 365
           BT_LEV_CAP: 5
           BT_MAX_NEW: ${{ matrix.max_new }}
         run: node backtest_historical_top30_90d.js
+
+      - name: Sonucu dogrula
+        run: |
+          test -s backtest3ay_sonuc.txt
+          test -s backtest3ay_islemler.json
+          grep -q '(365 gün)' backtest3ay_sonuc.txt
+          grep -q 'KASA:' backtest3ay_sonuc.txt
+          grep -q 'Maks drawdown:' backtest3ay_sonuc.txt
 
       - name: Varyant sonucunu hazirla
         run: |
