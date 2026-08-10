@@ -1,5 +1,5 @@
 {
- "equity": 9758.35,
+ "equity": 9752.41,
  "startEquity": 10000,
  "open": [
   {
@@ -9,7 +9,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 1910.8441,
-   "mkt": 1873.33,
+   "mkt": 1873.64,
    "slip": 0.0005,
    "entryFee": 1.0632,
    "qty": 2.78195844,
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1786127208140,
-   "lastCheck": 1786401600000,
+   "lastCheck": 1786403700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -988,7 +988,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 875.731915,
-   "mkt": 865.91,
+   "mkt": 863.33,
    "slip": 0.0005,
    "entryFee": 0.3919,
    "qty": 2.23758273,
@@ -1953,7 +1953,7 @@
     }
    },
    "openedAt": 1786136886141,
-   "lastCheck": 1786401600000,
+   "lastCheck": 1786403700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1967,7 +1967,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 76.12,
+   "mkt": 76.09,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 74.07575517,
@@ -2932,13 +2932,15 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1786401600000,
+   "lastCheck": 1786403700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
    "feeCharged": false,
    "fills": []
-  },
+  }
+ ],
+ "closed": [
   {
    "id": "PEPE_USDT-1786401672929",
    "symbol": "PEPE_USDT",
@@ -2949,7 +2951,7 @@
    "mkt": 0.000003,
    "slip": 0.0005,
    "entryFee": 1.2766,
-   "qty": 2220945119.3490725,
+   "qty": 0,
    "notional": 6382.85,
    "sl": 0.000003,
    "tp1": 0.000003,
@@ -3912,14 +3914,23 @@
    },
    "openedAt": 1786401672929,
    "lastCheck": 1786401672929,
-   "status": "open",
+   "status": "closed",
    "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
-  }
- ],
- "closed": [
+   "realized": -5.94,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1786403996089,
+     "px": 0.000003,
+     "part": 1,
+     "why": "SL",
+     "pnl": -5.94
+    }
+   ],
+   "closedAt": 1786403996089,
+   "closeReason": "SL",
+   "r": -0.06
+  },
   {
    "id": "SILVER_USDT-1786123812670",
    "symbol": "SILVER_USDT",
@@ -10320,17 +10331,22 @@
    "t": 1786401677488,
    "eq": 9758.35,
    "open": 4
+  },
+  {
+   "t": 1786404004253,
+   "eq": 9752.41,
+   "open": 3
   }
  ],
- "lastRun": 1786401677488,
- "runs": 88,
+ "lastRun": 1786404004253,
+ "runs": 89,
  "stats": {
-  "closed": 6,
+  "closed": 7,
   "wins": 2,
-  "losses": 4,
-  "winRate": 33.3,
-  "netPnl": -241.65,
-  "totalR": -2.4,
+  "losses": 5,
+  "winRate": 28.6,
+  "netPnl": -247.59,
+  "totalR": -2.46,
   "source": "perp",
   "minConf": 75,
   "tf": "60m",
