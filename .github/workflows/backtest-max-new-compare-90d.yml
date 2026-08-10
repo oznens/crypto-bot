@@ -1,0 +1,105 @@
+name: backtest-max-new-compare-90d
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-max-new-compare-90d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-max-new-compare-90d
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        max_new: [1, 2, 3, 4, 6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: 90 gun tarihsel Top30 + 5x · max yeni ${{ matrix.max_new }}
+        env:
+          GUN: 90
+          BT_LEV_CAP: 5
+          BT_MAX_NEW: ${{ matrix.max_new }}
+        run: node backtest_historical_top30_90d.js
+      - name: Varyant sonucunu hazirla
+        run: |
+          mkdir -p variant
+          cp backtest3ay_sonuc.txt variant/max${{ matrix.max_new }}_summary.txt
+          cp backtest3ay_islemler.json variant/max${{ matrix.max_new }}_trades.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: max-new-${{ matrix.max_new }}
+          path: variant/
+          retention-days: 30
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: max-new-*
+          path: compare
+          merge-multiple: true
+      - name: Karsilastirma ozeti olustur
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const vals=[1,2,3,4,6];
+          const rows=[];
+          for(const n of vals){
+            const p=`compare/max${n}_summary.txt`;
+            const s=fs.readFileSync(p,'utf8');
+            const kasa=s.match(/KASA:\s*([\d.]+)\$\s*→\s*([\d.]+)\$\s*\(net\s*([+\-\d.]+)\$\s*=\s*%([+\-\d.]+)\)/);
+            const cnt=s.match(/portföy kurallarıyla açılan:\s*(\d+)\s*\| kapanan:\s*(\d+)\s*\| hâlâ açık:\s*(\d+)/);
+            const rr=s.match(/Toplam R:\s*([+\-\d.]+)\s*\| Win Rate:\s*%([\d.]+)/);
+            const dd=s.match(/Maks drawdown:\s*%([\d.]+)\s*\| ortalama R\/işlem:\s*([+\-\d.]+)/);
+            const tp=(s.match(/^\s*TP\s+(\d+)/m)||[])[1];
+            const be=(s.match(/^\s*BE\s+(\d+)/m)||[])[1];
+            const sl=(s.match(/^\s*SL\s+(\d+)/m)||[])[1];
+            const trades=JSON.parse(fs.readFileSync(`compare/max${n}_trades.json`,'utf8')).closed||[];
+            const grossWin=trades.filter(t=>t.usd>0).reduce((a,t)=>a+t.usd,0);
+            const grossLoss=-trades.filter(t=>t.usd<0).reduce((a,t)=>a+t.usd,0);
+            const pf=grossLoss?grossWin/grossLoss:null;
+            rows.push({maxNew:n,finalEquity:+kasa[2],netPnl:+kasa[3],returnPct:+kasa[4],opened:+cnt[1],closed:+cnt[2],open:+cnt[3],tp:+tp||0,be:+be||0,sl:+sl||0,winRate:+rr[2],totalR:+rr[1],avgR:+dd[2],profitFactor:pf==null?null:+pf.toFixed(2),maxDD:+dd[1]});
+          }
+          fs.mkdirSync('docs/backtest_compare',{recursive:true});
+          fs.writeFileSync('docs/backtest_compare/max_new_90d.json',JSON.stringify(rows,null,2));
+          const hdr='maxYeni | Final$ | Net$ | Getiri% | Açılan | TP | BE | SL | WR% | TopR | OrtR | PF | MaxDD%';
+          const sep='---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:';
+          const body=rows.map(r=>[r.maxNew,r.finalEquity.toFixed(2),(r.netPnl>=0?'+':'')+r.netPnl.toFixed(2),r.returnPct.toFixed(1),r.opened,r.tp,r.be,r.sl,r.winRate.toFixed(1),r.totalR.toFixed(2),r.avgR.toFixed(2),r.profitFactor?.toFixed(2)??'-',r.maxDD.toFixed(1)].join(' | '));
+          fs.writeFileSync('docs/backtest_compare/max_new_90d.txt',[hdr,sep,...body].join('\n'));
+          NODE
+          cp compare/max*_summary.txt docs/backtest_compare/
+          cp compare/max*_trades.json docs/backtest_compare/
+      - name: Sonuclari main dalina kaydet
+        run: |
+          set -euo pipefail
+          cp -r docs/backtest_compare /tmp/backtest_compare
+          git config user.name "backtest-bot"
+          git config user.email "actions@github.com"
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p docs
+          rm -rf docs/backtest_compare
+          cp -r /tmp/backtest_compare docs/backtest_compare
+          git add docs/backtest_compare
+          if git diff --cached --quiet; then echo "Sonuc degismedi"; exit 0; fi
+          git commit -m "backtest: max-new 1-2-3-4-6 comparison [skip ci]"
+          git push origin HEAD:main
