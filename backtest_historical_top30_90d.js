@@ -6,9 +6,7 @@
  * - Sinyal ancak kendi gununde Top30'daysa kabul edilir.
  * - Ortak paper strateji parametreleri strategy_config.js'den gelir.
  * - Kaldirac: islem basi ve tum acik portfoy toplam notional <= 5x equity.
- *
- * Not: MEXC API bugun listelenmeyen/delist olmus kontratlari vermedigi icin tam anlamiyla
- * survivorship-bias-free degildir; ancak "bugunku Top30'u gecmise tasima" yanliligini kaldirir.
+ * - BT_MAX_NEW ile 5 dakikalik bucket/tarama basina yeni islem limiti test edilebilir.
  */
 const https = require('https');
 const fs = require('fs');
@@ -20,6 +18,7 @@ process.env.GUN = process.env.GUN || '90';
 const DAYS = +process.env.GUN;
 const TOPN = CFG.MAX_SYMS;
 const TOTAL_LEV_CAP = +(process.env.BT_LEV_CAP || 5);
+const MAX_NEW_TEST = +(process.env.BT_MAX_NEW || CFG.MAX_NEW_PER_RUN);
 const nowSec = Math.floor(Date.now() / 1000);
 const startSec = nowSec - (DAYS + 3) * 86400;
 
@@ -44,7 +43,6 @@ async function dailyTurnover(sym) {
       const out=[];
       for (let i=0;i<d.time.length;i++) {
         const close=+d.close[i] || 0, vol=+d.vol[i] || 0;
-        // MEXC contract kline cevabinda amount varsa quote turnover olarak tercih et.
         const amount = d.amount && isFinite(+d.amount[i]) ? +d.amount[i] : close * vol;
         out.push({ t:d.time[i]*1000, turnover:amount });
       }
@@ -102,7 +100,7 @@ async function buildUniverse() {
   );
   src=src.replace(
     /const MAX_OPEN = 6, MAX_NEW_PER_BUCKET = 2, BUCKET_MS = 5 \* 60000;/,
-    `const MAX_OPEN = ${q(CFG.MAX_OPEN)}, MAX_NEW_PER_BUCKET = ${q(CFG.MAX_NEW_PER_RUN)}, BUCKET_MS = 5 * 60000;`
+    `const MAX_OPEN = ${q(CFG.MAX_OPEN)}, MAX_NEW_PER_BUCKET = ${q(MAX_NEW_TEST)}, BUCKET_MS = 5 * 60000;`
   );
   src=src.replace(/const MIN_CONF = 75, TP1_R = 1\.5;/,`const MIN_CONF = ${q(CFG.MIN_CONF)}, TP1_R = ${q(CFG.TP1_R)};`);
   src=src.replace(/const FEE_TAKER = 0\.0002, FEE_MAKER = 0\.0001, SLIP = 0\.0005;/,`const FEE_TAKER = ${q(CFG.FEE_TAKER)}, FEE_MAKER = ${q(CFG.FEE_MAKER)}, SLIP = ${q(CFG.SLIP)};`);
@@ -115,7 +113,7 @@ async function buildUniverse() {
   src=src.replace(oldUniverse,newUniverse);
 
   const pushNeedle = `        cands.push({ t: barT, sym, tf, side: s.side, entry, sl, tp1, tpF, conf: s.confidence, grade: s.grade,`;
-  const pushReplacement = `        const dayKey = new Date(barT).toISOString().slice(0, 10);\n        const dayTop = HIST_UNIVERSE.days[dayKey] || [];\n        if (!dayTop.includes(sym)) continue; // sinyal gununde gercek tarihsel Top30 disindaysa alma\n        cands.push({ t: barT, sym, tf, side: s.side, entry, sl, tp1, tpF, conf: s.confidence, grade: s.grade,`;
+  const pushReplacement = `        const dayKey = new Date(barT).toISOString().slice(0, 10);\n        const dayTop = HIST_UNIVERSE.days[dayKey] || [];\n        if (!dayTop.includes(sym)) continue;\n        cands.push({ t: barT, sym, tf, side: s.side, entry, sl, tp1, tpF, conf: s.confidence, grade: s.grade,`;
   if (!src.includes(pushNeedle)) throw new Error('aday push noktasi bulunamadi');
   src=src.replace(pushNeedle,pushReplacement);
 
@@ -126,10 +124,10 @@ async function buildUniverse() {
 
   src=src.replace(
     /say\('\\nNOT: semboller BUGÜNKÜ hacim top-' \+ N_SYM \+ "'i \(seçim yanlılığı\); giriş = reclaim barı kapanışı;"\);/,
-    `say('\\nNOT: sembol evreni HER GUN yeniden hesaplanan tarihsel turnover Top${TOPN}; mevcut/delist olmayan kontratlar nedeniyle kalan survivorship riski vardir;');\n  say('Toplam portfoy notional limiti = ${TOTAL_LEV_CAP}x equity; giris = reclaim bari kapanisi;');`
+    `say('\\nNOT: sembol evreni HER GUN yeniden hesaplanan tarihsel turnover Top${TOPN}; mevcut/delist olmayan kontratlar nedeniyle kalan survivorship riski vardir;');\n  say('Toplam portfoy notional limiti = ${TOTAL_LEV_CAP}x equity; tarama/bucket basina max yeni = ${MAX_NEW_TEST}; giris = reclaim bari kapanisi;');`
   );
 
   process.env.SYMS=String(hist.union.length);
-  console.log('Test ayarlari:',JSON.stringify({days:DAYS, dailyTop:TOPN, union:hist.union.length, leverageCap:TOTAL_LEV_CAP, totalNotionalCap:TOTAL_LEV_CAP+'x', tf:CFG.TF, ltf:CFG.LTF, riskPct:CFG.RISK_PCT}));
+  console.log('Test ayarlari:',JSON.stringify({days:DAYS, dailyTop:TOPN, union:hist.union.length, leverageCap:TOTAL_LEV_CAP, totalNotionalCap:TOTAL_LEV_CAP+'x', maxNewPerBucket:MAX_NEW_TEST, tf:CFG.TF, ltf:CFG.LTF, riskPct:CFG.RISK_PCT}));
   const m=new Module(filename,module); m.filename=filename; m.paths=module.paths; m._compile(src,filename);
 })().catch(e=>{console.error('HATA',e.stack);process.exit(1);});
