@@ -1,0 +1,45 @@
+name: backtest-max-new-compare-365d
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backtest-max-new-compare-365d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        max_new: [1, 2, 3, 4, 6]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 365 gun tarihsel Top30 + 5x · max yeni ${{ matrix.max_new }}
+        env:
+          GUN: 365
+          BT_LEV_CAP: 5
+          BT_MAX_NEW: ${{ matrix.max_new }}
+        run: node backtest_historical_top30_90d.js
+
+      - name: Varyant sonucunu hazirla
+        run: |
+          mkdir -p variant
+          cp backtest3ay_sonuc.txt variant/max${{ matrix.max_new }}_summary.txt
+          cp backtest3ay_islemler.json variant/max${{ matrix.max_new }}_trades.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: max-new-365d-${{ matrix.max_new }}
+          path: variant/
+          retention-days: 30
