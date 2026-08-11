@@ -249,12 +249,20 @@ function recordStrategyRejection(st, sym, side, decision) {
 
 function updateStats(portfolio, strategyId) {
   const wins = portfolio.closed.filter(t => t.realized > 0).length;
+  let peak = portfolio.startEquity, maxDrawdownPct = 0;
+  for (const point of portfolio.equityHistory.concat([{ eq: portfolio.equity }])) {
+    const equity = +point.eq;
+    if (!Number.isFinite(equity)) continue;
+    peak = Math.max(peak, equity);
+    if (peak > 0) maxDrawdownPct = Math.max(maxDrawdownPct, (peak - equity) / peak * 100);
+  }
   portfolio.stats = {
     closed: portfolio.closed.length, wins,
     losses: portfolio.closed.filter(t => t.realized <= 0).length,
     winRate: portfolio.closed.length ? rnd(100 * wins / portfolio.closed.length, 1) : null,
     netPnl: rnd(portfolio.equity - portfolio.startEquity, 2),
     totalR: rnd(portfolio.closed.reduce((sum, trade) => sum + (trade.r || 0), 0), 2),
+    maxDrawdownPct: rnd(maxDrawdownPct, 2),
     strategyId, source: SRC, minConf: MIN_CONF, tf: TF, ltf: LTF,
     maxSymbols: MAX_SYMS, riskPct: RISK_PCT, tp1R: TP1_R,
     maxOpen: MAX_OPEN, maxNewPerRun: MAX_NEW_PER_RUN, minRiskPct: MIN_RISK,
