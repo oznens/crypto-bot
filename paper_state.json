@@ -6,9 +6,1407 @@
    "label": "DREYKO",
    "equity": 10000,
    "startEquity": 10000,
-   "open": [],
+   "open": [
+    {
+     "id": "DREYKO-TAO_USDT-1786486086788",
+     "strategyId": "DREYKO",
+     "symbol": "TAO_USDT",
+     "side": "LONG",
+     "src": "perp",
+     "tf": "60m",
+     "entry": 200.330115,
+     "mkt": 200.23,
+     "slip": 0.0005,
+     "entryFee": 0.8473,
+     "qty": 21.14739417,
+     "notional": 4236.46,
+     "sl": 195.6014,
+     "tp1": 207.423187,
+     "tpF": 209.98,
+     "riskUSD": 100,
+     "rrPlan": 2.04,
+     "conf": 75,
+     "grade": "A+",
+     "model": "MM Buy Model",
+     "mmxm": {
+      "score": 5,
+      "max": 5,
+      "valid": true
+     },
+     "reasons": [
+      "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
+      "Smart Money Reversal",
+      "CISD / displacement teyidi (güçlü geri alım mumu)",
+      "Bias uyumlu (Bullish)",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
+      "⚠ Hedef likiditesi (197.0567) son 20 barda zaten alınmış — yigit: kovalamak riskli"
+     ],
+     "context": {
+      "oiAvailable": false,
+      "oiState": null,
+      "smt": {
+       "available": true,
+       "confirmed": false,
+       "divergence": "NONE",
+       "reason": "SMT_NOT_CONFIRMED",
+       "score": 50,
+       "primary": {
+        "high": 203.77,
+        "low": 196.19,
+        "last": 200.23,
+        "previousHigh": 203.77,
+        "previousLow": 196.19
+       },
+       "peer": {
+        "high": 64466,
+        "low": 63211.6,
+        "last": 63697.4,
+        "previousHigh": 64466,
+        "previousLow": 63211.6
+       }
+      },
+      "timePolicy": {
+       "allowed": true,
+       "assetClass": "CRYPTO",
+       "mode": "CRYPTO_JUDAS",
+       "anchors": {
+        "daily": 199.5,
+        "weekly": 201.94,
+        "monthly": 193.17
+       },
+       "reason": "CRYPTO_HTF_TIME_POLICY"
+      },
+      "anchorContext": {
+       "version": "1.0",
+       "valid": true,
+       "side": "LONG",
+       "levels": [
+        {
+         "name": "daily",
+         "price": 199.5
+        },
+        {
+         "name": "weekly",
+         "price": 201.94
+        },
+        {
+         "name": "monthly",
+         "price": 193.17
+        }
+       ],
+       "aligned": [
+        "daily",
+        "monthly"
+       ],
+       "opposed": [
+        "weekly"
+       ],
+       "reclaims": [
+        {
+         "name": "daily",
+         "price": 199.5,
+         "index": 486,
+         "t": 1786438800000
+        },
+        {
+         "name": "weekly",
+         "price": 201.94,
+         "index": 490,
+         "t": 1786453200000
+        }
+       ],
+       "close": 200.23,
+       "minAligned": 2,
+       "mode": "OPEN_SWEEP_RECLAIM",
+       "reason": "OPENING_ANCHOR_RECLAIM"
+      },
+      "sequence": {
+       "version": "1.1",
+       "side": "LONG",
+       "valid": true,
+       "entryArmed": true,
+       "state": "ENTRY_ARMED",
+       "reason": "IOFED_RETEST_CONFIRMED",
+       "entryModel": "IOFED",
+       "manipulation": {
+        "side": "LONG",
+        "at": 496,
+        "sweepAt": 496,
+        "rangeFrom": 466,
+        "rangeTo": 495,
+        "wick": 196.19,
+        "level": 196.65,
+        "rangeHigh": 204.59,
+        "rangeLow": 196.65,
+        "box": {
+         "top": 196.65,
+         "bottom": 196.19
+        }
+       },
+       "displacement": {
+        "index": 496,
+        "t": 1786474800000,
+        "body": 1.2299999999999898,
+        "averageBody": 0.6249999999999958
+       },
+       "firstFvg": {
+        "side": "LONG",
+        "type": "bull",
+        "from": 496,
+        "to": 498,
+        "bottom": 198.82,
+        "top": 199.51,
+        "ce": 199.165
+       },
+       "iofed": {
+        "zone": {
+         "side": "SHORT",
+         "type": "bear",
+         "from": 491,
+         "to": 493,
+         "bottom": 199.54,
+         "top": 200.21,
+         "ce": 199.875
+        },
+        "flipIndex": 498,
+        "retestIndex": 499,
+        "held": true
+       },
+       "breakaway": null,
+       "retestIndex": 499,
+       "held": true
+      },
+      "targetDecision": {
+       "version": "1.0",
+       "valid": true,
+       "side": "LONG",
+       "entry": 200.33011499999998,
+       "stop": 195.6014,
+       "minTouches": 2,
+       "minGrossRR": 1,
+       "reason": "DRAW_ON_LIQUIDITY_FOUND",
+       "target": {
+        "price": 209.98,
+        "source": "OPPOSING_LIQUIDITY_POOL",
+        "touches": 2,
+        "grossRR": 2.040699217440696
+       },
+       "candidateCount": 1
+      },
+      "execution": {
+       "valid": true,
+       "reason": "EXECUTION_COST_ACCEPTABLE",
+       "grossRR": 2.041,
+       "netRR": 1.994,
+       "roundTripCost": 0.22036313,
+       "costToRisk": 0.047,
+       "feeBps": 2,
+       "slippageBps": 5,
+       "spreadBps": 2
+      }
+     },
+     "audit": {
+      "version": "1.0",
+      "generatedAt": 1786486086788,
+      "sourceAccount": "jaxiwnl21",
+      "strategy": "DREYKO_SEQUENCE",
+      "passed": true,
+      "events": [
+       {
+        "name": "MANIPULATION_RECLAIM",
+        "passed": true,
+        "details": {
+         "side": "LONG",
+         "at": 496,
+         "sweepAt": 496,
+         "rangeFrom": 466,
+         "rangeTo": 495,
+         "wick": 196.19,
+         "level": 196.65,
+         "rangeHigh": 204.59,
+         "rangeLow": 196.65,
+         "box": {
+          "top": 196.65,
+          "bottom": 196.19
+         }
+        },
+        "sourceTweetId": "1889012222040621477"
+       },
+       {
+        "name": "POST_RECLAIM_DISPLACEMENT",
+        "passed": true,
+        "details": {
+         "index": 496,
+         "t": 1786474800000,
+         "body": 1.2299999999999898,
+         "averageBody": 0.6249999999999958
+        },
+        "sourceTweetId": "1850574993165295834"
+       },
+       {
+        "name": "FIRST_PRESENTED_FVG",
+        "passed": true,
+        "details": {
+         "side": "LONG",
+         "type": "bull",
+         "from": 496,
+         "to": 498,
+         "bottom": 198.82,
+         "top": 199.51,
+         "ce": 199.165
+        },
+        "sourceTweetId": "2069827947830124573"
+       },
+       {
+        "name": "FVG_RETEST_HELD",
+        "passed": true,
+        "details": {
+         "retestIndex": 499,
+         "held": true
+        },
+        "sourceTweetId": "2069827947830124573"
+       },
+       {
+        "name": "LOW_RISK_ENTRY_MODEL",
+        "passed": true,
+        "details": {
+         "entryModel": "IOFED",
+         "iofed": {
+          "zone": {
+           "side": "SHORT",
+           "type": "bear",
+           "from": 491,
+           "to": 493,
+           "bottom": 199.54,
+           "top": 200.21,
+           "ce": 199.875
+          },
+          "flipIndex": 498,
+          "retestIndex": 499,
+          "held": true
+         },
+         "breakaway": null
+        },
+        "sourceTweetId": "1890341000532430981"
+       },
+       {
+        "name": "ASSET_TIME_POLICY",
+        "passed": true,
+        "details": {
+         "assetClass": "CRYPTO",
+         "mode": "CRYPTO_JUDAS",
+         "anchors": {
+          "daily": 199.5,
+          "weekly": 201.94,
+          "monthly": 193.17
+         }
+        },
+        "sourceTweetId": "1808570217523728885"
+       },
+       {
+        "name": "OPENING_ANCHOR_CONTEXT",
+        "passed": true,
+        "details": {
+         "version": "1.0",
+         "valid": true,
+         "side": "LONG",
+         "levels": [
+          {
+           "name": "daily",
+           "price": 199.5
+          },
+          {
+           "name": "weekly",
+           "price": 201.94
+          },
+          {
+           "name": "monthly",
+           "price": 193.17
+          }
+         ],
+         "aligned": [
+          "daily",
+          "monthly"
+         ],
+         "opposed": [
+          "weekly"
+         ],
+         "reclaims": [
+          {
+           "name": "daily",
+           "price": 199.5,
+           "index": 486,
+           "t": 1786438800000
+          },
+          {
+           "name": "weekly",
+           "price": 201.94,
+           "index": 490,
+           "t": 1786453200000
+          }
+         ],
+         "close": 200.23,
+         "minAligned": 2,
+         "mode": "OPEN_SWEEP_RECLAIM",
+         "reason": "OPENING_ANCHOR_RECLAIM"
+        },
+        "sourceTweetId": "1818751555731886376"
+       },
+       {
+        "name": "OPEN_INTEREST_CONTEXT",
+        "passed": false,
+        "details": null,
+        "sourceTweetId": "1919086310352167253"
+       },
+       {
+        "name": "SMT_CONTEXT",
+        "passed": false,
+        "details": {
+         "available": true,
+         "confirmed": false,
+         "divergence": "NONE"
+        },
+        "sourceTweetId": "1828041204627365916"
+       },
+       {
+        "name": "DRAW_ON_LIQUIDITY",
+        "passed": true,
+        "details": {
+         "version": "1.0",
+         "valid": true,
+         "side": "LONG",
+         "entry": 200.33011499999998,
+         "stop": 195.6014,
+         "minTouches": 2,
+         "minGrossRR": 1,
+         "reason": "DRAW_ON_LIQUIDITY_FOUND",
+         "target": {
+          "price": 209.98,
+          "source": "OPPOSING_LIQUIDITY_POOL",
+          "touches": 2,
+          "grossRR": 2.040699217440696
+         },
+         "candidateCount": 1
+        },
+        "sourceTweetId": "1890310291935608911"
+       },
+       {
+        "name": "NET_EXECUTION_RR",
+        "passed": true,
+        "details": {
+         "valid": true,
+         "reason": "EXECUTION_COST_ACCEPTABLE",
+         "grossRR": 2.041,
+         "netRR": 1.994,
+         "roundTripCost": 0.22036313,
+         "costToRisk": 0.047,
+         "feeBps": 2,
+         "slippageBps": 5,
+         "spreadBps": 2
+        },
+        "sourceTweetId": null
+       }
+      ]
+     },
+     "riskDecision": {
+      "allowed": true,
+      "reason": "OK",
+      "weekR": 0,
+      "totalRiskUSD": 100,
+      "directionalRiskUSD": 100,
+      "correlated": 0,
+      "limits": {
+       "enforceTotalRisk": false,
+       "enforceDirectionalRisk": false,
+       "enforceCorrelation": false
+      }
+     },
+     "snap": {
+      "candles": [
+       [
+        1786014000,
+        193.18,
+        195.01,
+        192.53,
+        194.7
+       ],
+       [
+        1786017600,
+        194.7,
+        194.76,
+        192.18,
+        192.44
+       ],
+       [
+        1786021200,
+        192.44,
+        192.67,
+        190.74,
+        191.65
+       ],
+       [
+        1786024800,
+        191.65,
+        192.6,
+        191.26,
+        191.89
+       ],
+       [
+        1786028400,
+        191.89,
+        193.8,
+        191.7,
+        193.17
+       ],
+       [
+        1786032000,
+        193.17,
+        193.52,
+        192.53,
+        193.3
+       ],
+       [
+        1786035600,
+        193.3,
+        193.36,
+        191.82,
+        192.58
+       ],
+       [
+        1786039200,
+        192.58,
+        193,
+        191.85,
+        192.83
+       ],
+       [
+        1786042800,
+        192.83,
+        193.95,
+        191.49,
+        191.58
+       ],
+       [
+        1786046400,
+        191.58,
+        192.8,
+        191.47,
+        192.62
+       ],
+       [
+        1786050000,
+        192.62,
+        193.16,
+        192.58,
+        192.62
+       ],
+       [
+        1786053600,
+        192.62,
+        193.08,
+        192.02,
+        192.44
+       ],
+       [
+        1786057200,
+        192.44,
+        192.44,
+        191.52,
+        192.09
+       ],
+       [
+        1786060800,
+        192.09,
+        192.55,
+        191.27,
+        192.36
+       ],
+       [
+        1786064400,
+        192.36,
+        192.75,
+        191.68,
+        192.14
+       ],
+       [
+        1786068000,
+        192.14,
+        192.86,
+        191.62,
+        192.03
+       ],
+       [
+        1786071600,
+        192.03,
+        192.19,
+        191.12,
+        191.13
+       ],
+       [
+        1786075200,
+        191.13,
+        191.7,
+        190.34,
+        190.79
+       ],
+       [
+        1786078800,
+        190.79,
+        191.63,
+        190.01,
+        191.5
+       ],
+       [
+        1786082400,
+        191.5,
+        192.51,
+        191.07,
+        192.14
+       ],
+       [
+        1786086000,
+        192.14,
+        192.86,
+        191.56,
+        191.62
+       ],
+       [
+        1786089600,
+        191.62,
+        192.8,
+        190.9,
+        192.42
+       ],
+       [
+        1786093200,
+        192.42,
+        193.6,
+        192.42,
+        193.14
+       ],
+       [
+        1786096800,
+        193.14,
+        193.74,
+        192.71,
+        193.23
+       ],
+       [
+        1786100400,
+        193.23,
+        194.7,
+        193.05,
+        193.78
+       ],
+       [
+        1786104000,
+        193.78,
+        194.51,
+        192.6,
+        193.22
+       ],
+       [
+        1786107600,
+        193.22,
+        193.84,
+        192.31,
+        193.04
+       ],
+       [
+        1786111200,
+        193.04,
+        193.65,
+        192.33,
+        192.41
+       ],
+       [
+        1786114800,
+        192.41,
+        194.42,
+        192.16,
+        193.75
+       ],
+       [
+        1786118400,
+        193.75,
+        194.16,
+        192.94,
+        192.94
+       ],
+       [
+        1786122000,
+        192.94,
+        192.94,
+        190.63,
+        191.02
+       ],
+       [
+        1786125600,
+        191.02,
+        192,
+        191.02,
+        191.45
+       ],
+       [
+        1786129200,
+        191.45,
+        194.17,
+        191.39,
+        193.88
+       ],
+       [
+        1786132800,
+        193.88,
+        195,
+        193.5,
+        194.88
+       ],
+       [
+        1786136400,
+        194.88,
+        195.34,
+        193.67,
+        193.72
+       ],
+       [
+        1786140000,
+        193.72,
+        194.15,
+        193.13,
+        193.44
+       ],
+       [
+        1786143600,
+        193.44,
+        195.34,
+        193.26,
+        193.44
+       ],
+       [
+        1786147200,
+        193.44,
+        193.52,
+        192.79,
+        193.02
+       ],
+       [
+        1786150800,
+        193.02,
+        193.92,
+        192.99,
+        193.46
+       ],
+       [
+        1786154400,
+        193.46,
+        194.5,
+        192.97,
+        193.96
+       ],
+       [
+        1786158000,
+        193.96,
+        197,
+        193.96,
+        196.19
+       ],
+       [
+        1786161600,
+        196.19,
+        197.18,
+        195.25,
+        195.52
+       ],
+       [
+        1786165200,
+        195.52,
+        195.53,
+        194.64,
+        195.37
+       ],
+       [
+        1786168800,
+        195.37,
+        197.77,
+        195.37,
+        197.33
+       ],
+       [
+        1786172400,
+        197.33,
+        197.49,
+        196.1,
+        196.52
+       ],
+       [
+        1786176000,
+        196.52,
+        196.86,
+        196.19,
+        196.68
+       ],
+       [
+        1786179600,
+        196.68,
+        196.78,
+        196,
+        196.15
+       ],
+       [
+        1786183200,
+        196.15,
+        196.85,
+        196.06,
+        196.55
+       ],
+       [
+        1786186800,
+        196.55,
+        196.73,
+        195.8,
+        196.47
+       ],
+       [
+        1786190400,
+        196.47,
+        197.15,
+        196.29,
+        196.78
+       ],
+       [
+        1786194000,
+        196.78,
+        197.11,
+        195.61,
+        195.76
+       ],
+       [
+        1786197600,
+        195.76,
+        197.29,
+        195.66,
+        197.2
+       ],
+       [
+        1786201200,
+        197.2,
+        198.33,
+        196.88,
+        197.97
+       ],
+       [
+        1786204800,
+        197.97,
+        198.22,
+        197.17,
+        198.09
+       ],
+       [
+        1786208400,
+        198.09,
+        199.27,
+        197.69,
+        198.79
+       ],
+       [
+        1786212000,
+        198.79,
+        200,
+        197.98,
+        198.19
+       ],
+       [
+        1786215600,
+        198.19,
+        198.41,
+        197,
+        198.33
+       ],
+       [
+        1786219200,
+        198.33,
+        198.86,
+        197.97,
+        198.73
+       ],
+       [
+        1786222800,
+        198.73,
+        200,
+        198.58,
+        199.2
+       ],
+       [
+        1786226400,
+        199.2,
+        199.73,
+        198.5,
+        198.9
+       ],
+       [
+        1786230000,
+        198.9,
+        205.35,
+        198.51,
+        203.72
+       ],
+       [
+        1786233600,
+        203.72,
+        209.97,
+        203.49,
+        208.55
+       ],
+       [
+        1786237200,
+        208.55,
+        209.17,
+        204.66,
+        205.3
+       ],
+       [
+        1786240800,
+        205.3,
+        206.64,
+        204.27,
+        205.96
+       ],
+       [
+        1786244400,
+        205.96,
+        208.21,
+        204.26,
+        207.45
+       ],
+       [
+        1786248000,
+        207.45,
+        209.99,
+        205.63,
+        205.95
+       ],
+       [
+        1786251600,
+        205.95,
+        207.19,
+        205.27,
+        206.19
+       ],
+       [
+        1786255200,
+        206.19,
+        206.89,
+        204.87,
+        205.25
+       ],
+       [
+        1786258800,
+        205.25,
+        206.25,
+        204.32,
+        205.98
+       ],
+       [
+        1786262400,
+        205.98,
+        206.98,
+        205.12,
+        206.38
+       ],
+       [
+        1786266000,
+        206.38,
+        206.54,
+        204.7,
+        205.46
+       ],
+       [
+        1786269600,
+        205.46,
+        205.97,
+        204.51,
+        204.58
+       ],
+       [
+        1786273200,
+        204.58,
+        207.7,
+        202.47,
+        206.78
+       ],
+       [
+        1786276800,
+        206.78,
+        207.85,
+        205.4,
+        206.37
+       ],
+       [
+        1786280400,
+        206.37,
+        209.3,
+        206.27,
+        208.78
+       ],
+       [
+        1786284000,
+        208.78,
+        209.89,
+        207.48,
+        208.68
+       ],
+       [
+        1786287600,
+        208.68,
+        210.49,
+        208.08,
+        208.84
+       ],
+       [
+        1786291200,
+        208.84,
+        210.1,
+        207.05,
+        207.46
+       ],
+       [
+        1786294800,
+        207.46,
+        207.7,
+        206.69,
+        207.04
+       ],
+       [
+        1786298400,
+        207.04,
+        207.68,
+        206.85,
+        206.93
+       ],
+       [
+        1786302000,
+        206.93,
+        207.28,
+        205.95,
+        206.97
+       ],
+       [
+        1786305600,
+        206.97,
+        207.04,
+        205.63,
+        205.81
+       ],
+       [
+        1786309200,
+        205.81,
+        206.94,
+        205.22,
+        206.2
+       ],
+       [
+        1786312800,
+        206.2,
+        207.03,
+        203.28,
+        204.14
+       ],
+       [
+        1786316400,
+        204.14,
+        204.16,
+        201.33,
+        201.94
+       ],
+       [
+        1786320000,
+        201.94,
+        204.4,
+        200.5,
+        203.57
+       ],
+       [
+        1786323600,
+        203.57,
+        205.2,
+        202.83,
+        204.71
+       ],
+       [
+        1786327200,
+        204.71,
+        204.72,
+        202.37,
+        203.68
+       ],
+       [
+        1786330800,
+        203.68,
+        203.74,
+        201.91,
+        202.24
+       ],
+       [
+        1786334400,
+        202.24,
+        203,
+        201.79,
+        201.91
+       ],
+       [
+        1786338000,
+        201.91,
+        204.06,
+        201.75,
+        203.67
+       ],
+       [
+        1786341600,
+        203.67,
+        204.1,
+        203.06,
+        203.88
+       ],
+       [
+        1786345200,
+        203.88,
+        204.4,
+        203.2,
+        203.97
+       ],
+       [
+        1786348800,
+        203.97,
+        204.28,
+        202.62,
+        203.64
+       ],
+       [
+        1786352400,
+        203.64,
+        203.77,
+        202.31,
+        202.58
+       ],
+       [
+        1786356000,
+        202.58,
+        203.72,
+        202.32,
+        203.51
+       ],
+       [
+        1786359600,
+        203.51,
+        205.63,
+        203.16,
+        205.14
+       ],
+       [
+        1786363200,
+        205.14,
+        205.85,
+        202.63,
+        202.86
+       ],
+       [
+        1786366800,
+        202.86,
+        204,
+        202.75,
+        203.2
+       ],
+       [
+        1786370400,
+        203.2,
+        204.59,
+        202.29,
+        202.63
+       ],
+       [
+        1786374000,
+        202.63,
+        203.44,
+        201.48,
+        202.36
+       ],
+       [
+        1786377600,
+        202.36,
+        203.2,
+        201.55,
+        201.96
+       ],
+       [
+        1786381200,
+        201.96,
+        203.86,
+        201.63,
+        202.33
+       ],
+       [
+        1786384800,
+        202.33,
+        202.33,
+        199.8,
+        199.8
+       ],
+       [
+        1786388400,
+        199.8,
+        202.45,
+        199.79,
+        200.94
+       ],
+       [
+        1786392000,
+        200.94,
+        202.28,
+        200.1,
+        201.75
+       ],
+       [
+        1786395600,
+        201.75,
+        202.43,
+        198.64,
+        198.93
+       ],
+       [
+        1786399200,
+        198.93,
+        199.78,
+        198.2,
+        198.7
+       ],
+       [
+        1786402800,
+        198.7,
+        199.83,
+        198.45,
+        199.5
+       ],
+       [
+        1786406400,
+        199.5,
+        199.73,
+        198.91,
+        199.09
+       ],
+       [
+        1786410000,
+        199.09,
+        200.08,
+        198.36,
+        199.28
+       ],
+       [
+        1786413600,
+        199.28,
+        200.28,
+        199.26,
+        199.39
+       ],
+       [
+        1786417200,
+        199.39,
+        199.96,
+        198.93,
+        199.41
+       ],
+       [
+        1786420800,
+        199.41,
+        199.81,
+        198.91,
+        198.93
+       ],
+       [
+        1786424400,
+        198.93,
+        199.66,
+        198.69,
+        198.99
+       ],
+       [
+        1786428000,
+        198.99,
+        199.24,
+        198.59,
+        199.07
+       ],
+       [
+        1786431600,
+        199.07,
+        199.43,
+        198.44,
+        199.07
+       ],
+       [
+        1786435200,
+        199.07,
+        199.8,
+        198.4,
+        199.35
+       ],
+       [
+        1786438800,
+        199.35,
+        200.69,
+        199.18,
+        200.54
+       ],
+       [
+        1786442400,
+        200.54,
+        201.88,
+        199.69,
+        201.3
+       ],
+       [
+        1786446000,
+        201.3,
+        202,
+        200.69,
+        201.27
+       ],
+       [
+        1786449600,
+        201.27,
+        202.16,
+        200.46,
+        201.8
+       ],
+       [
+        1786453200,
+        201.8,
+        203.77,
+        201.8,
+        202.54
+       ],
+       [
+        1786456800,
+        202.54,
+        203.55,
+        200.21,
+        200.72
+       ],
+       [
+        1786460400,
+        200.72,
+        201.57,
+        196.65,
+        198.24
+       ],
+       [
+        1786464000,
+        198.24,
+        199.54,
+        197.78,
+        198.32
+       ],
+       [
+        1786467600,
+        198.32,
+        199.4,
+        198.18,
+        198.92
+       ],
+       [
+        1786471200,
+        198.92,
+        199.26,
+        196.87,
+        197.08
+       ],
+       [
+        1786474800,
+        197.08,
+        198.82,
+        196.19,
+        198.31
+       ],
+       [
+        1786478400,
+        198.31,
+        199.93,
+        198.26,
+        199.53
+       ],
+       [
+        1786482000,
+        199.53,
+        200.75,
+        199.51,
+        200.3
+       ],
+       [
+        1786485600,
+        200.3,
+        200.66,
+        200.06,
+        200.23
+       ]
+      ],
+      "manip": {
+       "rangeFrom": 98,
+       "rangeTo": 127,
+       "sweepAt": 128,
+       "at": 128,
+       "rangeHigh": 204.59,
+       "rangeLow": 196.65,
+       "wick": 196.19,
+       "side": "LONG"
+      },
+      "sequence": {
+       "state": "ENTRY_ARMED",
+       "entryModel": "IOFED",
+       "displacementAt": 128,
+       "retestAt": 131,
+       "firstFvg": {
+        "side": "LONG",
+        "type": "bull",
+        "from": 128,
+        "to": 130,
+        "bottom": 198.82,
+        "top": 199.51,
+        "ce": 199.165
+       },
+       "iofed": {
+        "zone": {
+         "side": "SHORT",
+         "type": "bear",
+         "from": 123,
+         "to": 125,
+         "bottom": 199.54,
+         "top": 200.21,
+         "ce": 199.875
+        },
+        "flipIndex": 130,
+        "retestIndex": 131,
+        "held": true
+       },
+       "breakaway": null
+      },
+      "anchors": {
+       "daily": 199.5,
+       "weekly": 201.94,
+       "monthly": 193.17
+      }
+     },
+     "openedAt": 1786486086788,
+     "lastCheck": 1786486086788,
+     "status": "open",
+     "deriskDone": false,
+     "realized": 0,
+     "feeCharged": false,
+     "fills": []
+    }
+   ],
    "closed": [],
-   "recentSigs": [],
+   "recentSigs": [
+    "DREYKO|TAO_USDT|60m|LONG|1786474800000"
+   ],
    "equityHistory": [
     {
      "t": 1786469816862,
@@ -34,6 +1432,11 @@
      "t": 1786482778274,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786486090577,
+     "eq": 10000,
+     "open": 1
     }
    ],
    "stats": {
@@ -64,7 +1467,7 @@
     "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786482760038,
+     "generatedAt": 1786486077218,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -89,39 +1492,32 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 75,
-     "grade": "A+",
+     "conf": 55,
+     "grade": "B",
      "entry": 0.002672,
      "sl": 0.002661,
      "tp1": 0.002943,
      "tpF": 0.002943,
      "rrPlan": 20,
-     "status": "BEKLİYOR / RED",
-     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "status": "ÖN İZLEME",
+     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
-      "⚠ Hedef likiditesi (0.002861) son 20 barda zaten alınmış — yigit: kovalamak riskli",
+      "⚠ FVG EQ (0.0027175) henüz kazanılmadı — yigit: teyit bekle",
+      "⚠ Hedef likiditesi (0.0027955) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: Value Area içinde [0.002475–0.002943] (SolCJ)",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
-      "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
+      "MMxM 3/5 (LTF verisi yok — ön izleme)"
      ],
      "mmxm": {
-      "score": 4,
+      "score": 3,
       "max": 5,
-      "valid": true
+      "valid": false
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        0.002319,
-        0.002327,
-        0.002291,
-        0.0023
-       ],
        [
         1786014000,
         0.0023,
@@ -1036,45 +2432,32 @@
         1786482000,
         0.002754,
         0.002773,
-        0.002742,
-        0.002743
+        0.002711,
+        0.002719
+       ],
+       [
+        1786485600,
+        0.002719,
+        0.002727,
+        0.002715,
+        0.002716
        ]
       ],
       "manip": {
-       "rangeFrom": 97,
-       "rangeTo": 126,
-       "sweepAt": 127,
-       "at": 127,
+       "rangeFrom": 96,
+       "rangeTo": 125,
+       "sweepAt": 126,
+       "at": 126,
        "rangeHigh": 0.002943,
        "rangeLow": 0.002672,
        "wick": 0.002669,
        "side": "LONG"
       },
-      "sequence": {
-       "state": "WAITING_FVG_RETEST",
-       "entryModel": null,
-       "displacementAt": 130,
-       "retestAt": null,
-       "firstFvg": {
-        "side": "LONG",
-        "type": "bull",
-        "from": 129,
-        "to": 131,
-        "bottom": 0.002721,
-        "top": 0.002742,
-        "ce": 0.0027315
-       },
-       "iofed": null,
-       "breakaway": null
-      },
-      "anchors": {
-       "daily": 0.002777,
-       "weekly": 0.002673,
-       "monthly": 0.00207
-      }
+      "sequence": null,
+      "anchors": null
      },
-     "openedAt": 1786482777331,
-     "observedAt": 1786482777331
+     "openedAt": 1786486090050,
+     "observedAt": 1786486090050
     },
     {
      "id": "DREYKO|NAS100_USDT",
@@ -1095,11 +2478,11 @@
      "reasons": [
       "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
       "Smart Money Reversal",
-      "⚠ FVG EQ (29541) henüz kazanılmadı — yigit: teyit bekle",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (29738) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: POC yakını (29652.48) (SolCJ)",
-      "iFVG POI: geçersizleşen FVG dirence döndü [29619–29649] (SolCJ)",
-      "OTE 0.618–0.786 desteği [29725.29–29778.38] (JB: fib-backed giriş)",
+      "iFVG POI: geçersizleşen FVG dirence döndü [29648–29697] (SolCJ)",
+      "OTE 0.618–0.786 desteği [29711.15–29770.46] (JB: fib-backed giriş)",
       "Market Maker Sell Model · Hedef: karşı range / IPDA"
      ],
      "mmxm": {
@@ -1109,13 +2492,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        29408,
-        29416,
-        29345,
-        29360
-       ],
        [
         1786014000,
         29360,
@@ -2030,15 +3406,22 @@
         1786482000,
         29536,
         29846,
-        29530,
-        29555
+        29493,
+        29542
+       ],
+       [
+        1786485600,
+        29542,
+        29544,
+        29517,
+        29522
        ]
       ],
       "manip": {
-       "rangeFrom": 101,
-       "rangeTo": 130,
-       "sweepAt": 131,
-       "at": 131,
+       "rangeFrom": 100,
+       "rangeTo": 129,
+       "sweepAt": 130,
+       "at": 130,
        "rangeHigh": 29768,
        "rangeLow": 29422,
        "wick": 29846,
@@ -2047,8 +3430,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482776620,
-     "observedAt": 1786482776620
+     "openedAt": 1786486089631,
+     "observedAt": 1786486089631
     },
     {
      "id": "DREYKO|AVAX_USDT",
@@ -2065,7 +3448,7 @@
      "tpF": 6.585,
      "rrPlan": 2.8,
      "status": "BEKLİYOR / RED",
-     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "reason": "WAITING_LOW_RISK_ENTRY",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
@@ -2083,13 +3466,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        6.521,
-        6.521,
-        6.349,
-        6.405
-       ],
        [
         1786014000,
         6.405,
@@ -3004,36 +4380,56 @@
         1786482000,
         6.304,
         6.317,
-        6.302,
+        6.288,
         6.312
+       ],
+       [
+        1786485600,
+        6.312,
+        6.33,
+        6.31,
+        6.313
        ]
       ],
       "manip": {
-       "rangeFrom": 95,
-       "rangeTo": 124,
-       "sweepAt": 125,
-       "at": 128,
+       "rangeFrom": 94,
+       "rangeTo": 123,
+       "sweepAt": 124,
+       "at": 127,
        "rangeHigh": 6.579,
        "rangeLow": 6.221,
        "wick": 6.108,
        "side": "LONG"
       },
       "sequence": {
-       "state": "WAITING_FVG_RETEST",
-       "entryModel": null,
-       "displacementAt": 129,
+       "state": "BREAKAWAY_GAP_CONFIRMED",
+       "entryModel": "BREAKAWAY_GAP",
+       "displacementAt": 128,
        "retestAt": null,
        "firstFvg": {
         "side": "LONG",
         "type": "bull",
-        "from": 128,
-        "to": 130,
+        "from": 127,
+        "to": 129,
         "bottom": 6.239,
         "top": 6.269,
         "ce": 6.254
        },
        "iofed": null,
-       "breakaway": null
+       "breakaway": {
+        "confirmed": true,
+        "barsUntouched": 2,
+        "extensionInGaps": 1.466666666666641,
+        "zone": {
+         "side": "LONG",
+         "type": "bull",
+         "from": 127,
+         "to": 129,
+         "bottom": 6.239,
+         "top": 6.269,
+         "ce": 6.254
+        }
+       }
       },
       "anchors": {
        "daily": 6.432,
@@ -3041,8 +4437,8 @@
        "monthly": 6.382
       }
      },
-     "openedAt": 1786482775587,
-     "observedAt": 1786482775587
+     "openedAt": 1786486089203,
+     "observedAt": 1786486089203
     },
     {
      "id": "DREYKO|WLD_USDT",
@@ -3077,13 +4473,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        0.3047,
-        0.3062,
-        0.3025,
-        0.3037
-       ],
        [
         1786014000,
         0.3037,
@@ -3997,16 +5386,23 @@
        [
         1786482000,
         0.3363,
-        0.3363,
-        0.3353,
+        0.339,
+        0.3351,
+        0.3366
+       ],
+       [
+        1786485600,
+        0.3366,
+        0.3376,
+        0.3362,
         0.3362
        ]
       ],
       "manip": {
-       "rangeFrom": 94,
-       "rangeTo": 123,
-       "sweepAt": 124,
-       "at": 125,
+       "rangeFrom": 93,
+       "rangeTo": 122,
+       "sweepAt": 123,
+       "at": 124,
        "rangeHigh": 0.354,
        "rangeLow": 0.3279,
        "wick": 0.3243,
@@ -4015,8 +5411,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482774844,
-     "observedAt": 1786482774844
+     "openedAt": 1786486088258,
+     "observedAt": 1786486088258
     },
     {
      "id": "DREYKO|SPX500_USDT",
@@ -4038,7 +5434,7 @@
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "RSI 36",
+      "RSI 38",
       "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (7739.73) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: POC yakını (7762.75) (SolCJ)",
@@ -4051,13 +5447,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        7739.3,
-        7739.3,
-        7730.3,
-        7732.4
-       ],
        [
         1786014000,
         7732.4,
@@ -4972,15 +6361,22 @@
         1786482000,
         7729.6,
         7740,
-        7727.1,
-        7729.6
+        7723.8,
+        7723.8
+       ],
+       [
+        1786485600,
+        7723.8,
+        7731.6,
+        7723.8,
+        7728.8
        ]
       ],
       "manip": {
-       "rangeFrom": 98,
-       "rangeTo": 127,
-       "sweepAt": 128,
-       "at": 129,
+       "rangeFrom": 97,
+       "rangeTo": 126,
+       "sweepAt": 127,
+       "at": 128,
        "rangeHigh": 7773.3,
        "rangeLow": 7724,
        "wick": 7714.6,
@@ -5000,8 +6396,8 @@
        "monthly": 7447.9
       }
      },
-     "openedAt": 1786482774327,
-     "observedAt": 1786482774327
+     "openedAt": 1786486087840,
+     "observedAt": 1786486087840
     },
     {
      "id": "DREYKO|TAO_USDT",
@@ -5010,39 +6406,32 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 55,
-     "grade": "B",
-     "entry": 196.65,
+     "conf": 75,
+     "grade": "A+",
+     "entry": 200.330115,
      "sl": 195.6014,
      "tp1": 204.59,
-     "tpF": 210.49,
-     "rrPlan": 13.2,
-     "status": "ÖN İZLEME",
-     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
+     "tpF": 209.98,
+     "rrPlan": 2.04,
+     "status": "İŞLEM AÇILDI",
+     "reason": null,
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "CISD / displacement teyidi (güçlü geri alım mumu)",
       "Bias uyumlu (Bullish)",
-      "⚠ FVG EQ (201.61) henüz kazanılmadı — yigit: teyit bekle",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (197.0567) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
-      "MMxM 4/5 (LTF verisi yok — ön izleme)"
+      "GERÇEK MMxM ✓ 5/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
      ],
      "mmxm": {
-      "score": 4,
+      "score": 5,
       "max": 5,
-      "valid": false
+      "valid": true
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        193.22,
-        194,
-        192.47,
-        193.18
-       ],
        [
         1786014000,
         193.18,
@@ -5956,26 +7345,66 @@
        [
         1786482000,
         199.53,
-        200.71,
+        200.75,
         199.51,
-        200.58
+        200.3
+       ],
+       [
+        1786485600,
+        200.3,
+        200.66,
+        200.06,
+        200.23
        ]
       ],
       "manip": {
-       "rangeFrom": 99,
-       "rangeTo": 128,
-       "sweepAt": 129,
-       "at": 129,
+       "rangeFrom": 98,
+       "rangeTo": 127,
+       "sweepAt": 128,
+       "at": 128,
        "rangeHigh": 204.59,
        "rangeLow": 196.65,
        "wick": 196.19,
        "side": "LONG"
       },
-      "sequence": null,
-      "anchors": null
+      "sequence": {
+       "state": "ENTRY_ARMED",
+       "entryModel": "IOFED",
+       "displacementAt": 128,
+       "retestAt": 131,
+       "firstFvg": {
+        "side": "LONG",
+        "type": "bull",
+        "from": 128,
+        "to": 130,
+        "bottom": 198.82,
+        "top": 199.51,
+        "ce": 199.165
+       },
+       "iofed": {
+        "zone": {
+         "side": "SHORT",
+         "type": "bear",
+         "from": 123,
+         "to": 125,
+         "bottom": 199.54,
+         "top": 200.21,
+         "ce": 199.875
+        },
+        "flipIndex": 130,
+        "retestIndex": 131,
+        "held": true
+       },
+       "breakaway": null
+      },
+      "anchors": {
+       "daily": 199.5,
+       "weekly": 201.94,
+       "monthly": 193.17
+      }
      },
-     "openedAt": 1786482773140,
-     "observedAt": 1786482773140
+     "openedAt": 1786486086788,
+     "observedAt": 1786486086788
     },
     {
      "id": "DREYKO|SUI_USDT",
@@ -6009,13 +7438,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        0.6776,
-        0.6776,
-        0.6681,
-        0.6737
-       ],
        [
         1786014000,
         0.6737,
@@ -6929,16 +8351,23 @@
        [
         1786482000,
         0.687,
-        0.6882,
+        0.6917,
         0.6864,
-        0.6877
+        0.6909
+       ],
+       [
+        1786485600,
+        0.6909,
+        0.6951,
+        0.6909,
+        0.6929
        ]
       ],
       "manip": {
-       "rangeFrom": 95,
-       "rangeTo": 124,
-       "sweepAt": 125,
-       "at": 125,
+       "rangeFrom": 94,
+       "rangeTo": 123,
+       "sweepAt": 124,
+       "at": 124,
        "rangeHigh": 0.6975,
        "rangeLow": 0.6747,
        "wick": 0.6719,
@@ -6947,8 +8376,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482771734,
-     "observedAt": 1786482771734
+     "openedAt": 1786486085839,
+     "observedAt": 1786486085839
     },
     {
      "id": "DREYKO|PEPE_USDT",
@@ -6957,39 +8386,32 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 75,
-     "grade": "A+",
+     "conf": 55,
+     "grade": "B",
      "entry": 0.000003,
      "sl": 0.000003,
      "tp1": 0.000003,
      "tpF": 0.000003,
      "rrPlan": 9,
-     "status": "BEKLİYOR / RED",
-     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "status": "ÖN İZLEME",
+     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "RSI 44",
-      "⚠ FVG EQ (0.00000282) henüz kazanılmadı — yigit: teyit bekle",
+      "⚠ FVG EQ (0.00000285) henüz kazanılmadı — yigit: teyit bekle",
       "⚠ Hedef likiditesi (0.00000278) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-      "OTE 0.618–0.786 desteği [0.00000278–0.0000028] (JB: fib-backed giriş)",
-      "Market Maker Buy Model · Hedef: karşı range / IPDA"
+      "OTE 0.618–0.786 desteği [0.00000279–0.0000028] (JB: fib-backed giriş)",
+      "Market Maker Buy Model · Hedef: karşı range / IPDA",
+      "MMxM 3/5 (LTF verisi yok — ön izleme)"
      ],
      "mmxm": {
-      "score": 4,
+      "score": 3,
       "max": 5,
-      "valid": true
+      "valid": false
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        0.000003,
-        0.000003,
-        0.000003,
-        0.000003
-       ],
        [
         1786014000,
         0.000003,
@@ -7906,43 +9328,30 @@
         0.000003,
         0.000003,
         0.000003
+       ],
+       [
+        1786485600,
+        0.000003,
+        0.000003,
+        0.000003,
+        0.000003
        ]
       ],
       "manip": {
-       "rangeFrom": 95,
-       "rangeTo": 124,
-       "sweepAt": 125,
-       "at": 125,
+       "rangeFrom": 94,
+       "rangeTo": 123,
+       "sweepAt": 124,
+       "at": 124,
        "rangeHigh": 0.0000029,
        "rangeLow": 0.00000278,
        "wick": 0.00000277,
        "side": "LONG"
       },
-      "sequence": {
-       "state": "WAITING_FVG_RETEST",
-       "entryModel": null,
-       "displacementAt": 130,
-       "retestAt": null,
-       "firstFvg": {
-        "side": "LONG",
-        "type": "bull",
-        "from": 128,
-        "to": 130,
-        "bottom": 0.0000027986,
-        "top": 0.0000028027,
-        "ce": 0.00000280065
-       },
-       "iofed": null,
-       "breakaway": null
-      },
-      "anchors": {
-       "daily": 0.0000028756,
-       "weekly": 0.0000028828,
-       "monthly": 0.0000027535
-      }
+      "sequence": null,
+      "anchors": null
      },
-     "openedAt": 1786482770126,
-     "observedAt": 1786482770126
+     "openedAt": 1786486084636,
+     "observedAt": 1786486084636
     },
     {
      "id": "DREYKO|ZEC_USDT",
@@ -7951,39 +9360,31 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 95,
-     "grade": "A+",
+     "conf": 55,
+     "grade": "B",
      "entry": 469.71,
      "sl": 464.7815,
      "tp1": 509.22,
-     "tpF": 529.09,
-     "rrPlan": 12,
-     "status": "BEKLİYOR / RED",
-     "reason": "OPENING_ANCHOR_CONFLICT",
+     "tpF": 527,
+     "rrPlan": 11.6,
+     "status": "ÖN İZLEME",
+     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "RSI 43",
       "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (474.775) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-      "OTE 0.618–0.786 desteği [469.3386–471.8183] (JB: fib-backed giriş)",
-      "Market Maker Buy Model · Hedef: karşı range / IPDA"
+      "Market Maker Buy Model · Hedef: karşı range / IPDA",
+      "MMxM 3/5 (LTF verisi yok — ön izleme)"
      ],
      "mmxm": {
-      "score": 4,
+      "score": 3,
       "max": 5,
-      "valid": true
+      "valid": false
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        503.45,
-        503.79,
-        494.58,
-        495.25
-       ],
        [
         1786014000,
         495.25,
@@ -8897,30 +10298,33 @@
        [
         1786482000,
         478.39,
-        480.94,
+        482.16,
         478,
-        480.3
+        480.99
+       ],
+       [
+        1786485600,
+        480.99,
+        484.92,
+        480.99,
+        482.61
        ]
       ],
       "manip": {
-       "rangeFrom": 96,
-       "rangeTo": 125,
-       "sweepAt": 126,
-       "at": 127,
+       "rangeFrom": 95,
+       "rangeTo": 124,
+       "sweepAt": 125,
+       "at": 126,
        "rangeHigh": 509.22,
        "rangeLow": 469.71,
        "wick": 466.18,
        "side": "LONG"
       },
       "sequence": null,
-      "anchors": {
-       "daily": 496,
-       "weekly": 509.67,
-       "monthly": 457.52
-      }
+      "anchors": null
      },
-     "openedAt": 1786482768783,
-     "observedAt": 1786482768783
+     "openedAt": 1786486083829,
+     "observedAt": 1786486083829
     },
     {
      "id": "DREYKO|SNDKSTOCK_USDT",
@@ -8955,13 +10359,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        1235.63,
-        1238.36,
-        1211.66,
-        1216.34
-       ],
        [
         1786014000,
         1216.34,
@@ -9875,16 +11272,23 @@
        [
         1786482000,
         1275,
-        1276.52,
-        1273.96,
-        1274.02
+        1276.89,
+        1273.55,
+        1275.07
+       ],
+       [
+        1786485600,
+        1275.07,
+        1275.88,
+        1273.55,
+        1274
        ]
       ],
       "manip": {
-       "rangeFrom": 93,
-       "rangeTo": 122,
-       "sweepAt": 123,
-       "at": 123,
+       "rangeFrom": 92,
+       "rangeTo": 121,
+       "sweepAt": 122,
+       "at": 122,
        "rangeHigh": 1278.39,
        "rangeLow": 1191.26,
        "wick": 1287.3,
@@ -9893,8 +11297,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482768086,
-     "observedAt": 1786482768086
+     "openedAt": 1786486083398,
+     "observedAt": 1786486083398
     },
     {
      "id": "DREYKO|MUSTOCK_USDT",
@@ -9929,13 +11333,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        864.45,
-        866.72,
-        850.42,
-        853.4
-       ],
        [
         1786014000,
         853.4,
@@ -10850,15 +12247,22 @@
         1786482000,
         866.46,
         867.9,
-        866.46,
-        866.85
+        865.47,
+        866.62
+       ],
+       [
+        1786485600,
+        866.62,
+        867.25,
+        865.55,
+        865.84
        ]
       ],
       "manip": {
-       "rangeFrom": 94,
-       "rangeTo": 123,
-       "sweepAt": 124,
-       "at": 124,
+       "rangeFrom": 93,
+       "rangeTo": 122,
+       "sweepAt": 123,
+       "at": 123,
        "rangeHigh": 895.64,
        "rangeLow": 853.44,
        "wick": 845.8,
@@ -10867,8 +12271,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482767552,
-     "observedAt": 1786482767552
+     "openedAt": 1786486082992,
+     "observedAt": 1786486082992
     },
     {
      "id": "DREYKO|SPCXSTOCK_USDT",
@@ -10903,13 +12307,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        109.96,
-        110.56,
-        109.46,
-        110.08
-       ],
        [
         1786014000,
         110.08,
@@ -11823,16 +13220,23 @@
        [
         1786482000,
         132.84,
-        132.97,
-        132.84,
-        132.95
+        132.98,
+        132.72,
+        132.79
+       ],
+       [
+        1786485600,
+        132.79,
+        132.87,
+        132.77,
+        132.8
        ]
       ],
       "manip": {
-       "rangeFrom": 93,
-       "rangeTo": 122,
-       "sweepAt": 123,
-       "at": 123,
+       "rangeFrom": 92,
+       "rangeTo": 121,
+       "sweepAt": 122,
+       "at": 122,
        "rangeHigh": 139.56,
        "rangeLow": 130.26,
        "wick": 139.96,
@@ -11841,8 +13245,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482767033,
-     "observedAt": 1786482767033
+     "openedAt": 1786486082603,
+     "observedAt": 1786486082603
     },
     {
      "id": "DREYKO|HYPE_USDT",
@@ -11853,7 +13257,7 @@
      "model": "MM Buy Model",
      "conf": 75,
      "grade": "A+",
-     "entry": 54.663318,
+     "entry": 54.684328,
      "sl": 53.5578,
      "tp1": 56.126,
      "tpF": 55.8505,
@@ -11877,13 +13281,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        55.59,
-        55.705,
-        55.35,
-        55.567
-       ],
        [
         1786014000,
         55.567,
@@ -12797,16 +14194,23 @@
        [
         1786482000,
         54.658,
-        54.702,
-        54.589,
-        54.636
+        54.758,
+        54.462,
+        54.637
+       ],
+       [
+        1786485600,
+        54.637,
+        54.77,
+        54.637,
+        54.657
        ]
       ],
       "manip": {
-       "rangeFrom": 95,
-       "rangeTo": 124,
-       "sweepAt": 125,
-       "at": 127,
+       "rangeFrom": 94,
+       "rangeTo": 123,
+       "sweepAt": 124,
+       "at": 126,
        "rangeHigh": 56.126,
        "rangeLow": 53.94,
        "wick": 53.719,
@@ -12814,14 +14218,14 @@
       },
       "sequence": {
        "state": "ENTRY_ARMED",
-       "entryModel": "IOFED",
-       "displacementAt": 129,
-       "retestAt": 131,
+       "entryModel": "FIRST_PRESENTED_FVG",
+       "displacementAt": 128,
+       "retestAt": 130,
        "firstFvg": {
         "side": "LONG",
         "type": "bull",
-        "from": 128,
-        "to": 130,
+        "from": 127,
+        "to": 129,
         "bottom": 54.306,
         "top": 54.461,
         "ce": 54.3835
@@ -12830,14 +14234,14 @@
         "zone": {
          "side": "SHORT",
          "type": "bear",
-         "from": 123,
-         "to": 125,
+         "from": 122,
+         "to": 124,
          "bottom": 54.481,
          "top": 54.573,
          "ce": 54.527
         },
-        "flipIndex": 130,
-        "retestIndex": 131,
+        "flipIndex": 129,
+        "retestIndex": 130,
         "held": true
        },
        "breakaway": null
@@ -12848,8 +14252,8 @@
        "monthly": 52.558
       }
      },
-     "openedAt": 1786482766469,
-     "observedAt": 1786482766469
+     "openedAt": 1786486082201,
+     "observedAt": 1786486082201
     },
     {
      "id": "DREYKO|XRP_USDT",
@@ -12873,7 +14277,7 @@
       "CISD / displacement teyidi (güçlü geri alım mumu)",
       "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (1.0103) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-      "OTE 0.618–0.786 desteği [0.997297–1.003] (JB: fib-backed giriş)",
+      "OTE 0.618–0.786 desteği [0.997704–1.0038] (JB: fib-backed giriş)",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
       "⚠ HTF bias ters — yigit kuralı: HTF dönmeden işlem alma"
      ],
@@ -12884,13 +14288,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        1.0448,
-        1.0472,
-        1.0418,
-        1.0471
-       ],
        [
         1786014000,
         1.0471,
@@ -13804,16 +15201,23 @@
        [
         1786482000,
         1.017,
-        1.0183,
+        1.026,
         1.0169,
-        1.0179
+        1.024
+       ],
+       [
+        1786485600,
+        1.024,
+        1.0255,
+        1.0218,
+        1.0222
        ]
       ],
       "manip": {
-       "rangeFrom": 94,
-       "rangeTo": 123,
-       "sweepAt": 124,
-       "at": 125,
+       "rangeFrom": 93,
+       "rangeTo": 122,
+       "sweepAt": 123,
+       "at": 124,
        "rangeHigh": 1.0384,
        "rangeLow": 1.0005,
        "wick": 0.99,
@@ -13822,49 +15226,42 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482764075,
-     "observedAt": 1786482764075
+     "openedAt": 1786486079990,
+     "observedAt": 1786486079990
     },
     {
      "id": "DREYKO|SOL_USDT",
      "strategyId": "DREYKO",
      "symbol": "SOL_USDT",
      "tf": "60m",
-     "side": "LONG",
-     "model": "MM Buy Model",
+     "side": "SHORT",
+     "model": "MM Sell Model",
      "conf": 75,
-     "grade": "A+",
-     "entry": 75.03,
-     "sl": 74.3563,
-     "tp1": 77.09,
-     "tpF": 77.83,
-     "rrPlan": 4.2,
-     "status": "BEKLİYOR / RED",
-     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "grade": "B",
+     "entry": 76.47,
+     "sl": 76.8799,
+     "tp1": 74.58,
+     "tpF": 74.58,
+     "rrPlan": 4.6,
+     "status": "ÖN İZLEME",
+     "reason": null,
      "reasons": [
-      "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
+      "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
       "Smart Money Reversal",
-      "Bias uyumlu (Bullish)",
-      "⚠ FVG EQ (76.115) henüz kazanılmadı — yigit: teyit bekle",
-      "⚠ Hedef likiditesi (75.21) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-      "iFVG POI: geçersizleşen FVG desteğe döndü [75.38–75.68] (SolCJ)",
-      "OTE 0.618–0.786 desteği [74.9481–75.237] (JB: fib-backed giriş)",
-      "Market Maker Buy Model · Hedef: karşı range / IPDA"
+      "RSI 60",
+      "⚠ FVG EQ (76.23) henüz kazanılmadı — yigit: teyit bekle",
+      "⚠ Hedef likiditesi (76.2167) son 20 barda zaten alınmış — yigit: kovalamak riskli",
+      "Hacim Profili confluence: POC yakını (75.8679) (SolCJ)",
+      "iFVG POI: geçersizleşen FVG dirence döndü [76.05–76.15] (SolCJ)",
+      "Market Maker Sell Model · Hedef: karşı range / IPDA"
      ],
      "mmxm": {
-      "score": 5,
+      "score": 3,
       "max": 5,
-      "valid": true
+      "valid": false
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        73.25,
-        73.4,
-        73.12,
-        73.25
-       ],
        [
         1786014000,
         73.25,
@@ -14778,46 +16175,33 @@
        [
         1786482000,
         76.01,
-        76.16,
-        76.01,
-        76.11
+        76.41,
+        75.97,
+        76.4
+       ],
+       [
+        1786485600,
+        76.4,
+        76.65,
+        76.4,
+        76.45
        ]
       ],
       "manip": {
-       "rangeFrom": 95,
-       "rangeTo": 124,
-       "sweepAt": 125,
-       "at": 127,
-       "rangeHigh": 77.09,
-       "rangeLow": 75.03,
-       "wick": 74.58,
-       "side": "LONG"
+       "rangeFrom": 101,
+       "rangeTo": 130,
+       "sweepAt": 131,
+       "at": 131,
+       "rangeHigh": 76.47,
+       "rangeLow": 74.58,
+       "wick": 76.65,
+       "side": "SHORT"
       },
-      "sequence": {
-       "state": "WAITING_FVG_RETEST",
-       "entryModel": null,
-       "displacementAt": 129,
-       "retestAt": null,
-       "firstFvg": {
-        "side": "LONG",
-        "type": "bull",
-        "from": 128,
-        "to": 130,
-        "bottom": 75.32,
-        "top": 75.61,
-        "ce": 75.465
-       },
-       "iofed": null,
-       "breakaway": null
-      },
-      "anchors": {
-       "daily": 75.95,
-       "weekly": 76.22,
-       "monthly": 72.84
-      }
+      "sequence": null,
+      "anchors": null
      },
-     "openedAt": 1786482762523,
-     "observedAt": 1786482762523
+     "openedAt": 1786486079154,
+     "observedAt": 1786486079154
     },
     {
      "id": "DREYKO|BTC_USDT",
@@ -14826,9 +16210,9 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 95,
+     "conf": 99,
      "grade": "A+",
-     "entry": 63756.8625,
+     "entry": 63729.2487,
      "sl": 63035.33,
      "tp1": 65221.2,
      "tpF": 65460,
@@ -14843,7 +16227,7 @@
       "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (63604.65) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "iFVG POI: geçersizleşen FVG desteğe döndü [63634.9–63686] (SolCJ)",
-      "Market Maker Buy Model · Hedef: karşı range / IPDA"
+      "OTE 0.618–0.786 desteği [63338.33–63427.31] (JB: fib-backed giriş)"
      ],
      "mmxm": {
       "score": 4,
@@ -14852,13 +16236,6 @@
      },
      "snap": {
       "candles": [
-       [
-        1786010400,
-        64649.1,
-        64656,
-        64552.5,
-        64589.3
-       ],
        [
         1786014000,
         64589.3,
@@ -15772,16 +17149,23 @@
        [
         1786482000,
         63719,
-        63731.4,
-        63708,
-        63725
+        63754.6,
+        63590.7,
+        63641.5
+       ],
+       [
+        1786485600,
+        63641.5,
+        63742.9,
+        63641.5,
+        63697.4
        ]
       ],
       "manip": {
-       "rangeFrom": 98,
-       "rangeTo": 127,
-       "sweepAt": 128,
-       "at": 129,
+       "rangeFrom": 97,
+       "rangeTo": 126,
+       "sweepAt": 127,
+       "at": 128,
        "rangeHigh": 65221.2,
        "rangeLow": 63420,
        "wick": 63225,
@@ -15789,30 +17173,30 @@
       },
       "sequence": {
        "state": "ENTRY_ARMED",
-       "entryModel": "IOFED",
-       "displacementAt": 129,
+       "entryModel": "FIRST_PRESENTED_FVG",
+       "displacementAt": 128,
        "retestAt": 131,
        "firstFvg": {
         "side": "LONG",
         "type": "bull",
-        "from": 129,
-        "to": 131,
+        "from": 128,
+        "to": 130,
         "bottom": 63513.9,
-        "top": 63708,
-        "ce": 63610.95
+        "top": 63590.7,
+        "ce": 63552.3
        },
        "iofed": {
         "zone": {
          "side": "SHORT",
          "type": "bear",
-         "from": 124,
-         "to": 126,
+         "from": 123,
+         "to": 125,
          "bottom": 63634.9,
          "top": 63686,
          "ce": 63660.45
         },
-        "flipIndex": 130,
-        "retestIndex": 131,
+        "flipIndex": 129,
+        "retestIndex": 130,
         "held": true
        },
        "breakaway": null
@@ -15823,8 +17207,8 @@
        "monthly": 62859.8
       }
      },
-     "openedAt": 1786482760739,
-     "observedAt": 1786482760739
+     "openedAt": 1786486077917,
+     "observedAt": 1786486077917
     },
     {
      "id": "DREYKO|DOGE_USDT",
@@ -20769,7 +22153,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786482760038,
+    "generatedAt": 1786486077218,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -20783,6 +22167,34 @@
     "losingStreakEnabled": false
    },
    "strategyRejections": [
+    {
+     "t": 1786486089203,
+     "symbol": "AVAX_USDT",
+     "side": "LONG",
+     "reason": "WAITING_LOW_RISK_ENTRY",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786486087840,
+     "symbol": "SPX500_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786486082201,
+     "symbol": "HYPE_USDT",
+     "side": "LONG",
+     "reason": "NET_RR_TOO_LOW",
+     "state": "EXECUTION"
+    },
+    {
+     "t": 1786486077917,
+     "symbol": "BTC_USDT",
+     "side": "LONG",
+     "reason": "STOP_DISTANCE_TOO_SMALL",
+     "state": "GEOMETRY"
+    },
     {
      "t": 1786482777331,
      "symbol": "PUMPFUN_USDT",
@@ -21147,6 +22559,11 @@
      "t": 1786482778274,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786486090577,
+     "eq": 10000,
+     "open": 0
     }
    ],
    "stats": {
@@ -21177,7 +22594,7 @@
     "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786482760038,
+     "generatedAt": 1786486077218,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -21195,7 +22612,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786482760038,
+    "generatedAt": 1786486077218,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -21216,13 +22633,13 @@
      "tf": "60m",
      "side": "LONG",
      "model": "Turtle Soup",
-     "conf": 65,
+     "conf": 66,
      "grade": "A",
-     "entry": 7729.6,
+     "entry": 7728.8,
      "sl": 7708.55,
      "tp1": 7730.87,
      "tpF": 7773.48,
-     "rrPlan": 2.1,
+     "rrPlan": 2.2,
      "status": "ÖN İZLEME",
      "reason": "GÜVEN_EŞİĞİ_ALTINDA",
      "reasons": [
@@ -21231,18 +22648,11 @@
       "Eşit dip likiditesi",
       "HTF bias uyumlu (up)",
       "Discount bölge (EQ altı)",
-      "RSI düşük (36)"
+      "RSI düşük (38)"
      ],
      "mmxm": null,
      "snap": {
       "candles": [
-       [
-        1786010400,
-        7739.3,
-        7739.3,
-        7730.3,
-        7732.4
-       ],
        [
         1786014000,
         7732.4,
@@ -22157,15 +23567,22 @@
         1786482000,
         7729.6,
         7740,
-        7727.1,
-        7729.6
+        7723.8,
+        7723.8
+       ],
+       [
+        1786485600,
+        7723.8,
+        7731.6,
+        7723.8,
+        7728.8
        ]
       ],
       "manip": {
-       "rangeFrom": 98,
-       "rangeTo": 127,
-       "sweepAt": 128,
-       "at": 129,
+       "rangeFrom": 97,
+       "rangeTo": 126,
+       "sweepAt": 127,
+       "at": 128,
        "rangeHigh": 7773.3,
        "rangeLow": 7724,
        "wick": 7714.6,
@@ -22174,8 +23591,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786482774146,
-     "observedAt": 1786482774146
+     "openedAt": 1786486087661,
+     "observedAt": 1786486087661
     },
     {
      "id": "YIGITAL|SOXL_USDT",
@@ -24096,13 +25513,1411 @@
    ]
   }
  },
- "lastRun": 1786482778274,
- "runs": 116,
+ "lastRun": 1786486090577,
+ "runs": 117,
  "equity": 10000,
  "startEquity": 10000,
- "open": [],
+ "open": [
+  {
+   "id": "DREYKO-TAO_USDT-1786486086788",
+   "strategyId": "DREYKO",
+   "symbol": "TAO_USDT",
+   "side": "LONG",
+   "src": "perp",
+   "tf": "60m",
+   "entry": 200.330115,
+   "mkt": 200.23,
+   "slip": 0.0005,
+   "entryFee": 0.8473,
+   "qty": 21.14739417,
+   "notional": 4236.46,
+   "sl": 195.6014,
+   "tp1": 207.423187,
+   "tpF": 209.98,
+   "riskUSD": 100,
+   "rrPlan": 2.04,
+   "conf": 75,
+   "grade": "A+",
+   "model": "MM Buy Model",
+   "mmxm": {
+    "score": 5,
+    "max": 5,
+    "valid": true
+   },
+   "reasons": [
+    "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
+    "Smart Money Reversal",
+    "CISD / displacement teyidi (güçlü geri alım mumu)",
+    "Bias uyumlu (Bullish)",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
+    "⚠ Hedef likiditesi (197.0567) son 20 barda zaten alınmış — yigit: kovalamak riskli"
+   ],
+   "context": {
+    "oiAvailable": false,
+    "oiState": null,
+    "smt": {
+     "available": true,
+     "confirmed": false,
+     "divergence": "NONE",
+     "reason": "SMT_NOT_CONFIRMED",
+     "score": 50,
+     "primary": {
+      "high": 203.77,
+      "low": 196.19,
+      "last": 200.23,
+      "previousHigh": 203.77,
+      "previousLow": 196.19
+     },
+     "peer": {
+      "high": 64466,
+      "low": 63211.6,
+      "last": 63697.4,
+      "previousHigh": 64466,
+      "previousLow": 63211.6
+     }
+    },
+    "timePolicy": {
+     "allowed": true,
+     "assetClass": "CRYPTO",
+     "mode": "CRYPTO_JUDAS",
+     "anchors": {
+      "daily": 199.5,
+      "weekly": 201.94,
+      "monthly": 193.17
+     },
+     "reason": "CRYPTO_HTF_TIME_POLICY"
+    },
+    "anchorContext": {
+     "version": "1.0",
+     "valid": true,
+     "side": "LONG",
+     "levels": [
+      {
+       "name": "daily",
+       "price": 199.5
+      },
+      {
+       "name": "weekly",
+       "price": 201.94
+      },
+      {
+       "name": "monthly",
+       "price": 193.17
+      }
+     ],
+     "aligned": [
+      "daily",
+      "monthly"
+     ],
+     "opposed": [
+      "weekly"
+     ],
+     "reclaims": [
+      {
+       "name": "daily",
+       "price": 199.5,
+       "index": 486,
+       "t": 1786438800000
+      },
+      {
+       "name": "weekly",
+       "price": 201.94,
+       "index": 490,
+       "t": 1786453200000
+      }
+     ],
+     "close": 200.23,
+     "minAligned": 2,
+     "mode": "OPEN_SWEEP_RECLAIM",
+     "reason": "OPENING_ANCHOR_RECLAIM"
+    },
+    "sequence": {
+     "version": "1.1",
+     "side": "LONG",
+     "valid": true,
+     "entryArmed": true,
+     "state": "ENTRY_ARMED",
+     "reason": "IOFED_RETEST_CONFIRMED",
+     "entryModel": "IOFED",
+     "manipulation": {
+      "side": "LONG",
+      "at": 496,
+      "sweepAt": 496,
+      "rangeFrom": 466,
+      "rangeTo": 495,
+      "wick": 196.19,
+      "level": 196.65,
+      "rangeHigh": 204.59,
+      "rangeLow": 196.65,
+      "box": {
+       "top": 196.65,
+       "bottom": 196.19
+      }
+     },
+     "displacement": {
+      "index": 496,
+      "t": 1786474800000,
+      "body": 1.2299999999999898,
+      "averageBody": 0.6249999999999958
+     },
+     "firstFvg": {
+      "side": "LONG",
+      "type": "bull",
+      "from": 496,
+      "to": 498,
+      "bottom": 198.82,
+      "top": 199.51,
+      "ce": 199.165
+     },
+     "iofed": {
+      "zone": {
+       "side": "SHORT",
+       "type": "bear",
+       "from": 491,
+       "to": 493,
+       "bottom": 199.54,
+       "top": 200.21,
+       "ce": 199.875
+      },
+      "flipIndex": 498,
+      "retestIndex": 499,
+      "held": true
+     },
+     "breakaway": null,
+     "retestIndex": 499,
+     "held": true
+    },
+    "targetDecision": {
+     "version": "1.0",
+     "valid": true,
+     "side": "LONG",
+     "entry": 200.33011499999998,
+     "stop": 195.6014,
+     "minTouches": 2,
+     "minGrossRR": 1,
+     "reason": "DRAW_ON_LIQUIDITY_FOUND",
+     "target": {
+      "price": 209.98,
+      "source": "OPPOSING_LIQUIDITY_POOL",
+      "touches": 2,
+      "grossRR": 2.040699217440696
+     },
+     "candidateCount": 1
+    },
+    "execution": {
+     "valid": true,
+     "reason": "EXECUTION_COST_ACCEPTABLE",
+     "grossRR": 2.041,
+     "netRR": 1.994,
+     "roundTripCost": 0.22036313,
+     "costToRisk": 0.047,
+     "feeBps": 2,
+     "slippageBps": 5,
+     "spreadBps": 2
+    }
+   },
+   "audit": {
+    "version": "1.0",
+    "generatedAt": 1786486086788,
+    "sourceAccount": "jaxiwnl21",
+    "strategy": "DREYKO_SEQUENCE",
+    "passed": true,
+    "events": [
+     {
+      "name": "MANIPULATION_RECLAIM",
+      "passed": true,
+      "details": {
+       "side": "LONG",
+       "at": 496,
+       "sweepAt": 496,
+       "rangeFrom": 466,
+       "rangeTo": 495,
+       "wick": 196.19,
+       "level": 196.65,
+       "rangeHigh": 204.59,
+       "rangeLow": 196.65,
+       "box": {
+        "top": 196.65,
+        "bottom": 196.19
+       }
+      },
+      "sourceTweetId": "1889012222040621477"
+     },
+     {
+      "name": "POST_RECLAIM_DISPLACEMENT",
+      "passed": true,
+      "details": {
+       "index": 496,
+       "t": 1786474800000,
+       "body": 1.2299999999999898,
+       "averageBody": 0.6249999999999958
+      },
+      "sourceTweetId": "1850574993165295834"
+     },
+     {
+      "name": "FIRST_PRESENTED_FVG",
+      "passed": true,
+      "details": {
+       "side": "LONG",
+       "type": "bull",
+       "from": 496,
+       "to": 498,
+       "bottom": 198.82,
+       "top": 199.51,
+       "ce": 199.165
+      },
+      "sourceTweetId": "2069827947830124573"
+     },
+     {
+      "name": "FVG_RETEST_HELD",
+      "passed": true,
+      "details": {
+       "retestIndex": 499,
+       "held": true
+      },
+      "sourceTweetId": "2069827947830124573"
+     },
+     {
+      "name": "LOW_RISK_ENTRY_MODEL",
+      "passed": true,
+      "details": {
+       "entryModel": "IOFED",
+       "iofed": {
+        "zone": {
+         "side": "SHORT",
+         "type": "bear",
+         "from": 491,
+         "to": 493,
+         "bottom": 199.54,
+         "top": 200.21,
+         "ce": 199.875
+        },
+        "flipIndex": 498,
+        "retestIndex": 499,
+        "held": true
+       },
+       "breakaway": null
+      },
+      "sourceTweetId": "1890341000532430981"
+     },
+     {
+      "name": "ASSET_TIME_POLICY",
+      "passed": true,
+      "details": {
+       "assetClass": "CRYPTO",
+       "mode": "CRYPTO_JUDAS",
+       "anchors": {
+        "daily": 199.5,
+        "weekly": 201.94,
+        "monthly": 193.17
+       }
+      },
+      "sourceTweetId": "1808570217523728885"
+     },
+     {
+      "name": "OPENING_ANCHOR_CONTEXT",
+      "passed": true,
+      "details": {
+       "version": "1.0",
+       "valid": true,
+       "side": "LONG",
+       "levels": [
+        {
+         "name": "daily",
+         "price": 199.5
+        },
+        {
+         "name": "weekly",
+         "price": 201.94
+        },
+        {
+         "name": "monthly",
+         "price": 193.17
+        }
+       ],
+       "aligned": [
+        "daily",
+        "monthly"
+       ],
+       "opposed": [
+        "weekly"
+       ],
+       "reclaims": [
+        {
+         "name": "daily",
+         "price": 199.5,
+         "index": 486,
+         "t": 1786438800000
+        },
+        {
+         "name": "weekly",
+         "price": 201.94,
+         "index": 490,
+         "t": 1786453200000
+        }
+       ],
+       "close": 200.23,
+       "minAligned": 2,
+       "mode": "OPEN_SWEEP_RECLAIM",
+       "reason": "OPENING_ANCHOR_RECLAIM"
+      },
+      "sourceTweetId": "1818751555731886376"
+     },
+     {
+      "name": "OPEN_INTEREST_CONTEXT",
+      "passed": false,
+      "details": null,
+      "sourceTweetId": "1919086310352167253"
+     },
+     {
+      "name": "SMT_CONTEXT",
+      "passed": false,
+      "details": {
+       "available": true,
+       "confirmed": false,
+       "divergence": "NONE"
+      },
+      "sourceTweetId": "1828041204627365916"
+     },
+     {
+      "name": "DRAW_ON_LIQUIDITY",
+      "passed": true,
+      "details": {
+       "version": "1.0",
+       "valid": true,
+       "side": "LONG",
+       "entry": 200.33011499999998,
+       "stop": 195.6014,
+       "minTouches": 2,
+       "minGrossRR": 1,
+       "reason": "DRAW_ON_LIQUIDITY_FOUND",
+       "target": {
+        "price": 209.98,
+        "source": "OPPOSING_LIQUIDITY_POOL",
+        "touches": 2,
+        "grossRR": 2.040699217440696
+       },
+       "candidateCount": 1
+      },
+      "sourceTweetId": "1890310291935608911"
+     },
+     {
+      "name": "NET_EXECUTION_RR",
+      "passed": true,
+      "details": {
+       "valid": true,
+       "reason": "EXECUTION_COST_ACCEPTABLE",
+       "grossRR": 2.041,
+       "netRR": 1.994,
+       "roundTripCost": 0.22036313,
+       "costToRisk": 0.047,
+       "feeBps": 2,
+       "slippageBps": 5,
+       "spreadBps": 2
+      },
+      "sourceTweetId": null
+     }
+    ]
+   },
+   "riskDecision": {
+    "allowed": true,
+    "reason": "OK",
+    "weekR": 0,
+    "totalRiskUSD": 100,
+    "directionalRiskUSD": 100,
+    "correlated": 0,
+    "limits": {
+     "enforceTotalRisk": false,
+     "enforceDirectionalRisk": false,
+     "enforceCorrelation": false
+    }
+   },
+   "snap": {
+    "candles": [
+     [
+      1786014000,
+      193.18,
+      195.01,
+      192.53,
+      194.7
+     ],
+     [
+      1786017600,
+      194.7,
+      194.76,
+      192.18,
+      192.44
+     ],
+     [
+      1786021200,
+      192.44,
+      192.67,
+      190.74,
+      191.65
+     ],
+     [
+      1786024800,
+      191.65,
+      192.6,
+      191.26,
+      191.89
+     ],
+     [
+      1786028400,
+      191.89,
+      193.8,
+      191.7,
+      193.17
+     ],
+     [
+      1786032000,
+      193.17,
+      193.52,
+      192.53,
+      193.3
+     ],
+     [
+      1786035600,
+      193.3,
+      193.36,
+      191.82,
+      192.58
+     ],
+     [
+      1786039200,
+      192.58,
+      193,
+      191.85,
+      192.83
+     ],
+     [
+      1786042800,
+      192.83,
+      193.95,
+      191.49,
+      191.58
+     ],
+     [
+      1786046400,
+      191.58,
+      192.8,
+      191.47,
+      192.62
+     ],
+     [
+      1786050000,
+      192.62,
+      193.16,
+      192.58,
+      192.62
+     ],
+     [
+      1786053600,
+      192.62,
+      193.08,
+      192.02,
+      192.44
+     ],
+     [
+      1786057200,
+      192.44,
+      192.44,
+      191.52,
+      192.09
+     ],
+     [
+      1786060800,
+      192.09,
+      192.55,
+      191.27,
+      192.36
+     ],
+     [
+      1786064400,
+      192.36,
+      192.75,
+      191.68,
+      192.14
+     ],
+     [
+      1786068000,
+      192.14,
+      192.86,
+      191.62,
+      192.03
+     ],
+     [
+      1786071600,
+      192.03,
+      192.19,
+      191.12,
+      191.13
+     ],
+     [
+      1786075200,
+      191.13,
+      191.7,
+      190.34,
+      190.79
+     ],
+     [
+      1786078800,
+      190.79,
+      191.63,
+      190.01,
+      191.5
+     ],
+     [
+      1786082400,
+      191.5,
+      192.51,
+      191.07,
+      192.14
+     ],
+     [
+      1786086000,
+      192.14,
+      192.86,
+      191.56,
+      191.62
+     ],
+     [
+      1786089600,
+      191.62,
+      192.8,
+      190.9,
+      192.42
+     ],
+     [
+      1786093200,
+      192.42,
+      193.6,
+      192.42,
+      193.14
+     ],
+     [
+      1786096800,
+      193.14,
+      193.74,
+      192.71,
+      193.23
+     ],
+     [
+      1786100400,
+      193.23,
+      194.7,
+      193.05,
+      193.78
+     ],
+     [
+      1786104000,
+      193.78,
+      194.51,
+      192.6,
+      193.22
+     ],
+     [
+      1786107600,
+      193.22,
+      193.84,
+      192.31,
+      193.04
+     ],
+     [
+      1786111200,
+      193.04,
+      193.65,
+      192.33,
+      192.41
+     ],
+     [
+      1786114800,
+      192.41,
+      194.42,
+      192.16,
+      193.75
+     ],
+     [
+      1786118400,
+      193.75,
+      194.16,
+      192.94,
+      192.94
+     ],
+     [
+      1786122000,
+      192.94,
+      192.94,
+      190.63,
+      191.02
+     ],
+     [
+      1786125600,
+      191.02,
+      192,
+      191.02,
+      191.45
+     ],
+     [
+      1786129200,
+      191.45,
+      194.17,
+      191.39,
+      193.88
+     ],
+     [
+      1786132800,
+      193.88,
+      195,
+      193.5,
+      194.88
+     ],
+     [
+      1786136400,
+      194.88,
+      195.34,
+      193.67,
+      193.72
+     ],
+     [
+      1786140000,
+      193.72,
+      194.15,
+      193.13,
+      193.44
+     ],
+     [
+      1786143600,
+      193.44,
+      195.34,
+      193.26,
+      193.44
+     ],
+     [
+      1786147200,
+      193.44,
+      193.52,
+      192.79,
+      193.02
+     ],
+     [
+      1786150800,
+      193.02,
+      193.92,
+      192.99,
+      193.46
+     ],
+     [
+      1786154400,
+      193.46,
+      194.5,
+      192.97,
+      193.96
+     ],
+     [
+      1786158000,
+      193.96,
+      197,
+      193.96,
+      196.19
+     ],
+     [
+      1786161600,
+      196.19,
+      197.18,
+      195.25,
+      195.52
+     ],
+     [
+      1786165200,
+      195.52,
+      195.53,
+      194.64,
+      195.37
+     ],
+     [
+      1786168800,
+      195.37,
+      197.77,
+      195.37,
+      197.33
+     ],
+     [
+      1786172400,
+      197.33,
+      197.49,
+      196.1,
+      196.52
+     ],
+     [
+      1786176000,
+      196.52,
+      196.86,
+      196.19,
+      196.68
+     ],
+     [
+      1786179600,
+      196.68,
+      196.78,
+      196,
+      196.15
+     ],
+     [
+      1786183200,
+      196.15,
+      196.85,
+      196.06,
+      196.55
+     ],
+     [
+      1786186800,
+      196.55,
+      196.73,
+      195.8,
+      196.47
+     ],
+     [
+      1786190400,
+      196.47,
+      197.15,
+      196.29,
+      196.78
+     ],
+     [
+      1786194000,
+      196.78,
+      197.11,
+      195.61,
+      195.76
+     ],
+     [
+      1786197600,
+      195.76,
+      197.29,
+      195.66,
+      197.2
+     ],
+     [
+      1786201200,
+      197.2,
+      198.33,
+      196.88,
+      197.97
+     ],
+     [
+      1786204800,
+      197.97,
+      198.22,
+      197.17,
+      198.09
+     ],
+     [
+      1786208400,
+      198.09,
+      199.27,
+      197.69,
+      198.79
+     ],
+     [
+      1786212000,
+      198.79,
+      200,
+      197.98,
+      198.19
+     ],
+     [
+      1786215600,
+      198.19,
+      198.41,
+      197,
+      198.33
+     ],
+     [
+      1786219200,
+      198.33,
+      198.86,
+      197.97,
+      198.73
+     ],
+     [
+      1786222800,
+      198.73,
+      200,
+      198.58,
+      199.2
+     ],
+     [
+      1786226400,
+      199.2,
+      199.73,
+      198.5,
+      198.9
+     ],
+     [
+      1786230000,
+      198.9,
+      205.35,
+      198.51,
+      203.72
+     ],
+     [
+      1786233600,
+      203.72,
+      209.97,
+      203.49,
+      208.55
+     ],
+     [
+      1786237200,
+      208.55,
+      209.17,
+      204.66,
+      205.3
+     ],
+     [
+      1786240800,
+      205.3,
+      206.64,
+      204.27,
+      205.96
+     ],
+     [
+      1786244400,
+      205.96,
+      208.21,
+      204.26,
+      207.45
+     ],
+     [
+      1786248000,
+      207.45,
+      209.99,
+      205.63,
+      205.95
+     ],
+     [
+      1786251600,
+      205.95,
+      207.19,
+      205.27,
+      206.19
+     ],
+     [
+      1786255200,
+      206.19,
+      206.89,
+      204.87,
+      205.25
+     ],
+     [
+      1786258800,
+      205.25,
+      206.25,
+      204.32,
+      205.98
+     ],
+     [
+      1786262400,
+      205.98,
+      206.98,
+      205.12,
+      206.38
+     ],
+     [
+      1786266000,
+      206.38,
+      206.54,
+      204.7,
+      205.46
+     ],
+     [
+      1786269600,
+      205.46,
+      205.97,
+      204.51,
+      204.58
+     ],
+     [
+      1786273200,
+      204.58,
+      207.7,
+      202.47,
+      206.78
+     ],
+     [
+      1786276800,
+      206.78,
+      207.85,
+      205.4,
+      206.37
+     ],
+     [
+      1786280400,
+      206.37,
+      209.3,
+      206.27,
+      208.78
+     ],
+     [
+      1786284000,
+      208.78,
+      209.89,
+      207.48,
+      208.68
+     ],
+     [
+      1786287600,
+      208.68,
+      210.49,
+      208.08,
+      208.84
+     ],
+     [
+      1786291200,
+      208.84,
+      210.1,
+      207.05,
+      207.46
+     ],
+     [
+      1786294800,
+      207.46,
+      207.7,
+      206.69,
+      207.04
+     ],
+     [
+      1786298400,
+      207.04,
+      207.68,
+      206.85,
+      206.93
+     ],
+     [
+      1786302000,
+      206.93,
+      207.28,
+      205.95,
+      206.97
+     ],
+     [
+      1786305600,
+      206.97,
+      207.04,
+      205.63,
+      205.81
+     ],
+     [
+      1786309200,
+      205.81,
+      206.94,
+      205.22,
+      206.2
+     ],
+     [
+      1786312800,
+      206.2,
+      207.03,
+      203.28,
+      204.14
+     ],
+     [
+      1786316400,
+      204.14,
+      204.16,
+      201.33,
+      201.94
+     ],
+     [
+      1786320000,
+      201.94,
+      204.4,
+      200.5,
+      203.57
+     ],
+     [
+      1786323600,
+      203.57,
+      205.2,
+      202.83,
+      204.71
+     ],
+     [
+      1786327200,
+      204.71,
+      204.72,
+      202.37,
+      203.68
+     ],
+     [
+      1786330800,
+      203.68,
+      203.74,
+      201.91,
+      202.24
+     ],
+     [
+      1786334400,
+      202.24,
+      203,
+      201.79,
+      201.91
+     ],
+     [
+      1786338000,
+      201.91,
+      204.06,
+      201.75,
+      203.67
+     ],
+     [
+      1786341600,
+      203.67,
+      204.1,
+      203.06,
+      203.88
+     ],
+     [
+      1786345200,
+      203.88,
+      204.4,
+      203.2,
+      203.97
+     ],
+     [
+      1786348800,
+      203.97,
+      204.28,
+      202.62,
+      203.64
+     ],
+     [
+      1786352400,
+      203.64,
+      203.77,
+      202.31,
+      202.58
+     ],
+     [
+      1786356000,
+      202.58,
+      203.72,
+      202.32,
+      203.51
+     ],
+     [
+      1786359600,
+      203.51,
+      205.63,
+      203.16,
+      205.14
+     ],
+     [
+      1786363200,
+      205.14,
+      205.85,
+      202.63,
+      202.86
+     ],
+     [
+      1786366800,
+      202.86,
+      204,
+      202.75,
+      203.2
+     ],
+     [
+      1786370400,
+      203.2,
+      204.59,
+      202.29,
+      202.63
+     ],
+     [
+      1786374000,
+      202.63,
+      203.44,
+      201.48,
+      202.36
+     ],
+     [
+      1786377600,
+      202.36,
+      203.2,
+      201.55,
+      201.96
+     ],
+     [
+      1786381200,
+      201.96,
+      203.86,
+      201.63,
+      202.33
+     ],
+     [
+      1786384800,
+      202.33,
+      202.33,
+      199.8,
+      199.8
+     ],
+     [
+      1786388400,
+      199.8,
+      202.45,
+      199.79,
+      200.94
+     ],
+     [
+      1786392000,
+      200.94,
+      202.28,
+      200.1,
+      201.75
+     ],
+     [
+      1786395600,
+      201.75,
+      202.43,
+      198.64,
+      198.93
+     ],
+     [
+      1786399200,
+      198.93,
+      199.78,
+      198.2,
+      198.7
+     ],
+     [
+      1786402800,
+      198.7,
+      199.83,
+      198.45,
+      199.5
+     ],
+     [
+      1786406400,
+      199.5,
+      199.73,
+      198.91,
+      199.09
+     ],
+     [
+      1786410000,
+      199.09,
+      200.08,
+      198.36,
+      199.28
+     ],
+     [
+      1786413600,
+      199.28,
+      200.28,
+      199.26,
+      199.39
+     ],
+     [
+      1786417200,
+      199.39,
+      199.96,
+      198.93,
+      199.41
+     ],
+     [
+      1786420800,
+      199.41,
+      199.81,
+      198.91,
+      198.93
+     ],
+     [
+      1786424400,
+      198.93,
+      199.66,
+      198.69,
+      198.99
+     ],
+     [
+      1786428000,
+      198.99,
+      199.24,
+      198.59,
+      199.07
+     ],
+     [
+      1786431600,
+      199.07,
+      199.43,
+      198.44,
+      199.07
+     ],
+     [
+      1786435200,
+      199.07,
+      199.8,
+      198.4,
+      199.35
+     ],
+     [
+      1786438800,
+      199.35,
+      200.69,
+      199.18,
+      200.54
+     ],
+     [
+      1786442400,
+      200.54,
+      201.88,
+      199.69,
+      201.3
+     ],
+     [
+      1786446000,
+      201.3,
+      202,
+      200.69,
+      201.27
+     ],
+     [
+      1786449600,
+      201.27,
+      202.16,
+      200.46,
+      201.8
+     ],
+     [
+      1786453200,
+      201.8,
+      203.77,
+      201.8,
+      202.54
+     ],
+     [
+      1786456800,
+      202.54,
+      203.55,
+      200.21,
+      200.72
+     ],
+     [
+      1786460400,
+      200.72,
+      201.57,
+      196.65,
+      198.24
+     ],
+     [
+      1786464000,
+      198.24,
+      199.54,
+      197.78,
+      198.32
+     ],
+     [
+      1786467600,
+      198.32,
+      199.4,
+      198.18,
+      198.92
+     ],
+     [
+      1786471200,
+      198.92,
+      199.26,
+      196.87,
+      197.08
+     ],
+     [
+      1786474800,
+      197.08,
+      198.82,
+      196.19,
+      198.31
+     ],
+     [
+      1786478400,
+      198.31,
+      199.93,
+      198.26,
+      199.53
+     ],
+     [
+      1786482000,
+      199.53,
+      200.75,
+      199.51,
+      200.3
+     ],
+     [
+      1786485600,
+      200.3,
+      200.66,
+      200.06,
+      200.23
+     ]
+    ],
+    "manip": {
+     "rangeFrom": 98,
+     "rangeTo": 127,
+     "sweepAt": 128,
+     "at": 128,
+     "rangeHigh": 204.59,
+     "rangeLow": 196.65,
+     "wick": 196.19,
+     "side": "LONG"
+    },
+    "sequence": {
+     "state": "ENTRY_ARMED",
+     "entryModel": "IOFED",
+     "displacementAt": 128,
+     "retestAt": 131,
+     "firstFvg": {
+      "side": "LONG",
+      "type": "bull",
+      "from": 128,
+      "to": 130,
+      "bottom": 198.82,
+      "top": 199.51,
+      "ce": 199.165
+     },
+     "iofed": {
+      "zone": {
+       "side": "SHORT",
+       "type": "bear",
+       "from": 123,
+       "to": 125,
+       "bottom": 199.54,
+       "top": 200.21,
+       "ce": 199.875
+      },
+      "flipIndex": 130,
+      "retestIndex": 131,
+      "held": true
+     },
+     "breakaway": null
+    },
+    "anchors": {
+     "daily": 199.5,
+     "weekly": 201.94,
+     "monthly": 193.17
+    }
+   },
+   "openedAt": 1786486086788,
+   "lastCheck": 1786486086788,
+   "status": "open",
+   "deriskDone": false,
+   "realized": 0,
+   "feeCharged": false,
+   "fills": []
+  }
+ ],
  "closed": [],
- "recentSigs": [],
+ "recentSigs": [
+  "DREYKO|TAO_USDT|60m|LONG|1786474800000"
+ ],
  "equityHistory": [
   {
    "t": 1786469816862,
@@ -24128,6 +26943,11 @@
    "t": 1786482778274,
    "eq": 10000,
    "open": 0
+  },
+  {
+   "t": 1786486090577,
+   "eq": 10000,
+   "open": 1
   }
  ],
  "stats": {
@@ -24158,7 +26978,7 @@
   "dailyLossLimitR": null,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786482760038,
+   "generatedAt": 1786486077218,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -24186,39 +27006,32 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 75,
-   "grade": "A+",
+   "conf": 55,
+   "grade": "B",
    "entry": 0.002672,
    "sl": 0.002661,
    "tp1": 0.002943,
    "tpF": 0.002943,
    "rrPlan": 20,
-   "status": "BEKLİYOR / RED",
-   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "status": "ÖN İZLEME",
+   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
-    "⚠ Hedef likiditesi (0.002861) son 20 barda zaten alınmış — yigit: kovalamak riskli",
+    "⚠ FVG EQ (0.0027175) henüz kazanılmadı — yigit: teyit bekle",
+    "⚠ Hedef likiditesi (0.0027955) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: Value Area içinde [0.002475–0.002943] (SolCJ)",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
-    "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
+    "MMxM 3/5 (LTF verisi yok — ön izleme)"
    ],
    "mmxm": {
-    "score": 4,
+    "score": 3,
     "max": 5,
-    "valid": true
+    "valid": false
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      0.002319,
-      0.002327,
-      0.002291,
-      0.0023
-     ],
      [
       1786014000,
       0.0023,
@@ -25133,45 +27946,32 @@
       1786482000,
       0.002754,
       0.002773,
-      0.002742,
-      0.002743
+      0.002711,
+      0.002719
+     ],
+     [
+      1786485600,
+      0.002719,
+      0.002727,
+      0.002715,
+      0.002716
      ]
     ],
     "manip": {
-     "rangeFrom": 97,
-     "rangeTo": 126,
-     "sweepAt": 127,
-     "at": 127,
+     "rangeFrom": 96,
+     "rangeTo": 125,
+     "sweepAt": 126,
+     "at": 126,
      "rangeHigh": 0.002943,
      "rangeLow": 0.002672,
      "wick": 0.002669,
      "side": "LONG"
     },
-    "sequence": {
-     "state": "WAITING_FVG_RETEST",
-     "entryModel": null,
-     "displacementAt": 130,
-     "retestAt": null,
-     "firstFvg": {
-      "side": "LONG",
-      "type": "bull",
-      "from": 129,
-      "to": 131,
-      "bottom": 0.002721,
-      "top": 0.002742,
-      "ce": 0.0027315
-     },
-     "iofed": null,
-     "breakaway": null
-    },
-    "anchors": {
-     "daily": 0.002777,
-     "weekly": 0.002673,
-     "monthly": 0.00207
-    }
+    "sequence": null,
+    "anchors": null
    },
-   "openedAt": 1786482777331,
-   "observedAt": 1786482777331
+   "openedAt": 1786486090050,
+   "observedAt": 1786486090050
   },
   {
    "id": "DREYKO|NAS100_USDT",
@@ -25192,11 +27992,11 @@
    "reasons": [
     "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
     "Smart Money Reversal",
-    "⚠ FVG EQ (29541) henüz kazanılmadı — yigit: teyit bekle",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (29738) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: POC yakını (29652.48) (SolCJ)",
-    "iFVG POI: geçersizleşen FVG dirence döndü [29619–29649] (SolCJ)",
-    "OTE 0.618–0.786 desteği [29725.29–29778.38] (JB: fib-backed giriş)",
+    "iFVG POI: geçersizleşen FVG dirence döndü [29648–29697] (SolCJ)",
+    "OTE 0.618–0.786 desteği [29711.15–29770.46] (JB: fib-backed giriş)",
     "Market Maker Sell Model · Hedef: karşı range / IPDA"
    ],
    "mmxm": {
@@ -25206,13 +28006,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      29408,
-      29416,
-      29345,
-      29360
-     ],
      [
       1786014000,
       29360,
@@ -26127,15 +28920,22 @@
       1786482000,
       29536,
       29846,
-      29530,
-      29555
+      29493,
+      29542
+     ],
+     [
+      1786485600,
+      29542,
+      29544,
+      29517,
+      29522
      ]
     ],
     "manip": {
-     "rangeFrom": 101,
-     "rangeTo": 130,
-     "sweepAt": 131,
-     "at": 131,
+     "rangeFrom": 100,
+     "rangeTo": 129,
+     "sweepAt": 130,
+     "at": 130,
      "rangeHigh": 29768,
      "rangeLow": 29422,
      "wick": 29846,
@@ -26144,8 +28944,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482776620,
-   "observedAt": 1786482776620
+   "openedAt": 1786486089631,
+   "observedAt": 1786486089631
   },
   {
    "id": "DREYKO|AVAX_USDT",
@@ -26162,7 +28962,7 @@
    "tpF": 6.585,
    "rrPlan": 2.8,
    "status": "BEKLİYOR / RED",
-   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "reason": "WAITING_LOW_RISK_ENTRY",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
@@ -26180,13 +28980,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      6.521,
-      6.521,
-      6.349,
-      6.405
-     ],
      [
       1786014000,
       6.405,
@@ -27101,36 +29894,56 @@
       1786482000,
       6.304,
       6.317,
-      6.302,
+      6.288,
       6.312
+     ],
+     [
+      1786485600,
+      6.312,
+      6.33,
+      6.31,
+      6.313
      ]
     ],
     "manip": {
-     "rangeFrom": 95,
-     "rangeTo": 124,
-     "sweepAt": 125,
-     "at": 128,
+     "rangeFrom": 94,
+     "rangeTo": 123,
+     "sweepAt": 124,
+     "at": 127,
      "rangeHigh": 6.579,
      "rangeLow": 6.221,
      "wick": 6.108,
      "side": "LONG"
     },
     "sequence": {
-     "state": "WAITING_FVG_RETEST",
-     "entryModel": null,
-     "displacementAt": 129,
+     "state": "BREAKAWAY_GAP_CONFIRMED",
+     "entryModel": "BREAKAWAY_GAP",
+     "displacementAt": 128,
      "retestAt": null,
      "firstFvg": {
       "side": "LONG",
       "type": "bull",
-      "from": 128,
-      "to": 130,
+      "from": 127,
+      "to": 129,
       "bottom": 6.239,
       "top": 6.269,
       "ce": 6.254
      },
      "iofed": null,
-     "breakaway": null
+     "breakaway": {
+      "confirmed": true,
+      "barsUntouched": 2,
+      "extensionInGaps": 1.466666666666641,
+      "zone": {
+       "side": "LONG",
+       "type": "bull",
+       "from": 127,
+       "to": 129,
+       "bottom": 6.239,
+       "top": 6.269,
+       "ce": 6.254
+      }
+     }
     },
     "anchors": {
      "daily": 6.432,
@@ -27138,8 +29951,8 @@
      "monthly": 6.382
     }
    },
-   "openedAt": 1786482775587,
-   "observedAt": 1786482775587
+   "openedAt": 1786486089203,
+   "observedAt": 1786486089203
   },
   {
    "id": "DREYKO|WLD_USDT",
@@ -27174,13 +29987,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      0.3047,
-      0.3062,
-      0.3025,
-      0.3037
-     ],
      [
       1786014000,
       0.3037,
@@ -28094,16 +30900,23 @@
      [
       1786482000,
       0.3363,
-      0.3363,
-      0.3353,
+      0.339,
+      0.3351,
+      0.3366
+     ],
+     [
+      1786485600,
+      0.3366,
+      0.3376,
+      0.3362,
       0.3362
      ]
     ],
     "manip": {
-     "rangeFrom": 94,
-     "rangeTo": 123,
-     "sweepAt": 124,
-     "at": 125,
+     "rangeFrom": 93,
+     "rangeTo": 122,
+     "sweepAt": 123,
+     "at": 124,
      "rangeHigh": 0.354,
      "rangeLow": 0.3279,
      "wick": 0.3243,
@@ -28112,8 +30925,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482774844,
-   "observedAt": 1786482774844
+   "openedAt": 1786486088258,
+   "observedAt": 1786486088258
   },
   {
    "id": "DREYKO|SPX500_USDT",
@@ -28135,7 +30948,7 @@
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "RSI 36",
+    "RSI 38",
     "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (7739.73) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: POC yakını (7762.75) (SolCJ)",
@@ -28148,13 +30961,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      7739.3,
-      7739.3,
-      7730.3,
-      7732.4
-     ],
      [
       1786014000,
       7732.4,
@@ -29069,15 +31875,22 @@
       1786482000,
       7729.6,
       7740,
-      7727.1,
-      7729.6
+      7723.8,
+      7723.8
+     ],
+     [
+      1786485600,
+      7723.8,
+      7731.6,
+      7723.8,
+      7728.8
      ]
     ],
     "manip": {
-     "rangeFrom": 98,
-     "rangeTo": 127,
-     "sweepAt": 128,
-     "at": 129,
+     "rangeFrom": 97,
+     "rangeTo": 126,
+     "sweepAt": 127,
+     "at": 128,
      "rangeHigh": 7773.3,
      "rangeLow": 7724,
      "wick": 7714.6,
@@ -29097,8 +31910,8 @@
      "monthly": 7447.9
     }
    },
-   "openedAt": 1786482774327,
-   "observedAt": 1786482774327
+   "openedAt": 1786486087840,
+   "observedAt": 1786486087840
   },
   {
    "id": "DREYKO|TAO_USDT",
@@ -29107,39 +31920,32 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 55,
-   "grade": "B",
-   "entry": 196.65,
+   "conf": 75,
+   "grade": "A+",
+   "entry": 200.330115,
    "sl": 195.6014,
    "tp1": 204.59,
-   "tpF": 210.49,
-   "rrPlan": 13.2,
-   "status": "ÖN İZLEME",
-   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
+   "tpF": 209.98,
+   "rrPlan": 2.04,
+   "status": "İŞLEM AÇILDI",
+   "reason": null,
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "CISD / displacement teyidi (güçlü geri alım mumu)",
     "Bias uyumlu (Bullish)",
-    "⚠ FVG EQ (201.61) henüz kazanılmadı — yigit: teyit bekle",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (197.0567) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
-    "MMxM 4/5 (LTF verisi yok — ön izleme)"
+    "GERÇEK MMxM ✓ 5/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
    ],
    "mmxm": {
-    "score": 4,
+    "score": 5,
     "max": 5,
-    "valid": false
+    "valid": true
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      193.22,
-      194,
-      192.47,
-      193.18
-     ],
      [
       1786014000,
       193.18,
@@ -30053,26 +32859,66 @@
      [
       1786482000,
       199.53,
-      200.71,
+      200.75,
       199.51,
-      200.58
+      200.3
+     ],
+     [
+      1786485600,
+      200.3,
+      200.66,
+      200.06,
+      200.23
      ]
     ],
     "manip": {
-     "rangeFrom": 99,
-     "rangeTo": 128,
-     "sweepAt": 129,
-     "at": 129,
+     "rangeFrom": 98,
+     "rangeTo": 127,
+     "sweepAt": 128,
+     "at": 128,
      "rangeHigh": 204.59,
      "rangeLow": 196.65,
      "wick": 196.19,
      "side": "LONG"
     },
-    "sequence": null,
-    "anchors": null
+    "sequence": {
+     "state": "ENTRY_ARMED",
+     "entryModel": "IOFED",
+     "displacementAt": 128,
+     "retestAt": 131,
+     "firstFvg": {
+      "side": "LONG",
+      "type": "bull",
+      "from": 128,
+      "to": 130,
+      "bottom": 198.82,
+      "top": 199.51,
+      "ce": 199.165
+     },
+     "iofed": {
+      "zone": {
+       "side": "SHORT",
+       "type": "bear",
+       "from": 123,
+       "to": 125,
+       "bottom": 199.54,
+       "top": 200.21,
+       "ce": 199.875
+      },
+      "flipIndex": 130,
+      "retestIndex": 131,
+      "held": true
+     },
+     "breakaway": null
+    },
+    "anchors": {
+     "daily": 199.5,
+     "weekly": 201.94,
+     "monthly": 193.17
+    }
    },
-   "openedAt": 1786482773140,
-   "observedAt": 1786482773140
+   "openedAt": 1786486086788,
+   "observedAt": 1786486086788
   },
   {
    "id": "DREYKO|SUI_USDT",
@@ -30106,13 +32952,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      0.6776,
-      0.6776,
-      0.6681,
-      0.6737
-     ],
      [
       1786014000,
       0.6737,
@@ -31026,16 +33865,23 @@
      [
       1786482000,
       0.687,
-      0.6882,
+      0.6917,
       0.6864,
-      0.6877
+      0.6909
+     ],
+     [
+      1786485600,
+      0.6909,
+      0.6951,
+      0.6909,
+      0.6929
      ]
     ],
     "manip": {
-     "rangeFrom": 95,
-     "rangeTo": 124,
-     "sweepAt": 125,
-     "at": 125,
+     "rangeFrom": 94,
+     "rangeTo": 123,
+     "sweepAt": 124,
+     "at": 124,
      "rangeHigh": 0.6975,
      "rangeLow": 0.6747,
      "wick": 0.6719,
@@ -31044,8 +33890,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482771734,
-   "observedAt": 1786482771734
+   "openedAt": 1786486085839,
+   "observedAt": 1786486085839
   },
   {
    "id": "DREYKO|PEPE_USDT",
@@ -31054,39 +33900,32 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 75,
-   "grade": "A+",
+   "conf": 55,
+   "grade": "B",
    "entry": 0.000003,
    "sl": 0.000003,
    "tp1": 0.000003,
    "tpF": 0.000003,
    "rrPlan": 9,
-   "status": "BEKLİYOR / RED",
-   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "status": "ÖN İZLEME",
+   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "RSI 44",
-    "⚠ FVG EQ (0.00000282) henüz kazanılmadı — yigit: teyit bekle",
+    "⚠ FVG EQ (0.00000285) henüz kazanılmadı — yigit: teyit bekle",
     "⚠ Hedef likiditesi (0.00000278) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-    "OTE 0.618–0.786 desteği [0.00000278–0.0000028] (JB: fib-backed giriş)",
-    "Market Maker Buy Model · Hedef: karşı range / IPDA"
+    "OTE 0.618–0.786 desteği [0.00000279–0.0000028] (JB: fib-backed giriş)",
+    "Market Maker Buy Model · Hedef: karşı range / IPDA",
+    "MMxM 3/5 (LTF verisi yok — ön izleme)"
    ],
    "mmxm": {
-    "score": 4,
+    "score": 3,
     "max": 5,
-    "valid": true
+    "valid": false
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      0.000003,
-      0.000003,
-      0.000003,
-      0.000003
-     ],
      [
       1786014000,
       0.000003,
@@ -32003,43 +34842,30 @@
       0.000003,
       0.000003,
       0.000003
+     ],
+     [
+      1786485600,
+      0.000003,
+      0.000003,
+      0.000003,
+      0.000003
      ]
     ],
     "manip": {
-     "rangeFrom": 95,
-     "rangeTo": 124,
-     "sweepAt": 125,
-     "at": 125,
+     "rangeFrom": 94,
+     "rangeTo": 123,
+     "sweepAt": 124,
+     "at": 124,
      "rangeHigh": 0.0000029,
      "rangeLow": 0.00000278,
      "wick": 0.00000277,
      "side": "LONG"
     },
-    "sequence": {
-     "state": "WAITING_FVG_RETEST",
-     "entryModel": null,
-     "displacementAt": 130,
-     "retestAt": null,
-     "firstFvg": {
-      "side": "LONG",
-      "type": "bull",
-      "from": 128,
-      "to": 130,
-      "bottom": 0.0000027986,
-      "top": 0.0000028027,
-      "ce": 0.00000280065
-     },
-     "iofed": null,
-     "breakaway": null
-    },
-    "anchors": {
-     "daily": 0.0000028756,
-     "weekly": 0.0000028828,
-     "monthly": 0.0000027535
-    }
+    "sequence": null,
+    "anchors": null
    },
-   "openedAt": 1786482770126,
-   "observedAt": 1786482770126
+   "openedAt": 1786486084636,
+   "observedAt": 1786486084636
   },
   {
    "id": "DREYKO|ZEC_USDT",
@@ -32048,39 +34874,31 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 95,
-   "grade": "A+",
+   "conf": 55,
+   "grade": "B",
    "entry": 469.71,
    "sl": 464.7815,
    "tp1": 509.22,
-   "tpF": 529.09,
-   "rrPlan": 12,
-   "status": "BEKLİYOR / RED",
-   "reason": "OPENING_ANCHOR_CONFLICT",
+   "tpF": 527,
+   "rrPlan": 11.6,
+   "status": "ÖN İZLEME",
+   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "RSI 43",
     "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (474.775) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-    "OTE 0.618–0.786 desteği [469.3386–471.8183] (JB: fib-backed giriş)",
-    "Market Maker Buy Model · Hedef: karşı range / IPDA"
+    "Market Maker Buy Model · Hedef: karşı range / IPDA",
+    "MMxM 3/5 (LTF verisi yok — ön izleme)"
    ],
    "mmxm": {
-    "score": 4,
+    "score": 3,
     "max": 5,
-    "valid": true
+    "valid": false
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      503.45,
-      503.79,
-      494.58,
-      495.25
-     ],
      [
       1786014000,
       495.25,
@@ -32994,30 +35812,33 @@
      [
       1786482000,
       478.39,
-      480.94,
+      482.16,
       478,
-      480.3
+      480.99
+     ],
+     [
+      1786485600,
+      480.99,
+      484.92,
+      480.99,
+      482.61
      ]
     ],
     "manip": {
-     "rangeFrom": 96,
-     "rangeTo": 125,
-     "sweepAt": 126,
-     "at": 127,
+     "rangeFrom": 95,
+     "rangeTo": 124,
+     "sweepAt": 125,
+     "at": 126,
      "rangeHigh": 509.22,
      "rangeLow": 469.71,
      "wick": 466.18,
      "side": "LONG"
     },
     "sequence": null,
-    "anchors": {
-     "daily": 496,
-     "weekly": 509.67,
-     "monthly": 457.52
-    }
+    "anchors": null
    },
-   "openedAt": 1786482768783,
-   "observedAt": 1786482768783
+   "openedAt": 1786486083829,
+   "observedAt": 1786486083829
   },
   {
    "id": "DREYKO|SNDKSTOCK_USDT",
@@ -33052,13 +35873,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      1235.63,
-      1238.36,
-      1211.66,
-      1216.34
-     ],
      [
       1786014000,
       1216.34,
@@ -33972,16 +36786,23 @@
      [
       1786482000,
       1275,
-      1276.52,
-      1273.96,
-      1274.02
+      1276.89,
+      1273.55,
+      1275.07
+     ],
+     [
+      1786485600,
+      1275.07,
+      1275.88,
+      1273.55,
+      1274
      ]
     ],
     "manip": {
-     "rangeFrom": 93,
-     "rangeTo": 122,
-     "sweepAt": 123,
-     "at": 123,
+     "rangeFrom": 92,
+     "rangeTo": 121,
+     "sweepAt": 122,
+     "at": 122,
      "rangeHigh": 1278.39,
      "rangeLow": 1191.26,
      "wick": 1287.3,
@@ -33990,8 +36811,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482768086,
-   "observedAt": 1786482768086
+   "openedAt": 1786486083398,
+   "observedAt": 1786486083398
   },
   {
    "id": "DREYKO|MUSTOCK_USDT",
@@ -34026,13 +36847,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      864.45,
-      866.72,
-      850.42,
-      853.4
-     ],
      [
       1786014000,
       853.4,
@@ -34947,15 +37761,22 @@
       1786482000,
       866.46,
       867.9,
-      866.46,
-      866.85
+      865.47,
+      866.62
+     ],
+     [
+      1786485600,
+      866.62,
+      867.25,
+      865.55,
+      865.84
      ]
     ],
     "manip": {
-     "rangeFrom": 94,
-     "rangeTo": 123,
-     "sweepAt": 124,
-     "at": 124,
+     "rangeFrom": 93,
+     "rangeTo": 122,
+     "sweepAt": 123,
+     "at": 123,
      "rangeHigh": 895.64,
      "rangeLow": 853.44,
      "wick": 845.8,
@@ -34964,8 +37785,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482767552,
-   "observedAt": 1786482767552
+   "openedAt": 1786486082992,
+   "observedAt": 1786486082992
   },
   {
    "id": "DREYKO|SPCXSTOCK_USDT",
@@ -35000,13 +37821,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      109.96,
-      110.56,
-      109.46,
-      110.08
-     ],
      [
       1786014000,
       110.08,
@@ -35920,16 +38734,23 @@
      [
       1786482000,
       132.84,
-      132.97,
-      132.84,
-      132.95
+      132.98,
+      132.72,
+      132.79
+     ],
+     [
+      1786485600,
+      132.79,
+      132.87,
+      132.77,
+      132.8
      ]
     ],
     "manip": {
-     "rangeFrom": 93,
-     "rangeTo": 122,
-     "sweepAt": 123,
-     "at": 123,
+     "rangeFrom": 92,
+     "rangeTo": 121,
+     "sweepAt": 122,
+     "at": 122,
      "rangeHigh": 139.56,
      "rangeLow": 130.26,
      "wick": 139.96,
@@ -35938,8 +38759,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482767033,
-   "observedAt": 1786482767033
+   "openedAt": 1786486082603,
+   "observedAt": 1786486082603
   },
   {
    "id": "DREYKO|HYPE_USDT",
@@ -35950,7 +38771,7 @@
    "model": "MM Buy Model",
    "conf": 75,
    "grade": "A+",
-   "entry": 54.663318,
+   "entry": 54.684328,
    "sl": 53.5578,
    "tp1": 56.126,
    "tpF": 55.8505,
@@ -35974,13 +38795,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      55.59,
-      55.705,
-      55.35,
-      55.567
-     ],
      [
       1786014000,
       55.567,
@@ -36894,16 +39708,23 @@
      [
       1786482000,
       54.658,
-      54.702,
-      54.589,
-      54.636
+      54.758,
+      54.462,
+      54.637
+     ],
+     [
+      1786485600,
+      54.637,
+      54.77,
+      54.637,
+      54.657
      ]
     ],
     "manip": {
-     "rangeFrom": 95,
-     "rangeTo": 124,
-     "sweepAt": 125,
-     "at": 127,
+     "rangeFrom": 94,
+     "rangeTo": 123,
+     "sweepAt": 124,
+     "at": 126,
      "rangeHigh": 56.126,
      "rangeLow": 53.94,
      "wick": 53.719,
@@ -36911,14 +39732,14 @@
     },
     "sequence": {
      "state": "ENTRY_ARMED",
-     "entryModel": "IOFED",
-     "displacementAt": 129,
-     "retestAt": 131,
+     "entryModel": "FIRST_PRESENTED_FVG",
+     "displacementAt": 128,
+     "retestAt": 130,
      "firstFvg": {
       "side": "LONG",
       "type": "bull",
-      "from": 128,
-      "to": 130,
+      "from": 127,
+      "to": 129,
       "bottom": 54.306,
       "top": 54.461,
       "ce": 54.3835
@@ -36927,14 +39748,14 @@
       "zone": {
        "side": "SHORT",
        "type": "bear",
-       "from": 123,
-       "to": 125,
+       "from": 122,
+       "to": 124,
        "bottom": 54.481,
        "top": 54.573,
        "ce": 54.527
       },
-      "flipIndex": 130,
-      "retestIndex": 131,
+      "flipIndex": 129,
+      "retestIndex": 130,
       "held": true
      },
      "breakaway": null
@@ -36945,8 +39766,8 @@
      "monthly": 52.558
     }
    },
-   "openedAt": 1786482766469,
-   "observedAt": 1786482766469
+   "openedAt": 1786486082201,
+   "observedAt": 1786486082201
   },
   {
    "id": "DREYKO|XRP_USDT",
@@ -36970,7 +39791,7 @@
     "CISD / displacement teyidi (güçlü geri alım mumu)",
     "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (1.0103) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-    "OTE 0.618–0.786 desteği [0.997297–1.003] (JB: fib-backed giriş)",
+    "OTE 0.618–0.786 desteği [0.997704–1.0038] (JB: fib-backed giriş)",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
     "⚠ HTF bias ters — yigit kuralı: HTF dönmeden işlem alma"
    ],
@@ -36981,13 +39802,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      1.0448,
-      1.0472,
-      1.0418,
-      1.0471
-     ],
      [
       1786014000,
       1.0471,
@@ -37901,16 +40715,23 @@
      [
       1786482000,
       1.017,
-      1.0183,
+      1.026,
       1.0169,
-      1.0179
+      1.024
+     ],
+     [
+      1786485600,
+      1.024,
+      1.0255,
+      1.0218,
+      1.0222
      ]
     ],
     "manip": {
-     "rangeFrom": 94,
-     "rangeTo": 123,
-     "sweepAt": 124,
-     "at": 125,
+     "rangeFrom": 93,
+     "rangeTo": 122,
+     "sweepAt": 123,
+     "at": 124,
      "rangeHigh": 1.0384,
      "rangeLow": 1.0005,
      "wick": 0.99,
@@ -37919,49 +40740,42 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786482764075,
-   "observedAt": 1786482764075
+   "openedAt": 1786486079990,
+   "observedAt": 1786486079990
   },
   {
    "id": "DREYKO|SOL_USDT",
    "strategyId": "DREYKO",
    "symbol": "SOL_USDT",
    "tf": "60m",
-   "side": "LONG",
-   "model": "MM Buy Model",
+   "side": "SHORT",
+   "model": "MM Sell Model",
    "conf": 75,
-   "grade": "A+",
-   "entry": 75.03,
-   "sl": 74.3563,
-   "tp1": 77.09,
-   "tpF": 77.83,
-   "rrPlan": 4.2,
-   "status": "BEKLİYOR / RED",
-   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "grade": "B",
+   "entry": 76.47,
+   "sl": 76.8799,
+   "tp1": 74.58,
+   "tpF": 74.58,
+   "rrPlan": 4.6,
+   "status": "ÖN İZLEME",
+   "reason": null,
    "reasons": [
-    "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
+    "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
     "Smart Money Reversal",
-    "Bias uyumlu (Bullish)",
-    "⚠ FVG EQ (76.115) henüz kazanılmadı — yigit: teyit bekle",
-    "⚠ Hedef likiditesi (75.21) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-    "iFVG POI: geçersizleşen FVG desteğe döndü [75.38–75.68] (SolCJ)",
-    "OTE 0.618–0.786 desteği [74.9481–75.237] (JB: fib-backed giriş)",
-    "Market Maker Buy Model · Hedef: karşı range / IPDA"
+    "RSI 60",
+    "⚠ FVG EQ (76.23) henüz kazanılmadı — yigit: teyit bekle",
+    "⚠ Hedef likiditesi (76.2167) son 20 barda zaten alınmış — yigit: kovalamak riskli",
+    "Hacim Profili confluence: POC yakını (75.8679) (SolCJ)",
+    "iFVG POI: geçersizleşen FVG dirence döndü [76.05–76.15] (SolCJ)",
+    "Market Maker Sell Model · Hedef: karşı range / IPDA"
    ],
    "mmxm": {
-    "score": 5,
+    "score": 3,
     "max": 5,
-    "valid": true
+    "valid": false
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      73.25,
-      73.4,
-      73.12,
-      73.25
-     ],
      [
       1786014000,
       73.25,
@@ -38875,46 +41689,33 @@
      [
       1786482000,
       76.01,
-      76.16,
-      76.01,
-      76.11
+      76.41,
+      75.97,
+      76.4
+     ],
+     [
+      1786485600,
+      76.4,
+      76.65,
+      76.4,
+      76.45
      ]
     ],
     "manip": {
-     "rangeFrom": 95,
-     "rangeTo": 124,
-     "sweepAt": 125,
-     "at": 127,
-     "rangeHigh": 77.09,
-     "rangeLow": 75.03,
-     "wick": 74.58,
-     "side": "LONG"
+     "rangeFrom": 101,
+     "rangeTo": 130,
+     "sweepAt": 131,
+     "at": 131,
+     "rangeHigh": 76.47,
+     "rangeLow": 74.58,
+     "wick": 76.65,
+     "side": "SHORT"
     },
-    "sequence": {
-     "state": "WAITING_FVG_RETEST",
-     "entryModel": null,
-     "displacementAt": 129,
-     "retestAt": null,
-     "firstFvg": {
-      "side": "LONG",
-      "type": "bull",
-      "from": 128,
-      "to": 130,
-      "bottom": 75.32,
-      "top": 75.61,
-      "ce": 75.465
-     },
-     "iofed": null,
-     "breakaway": null
-    },
-    "anchors": {
-     "daily": 75.95,
-     "weekly": 76.22,
-     "monthly": 72.84
-    }
+    "sequence": null,
+    "anchors": null
    },
-   "openedAt": 1786482762523,
-   "observedAt": 1786482762523
+   "openedAt": 1786486079154,
+   "observedAt": 1786486079154
   },
   {
    "id": "DREYKO|BTC_USDT",
@@ -38923,9 +41724,9 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 95,
+   "conf": 99,
    "grade": "A+",
-   "entry": 63756.8625,
+   "entry": 63729.2487,
    "sl": 63035.33,
    "tp1": 65221.2,
    "tpF": 65460,
@@ -38940,7 +41741,7 @@
     "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (63604.65) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "iFVG POI: geçersizleşen FVG desteğe döndü [63634.9–63686] (SolCJ)",
-    "Market Maker Buy Model · Hedef: karşı range / IPDA"
+    "OTE 0.618–0.786 desteği [63338.33–63427.31] (JB: fib-backed giriş)"
    ],
    "mmxm": {
     "score": 4,
@@ -38949,13 +41750,6 @@
    },
    "snap": {
     "candles": [
-     [
-      1786010400,
-      64649.1,
-      64656,
-      64552.5,
-      64589.3
-     ],
      [
       1786014000,
       64589.3,
@@ -39869,16 +42663,23 @@
      [
       1786482000,
       63719,
-      63731.4,
-      63708,
-      63725
+      63754.6,
+      63590.7,
+      63641.5
+     ],
+     [
+      1786485600,
+      63641.5,
+      63742.9,
+      63641.5,
+      63697.4
      ]
     ],
     "manip": {
-     "rangeFrom": 98,
-     "rangeTo": 127,
-     "sweepAt": 128,
-     "at": 129,
+     "rangeFrom": 97,
+     "rangeTo": 126,
+     "sweepAt": 127,
+     "at": 128,
      "rangeHigh": 65221.2,
      "rangeLow": 63420,
      "wick": 63225,
@@ -39886,30 +42687,30 @@
     },
     "sequence": {
      "state": "ENTRY_ARMED",
-     "entryModel": "IOFED",
-     "displacementAt": 129,
+     "entryModel": "FIRST_PRESENTED_FVG",
+     "displacementAt": 128,
      "retestAt": 131,
      "firstFvg": {
       "side": "LONG",
       "type": "bull",
-      "from": 129,
-      "to": 131,
+      "from": 128,
+      "to": 130,
       "bottom": 63513.9,
-      "top": 63708,
-      "ce": 63610.95
+      "top": 63590.7,
+      "ce": 63552.3
      },
      "iofed": {
       "zone": {
        "side": "SHORT",
        "type": "bear",
-       "from": 124,
-       "to": 126,
+       "from": 123,
+       "to": 125,
        "bottom": 63634.9,
        "top": 63686,
        "ce": 63660.45
       },
-      "flipIndex": 130,
-      "retestIndex": 131,
+      "flipIndex": 129,
+      "retestIndex": 130,
       "held": true
      },
      "breakaway": null
@@ -39920,8 +42721,8 @@
      "monthly": 62859.8
     }
    },
-   "openedAt": 1786482760739,
-   "observedAt": 1786482760739
+   "openedAt": 1786486077917,
+   "observedAt": 1786486077917
   },
   {
    "id": "DREYKO|DOGE_USDT",
@@ -44866,6 +47667,34 @@
  ],
  "strategyRejections": [
   {
+   "t": 1786486089203,
+   "symbol": "AVAX_USDT",
+   "side": "LONG",
+   "reason": "WAITING_LOW_RISK_ENTRY",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786486087840,
+   "symbol": "SPX500_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786486082201,
+   "symbol": "HYPE_USDT",
+   "side": "LONG",
+   "reason": "NET_RR_TOO_LOW",
+   "state": "EXECUTION"
+  },
+  {
+   "t": 1786486077917,
+   "symbol": "BTC_USDT",
+   "side": "LONG",
+   "reason": "STOP_DISTANCE_TOO_SMALL",
+   "state": "GEOMETRY"
+  },
+  {
    "t": 1786482777331,
    "symbol": "PUMPFUN_USDT",
    "side": "LONG",
@@ -45162,7 +47991,7 @@
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786482760038,
+  "generatedAt": 1786486077218,
   "blocked": false,
   "allowed": true,
   "reason": null,
