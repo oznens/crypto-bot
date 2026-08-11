@@ -31,11 +31,18 @@ const RISK_CONFIG = {
   maxCorrelatedTrades: +(process.env.PAPER_MAX_CORRELATED_TRADES || CFG.MAX_CORRELATED_TRADES),
   weeklyStopR: +(process.env.PAPER_WEEKLY_STOP_R || CFG.WEEKLY_STOP_R)
 };
+const YIGITAL_RISK_CONFIG = {
+  ...RISK_CONFIG,
+  enforceTotalRisk: false,
+  enforceDirectionalRisk: false,
+  enforceCorrelation: false
+};
 const CIRCUIT_CONFIG = {
   dailyLossLimitR: +(process.env.PAPER_DAILY_LOSS_LIMIT_R || CFG.DAILY_LOSS_LIMIT_R),
   maxLosingStreak: +(process.env.PAPER_MAX_LOSING_STREAK || CFG.MAX_LOSING_STREAK),
   cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS)
 };
+const YIGITAL_CIRCUIT_CONFIG = { ...CIRCUIT_CONFIG, losingStreakEnabled: false };
 const REQUIRE_DREYKO_SEQUENCE = process.env.PAPER_REQUIRE_DREYKO_SEQUENCE !== '0';
 const EXECUTION_CONFIG = {
   minNetRR: +(process.env.PAPER_MIN_NET_RR || CFG.MIN_NET_RR),
@@ -215,7 +222,8 @@ function tryOpen(st, sym, a, mktPx, context, pretrade, strategyId, candidate) {
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
   const qty = riskUSD / riskDist;
   if (!(qty > 0)) return null;
-  const riskDecision = Risk.evaluateTrade(st, { symbol: sym, side: s.side, riskUSD }, { ...RISK_CONFIG, now: Date.now() });
+  const portfolioRiskConfig = strategyId === 'YIGITAL' ? YIGITAL_RISK_CONFIG : RISK_CONFIG;
+  const riskDecision = Risk.evaluateTrade(st, { symbol: sym, side: s.side, riskUSD }, { ...portfolioRiskConfig, now: Date.now() });
   if (!riskDecision.allowed) {
     st.riskRejections = st.riskRejections || [];
     st.riskRejections.unshift({ t: Date.now(), symbol: sym, side: s.side, reason: riskDecision.reason });
@@ -266,9 +274,11 @@ function updateStats(portfolio, strategyId) {
     strategyId, source: SRC, minConf: MIN_CONF, tf: TF, ltf: LTF,
     maxSymbols: MAX_SYMS, riskPct: RISK_PCT, tp1R: TP1_R,
     maxOpen: MAX_OPEN, maxNewPerRun: MAX_NEW_PER_RUN, minRiskPct: MIN_RISK,
-    maxTotalRiskPct: RISK_CONFIG.maxTotalRiskPct,
-    maxDirectionalRiskPct: RISK_CONFIG.maxDirectionalRiskPct,
-    maxCorrelatedTrades: RISK_CONFIG.maxCorrelatedTrades,
+    maxTotalRiskPct: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxTotalRiskPct,
+    maxDirectionalRiskPct: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxDirectionalRiskPct,
+    maxCorrelatedTrades: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxCorrelatedTrades,
+    losingStreakLimit: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.maxLosingStreak,
+    cooldownMs: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.cooldownMs,
     weeklyStopR: RISK_CONFIG.weeklyStopR,
     circuitBreaker: portfolio.circuitBreaker,
     minNetRR: EXECUTION_CONFIG.minNetRR,
@@ -290,7 +300,8 @@ function updateStats(portfolio, strategyId) {
 
   const circuits = {};
   for (const [id, portfolio] of Object.entries(st.portfolios)) {
-    circuits[id] = Circuit.evaluate(portfolio, { ...CIRCUIT_CONFIG, now: Date.now() });
+    const circuitConfig = id === 'YIGITAL' ? YIGITAL_CIRCUIT_CONFIG : CIRCUIT_CONFIG;
+    circuits[id] = Circuit.evaluate(portfolio, { ...circuitConfig, now: Date.now() });
     Circuit.apply(portfolio, circuits[id]);
   }
 
