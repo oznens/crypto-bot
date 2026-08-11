@@ -15,7 +15,7 @@ const state = {
 };
 
 const decision = Risk.evaluateTrade(state, { symbol: 'SOL_USDT', side: 'LONG', riskUSD: 100 }, {
-  weeklyStopR: 5,
+  weeklyStopR: 0,
   enforceTotalRisk: false,
   enforceDirectionalRisk: false,
   enforceCorrelation: false,
@@ -23,8 +23,11 @@ const decision = Risk.evaluateTrade(state, { symbol: 'SOL_USDT', side: 'LONG', r
 });
 assert.equal(decision.allowed, true);
 
-const circuit = Circuit.evaluate(state, { dailyLossLimitR: 3, losingStreakEnabled: false, now });
+const deeplyLosing = { ...state, closed: Array.from({ length: 6 }, (_, i) => ({ r: -1, closedAt: now - i * 1000 })) };
+const circuit = Circuit.evaluate(deeplyLosing, { dailyLossEnabled: false, losingStreakEnabled: false, now });
 assert.equal(circuit.blocked, false);
+assert.equal(circuit.dailyLossEnabled, false);
+assert.equal(circuit.dailyLossLimitR, null);
 assert.equal(circuit.losingStreakEnabled, false);
 
 console.log('yigital_risk_policy tests passed');
