@@ -12,14 +12,16 @@ function evaluate(state,options={}){
   const dailyLimit=Math.abs(Number.isFinite(+options.dailyLossLimitR)?+options.dailyLossLimitR:3);
   const maxStreak=Number.isFinite(+options.maxLosingStreak)?+options.maxLosingStreak:4;
   const cooldownMs=Number.isFinite(+options.cooldownMs)?+options.cooldownMs:6*3600000;
+  const losingStreakEnabled=options.losingStreakEnabled!==false;
   const persistedUntil=n(state?.circuitBreaker?.blockedUntil);
-  const persisted=persistedUntil>now;
+  const persistedReason=state?.circuitBreaker?.reason;
+  const persisted=persistedUntil>now && (losingStreakEnabled || persistedReason!=='LOSING_STREAK_LIMIT');
   let reason=null;
   if(persisted)reason='COOLDOWN_ACTIVE';
   else if(dailyR<=-dailyLimit)reason='DAILY_LOSS_LIMIT';
-  else if(losingStreak>=maxStreak)reason='LOSING_STREAK_LIMIT';
+  else if(losingStreakEnabled && losingStreak>=maxStreak)reason='LOSING_STREAK_LIMIT';
   const blocked=!!reason;
-  return{blocked,allowed:!blocked,reason,dailyR:+dailyR.toFixed(2),todayTrades:today.length,losingStreak,blockedUntil:blocked?(persisted?persistedUntil:now+cooldownMs):null,dailyLossLimitR:dailyLimit,maxLosingStreak:maxStreak};
+  return{blocked,allowed:!blocked,reason,dailyR:+dailyR.toFixed(2),todayTrades:today.length,losingStreak,blockedUntil:blocked?(persisted?persistedUntil:now+cooldownMs):null,dailyLossLimitR:dailyLimit,maxLosingStreak:losingStreakEnabled?maxStreak:null,losingStreakEnabled};
 }
 function apply(state,decision,now=Date.now()){
   state.circuitBreaker={version:'32.0',generatedAt:now,...decision};return state.circuitBreaker;
