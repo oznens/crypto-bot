@@ -3,31 +3,77 @@
 const fs = require('fs');
 const path = require('path');
 
-function initialState(startEquity) {
+const PORTFOLIO_IDS = ['DREYKO', 'YIGITAL'];
+
+function initialPortfolio(id, startEquity) {
   return {
+    id,
+    label: id === 'YIGITAL' ? 'Yigital' : 'DREYKO',
     equity: startEquity,
     startEquity,
     open: [],
     closed: [],
     recentSigs: [],
     equityHistory: [],
+    stats: {}
+  };
+}
+
+function initialState(startEquity) {
+  return syncLegacyView({
+    version: 2,
+    portfolios: Object.fromEntries(PORTFOLIO_IDS.map(id => [id, initialPortfolio(id, startEquity)])),
     lastRun: null,
     runs: 0
-  };
+  });
+}
+
+// Eski rapor/CLI tüketicileri kök alanları DREYKO görünümü olarak okumaya devam eder.
+// Yigital hiçbir zaman bu alanlara birleştirilmez.
+function syncLegacyView(state) {
+  const dreyko = state.portfolios.DREYKO;
+  for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
+    if (dreyko[key] != null) state[key] = dreyko[key];
+    else delete state[key];
+  }
+  return state;
+}
+
+function migrateState(state, startEquity) {
+  if (state && state.portfolios) {
+    for (const id of PORTFOLIO_IDS) state.portfolios[id] = state.portfolios[id] || initialPortfolio(id, startEquity);
+    state.version = 2;
+    return syncLegacyView(state);
+  }
+  const next = initialState(startEquity);
+  if (state && typeof state === 'object') {
+    const legacy = next.portfolios.DREYKO;
+    for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
+      if (state[key] != null) legacy[key] = state[key];
+    }
+    next.lastRun = state.lastRun || null;
+    next.runs = state.runs || 0;
+    next.migration = { from: 'legacy-single-portfolio', migratedAt: Date.now() };
+  }
+  return syncLegacyView(next);
 }
 
 function validateState(state) {
   if (!state || typeof state !== 'object' || Array.isArray(state)) throw new Error('paper state nesne değil');
-  if (!Number.isFinite(+state.equity) || +state.equity <= 0) throw new Error('paper state equity geçersiz');
-  for (const key of ['open', 'closed', 'recentSigs', 'equityHistory']) {
-    if (!Array.isArray(state[key])) throw new Error(`paper state ${key} dizi değil`);
+  if (!state.portfolios || typeof state.portfolios !== 'object') throw new Error('paper state portfolios eksik');
+  for (const id of PORTFOLIO_IDS) {
+    const portfolio = state.portfolios[id];
+    if (!portfolio || !Number.isFinite(+portfolio.equity) || +portfolio.equity <= 0) throw new Error(`${id} equity geçersiz`);
+    for (const key of ['open', 'closed', 'recentSigs', 'equityHistory']) {
+      if (!Array.isArray(portfolio[key])) throw new Error(`${id} ${key} dizi değil`);
+    }
   }
   return state;
 }
 
 function parseState(text, source) {
   try {
-    return validateState(JSON.parse(text));
+    return validateState(migrateState(JSON.parse(text), 10000));
   } catch (error) {
     throw new Error(`${source} okunamadı: ${error.message}`);
   }
@@ -35,7 +81,7 @@ function parseState(text, source) {
 
 function loadState(filename, startEquity) {
   try {
-    return parseState(fs.readFileSync(filename, 'utf8'), filename);
+    return validateState(migrateState(JSON.parse(fs.readFileSync(filename, 'utf8')), startEquity));
   } catch (error) {
     if (error.code === 'ENOENT') return initialState(startEquity);
     const backup = `${filename}.bak`;
@@ -51,6 +97,7 @@ function loadState(filename, startEquity) {
 }
 
 function saveAtomic(filename, state) {
+  syncLegacyView(state);
   validateState(state);
   const serialized = JSON.stringify(state, null, 1);
   parseState(serialized, 'yazılacak paper state');
@@ -81,4 +128,4 @@ function saveAtomic(filename, state) {
   }
 }
 
-module.exports = { initialState, validateState, parseState, loadState, saveAtomic };
+module.exports = { PORTFOLIO_IDS, initialPortfolio, initialState, migrateState, syncLegacyView, validateState, parseState, loadState, saveAtomic };

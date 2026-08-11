@@ -1232,6 +1232,14 @@ function analyze(candles, opts) {
   const obsAll = orderBlocks(candles, ms);
   const hob = manip ? obsAll.filter(o => o.type === (manip.side === 'LONG' ? 'bull' : 'bear')).slice(-1)[0] || null : null;   // JB: HOB (gizli OB) bandı
   const setup = buildDreykoSetup(candles, { manip, eq, ipda, bias, rsiArr, oi, fvgList: fvgRaw, liq, vp, ifvg, ote, hob });
+  // Yigital modeli ayrı tutulur: Turtle Soup/PO3/FVG-OB + HTF akış ve dış likidite.
+  // DREYKO'nun OI, SMT, MMxM ve zaman politikası bu setup'a taşınmaz.
+  const htfCandles = resample(candles, htfMs);
+  const yigitalSetup = buildSetup(candles, {
+    eq, liq, fvg: fvgRaw, ob: obsAll, rsiArr,
+    htfBias: htfTrend,
+    kls: keyLevels(htfCandles, price)
+  });
 
   // GERÇEK MMxM filtresi (HTF bağlam + LTF teyit) — setup olmasa da izleme için hesaplanır
   const mmxm = mmxmFilter(candles, { manip, bias, interval, ltf: opts.ltf, tps: setup ? setup.tps : null });
@@ -1278,6 +1286,7 @@ function analyze(candles, opts) {
     rsiNow,
     htfBias: bias,
     setup,
+    yigitalSetup,
     comment: dreykoComment(candles, { manip, eq, ipda, bias, rsiNow, base, oi, setup, vp, wyk })
   };
 }
