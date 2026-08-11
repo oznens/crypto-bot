@@ -14,6 +14,7 @@ function initialPortfolio(id, startEquity) {
     open: [],
     closed: [],
     recentSigs: [],
+    watchedSetups: [],
     equityHistory: [],
     stats: {}
   };
@@ -32,7 +33,7 @@ function initialState(startEquity) {
 // Yigital hiçbir zaman bu alanlara birleştirilmez.
 function syncLegacyView(state) {
   const dreyko = state.portfolios.DREYKO;
-  for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
+  for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'watchedSetups', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
     if (dreyko[key] != null) state[key] = dreyko[key];
     else delete state[key];
   }
@@ -48,14 +49,17 @@ function resetPortfolio(state, id, startEquity) {
 
 function migrateState(state, startEquity) {
   if (state && state.portfolios) {
-    for (const id of PORTFOLIO_IDS) state.portfolios[id] = state.portfolios[id] || initialPortfolio(id, startEquity);
+    for (const id of PORTFOLIO_IDS) {
+      state.portfolios[id] = state.portfolios[id] || initialPortfolio(id, startEquity);
+      state.portfolios[id].watchedSetups = state.portfolios[id].watchedSetups || [];
+    }
     state.version = 2;
     return syncLegacyView(state);
   }
   const next = initialState(startEquity);
   if (state && typeof state === 'object') {
     const legacy = next.portfolios.DREYKO;
-    for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
+    for (const key of ['equity', 'startEquity', 'open', 'closed', 'recentSigs', 'watchedSetups', 'equityHistory', 'stats', 'riskRejections', 'strategyRejections', 'circuitBreaker']) {
       if (state[key] != null) legacy[key] = state[key];
     }
     next.lastRun = state.lastRun || null;
@@ -71,7 +75,7 @@ function validateState(state) {
   for (const id of PORTFOLIO_IDS) {
     const portfolio = state.portfolios[id];
     if (!portfolio || !Number.isFinite(+portfolio.equity) || +portfolio.equity <= 0) throw new Error(`${id} equity geçersiz`);
-    for (const key of ['open', 'closed', 'recentSigs', 'equityHistory']) {
+    for (const key of ['open', 'closed', 'recentSigs', 'watchedSetups', 'equityHistory']) {
       if (!Array.isArray(portfolio[key])) throw new Error(`${id} ${key} dizi değil`);
     }
   }

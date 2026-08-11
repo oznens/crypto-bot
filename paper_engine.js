@@ -261,6 +261,29 @@ function recordStrategyRejection(st, sym, side, decision) {
   if (st.strategyRejections.length > 200) st.strategyRejections.length = 200;
 }
 
+function watchSetup(portfolio, strategyId, sym, analysis, candidate, pretrade, status, reason) {
+  if (!candidate) return;
+  const target = pretrade?.target ?? (candidate.tps || []).slice(-1)[0];
+  const item = {
+    id: strategyId + '|' + sym,
+    strategyId, symbol: sym, tf: TF, side: candidate.side,
+    model: candidate.model, conf: candidate.confidence, grade: candidate.grade,
+    entry: rnd(pretrade?.entry ?? candidate.entry),
+    sl: rnd(pretrade?.stop ?? candidate.stop),
+    tp1: candidate.tps?.[0] == null ? null : rnd(candidate.tps[0]),
+    tpF: target == null ? null : rnd(target),
+    rrPlan: rnd(pretrade?.grossRR ?? candidate.rr, 2),
+    status: status || 'İZLENİYOR', reason: reason || null,
+    reasons: (candidate.reasons || []).slice(0, 8),
+    mmxm: candidate.mmxm || null,
+    snap: makeSnap(analysis), openedAt: Date.now(), observedAt: Date.now()
+  };
+  portfolio.watchedSetups = portfolio.watchedSetups || [];
+  portfolio.watchedSetups = portfolio.watchedSetups.filter(x => x.id !== item.id);
+  portfolio.watchedSetups.unshift(item);
+  if (portfolio.watchedSetups.length > 60) portfolio.watchedSetups.length = 60;
+}
+
 function updateStats(portfolio, strategyId) {
   const wins = portfolio.closed.filter(t => t.realized > 0).length;
   let peak = portfolio.startEquity, maxDrawdownPct = 0;
@@ -332,6 +355,8 @@ function updateStats(portfolio, strategyId) {
       ]);
       let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi });
       scanned++;
+      watchSetup(dreyko, 'DREYKO', sym, a, a.setup, null, 'ÖN İZLEME', a.setup && a.setup.confidence < MIN_CONF ? 'GÜVEN_EŞİĞİ_ALTINDA' : null);
+      watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, null, 'ÖN İZLEME', a.yigitalSetup && a.yigitalSetup.confidence < MIN_CONF ? 'GÜVEN_EŞİĞİ_ALTINDA' : null);
       if ((a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') || (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B')) {
         try {
           const c15 = await klines(sym, LTF, 500);
@@ -352,22 +377,28 @@ function updateStats(portfolio, strategyId) {
           a.structures.dreykoSequence = sequence;
           a.structures.timePolicy = timePolicy;
           if (!pretrade.valid) {
+            watchSetup(dreyko, 'DREYKO', sym, a, a.setup, pretrade, 'BEKLİYOR / RED', pretrade.reason);
             recordStrategyRejection(dreyko, sym, a.setup.side, { reason: pretrade.reason, state: pretrade.stage });
           } else {
             a.setup.reasons.push(anchorContext.mode === 'OPEN_SWEEP_RECLAIM' ? 'Açılış seviyesi sweep/reclaim ✓' : 'Açılış seviyeleri flow hizası ✓');
             a.setup.reasons.push(sequence.valid ? 'DREYKO sıra teyidi ✓ ' + sequence.entryModel : 'DREYKO sıra teyidi kapalı');
             const context = { oiAvailable: !!oi, oiState: a.structures.oiState || null, smt, timePolicy, anchorContext, sequence };
             const tr = tryOpen(dreyko, sym, a, c60[c60.length - 1].c, context, pretrade, 'DREYKO', a.setup);
+            watchSetup(dreyko, 'DREYKO', sym, a, a.setup, pretrade, tr ? 'İŞLEM AÇILDI' : 'HAZIR / AÇILMADI', tr ? null : 'PORTFÖY VEYA TEKRAR SİNYAL KONTROLÜ');
             if (tr) opened.DREYKO++;
           }
         }
         if (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B' && !circuits.YIGITAL.blocked && opened.YIGITAL < MAX_NEW_PER_RUN && yigital.open.length < MAX_OPEN) {
           const pretrade = YigitalPretrade.evaluate({ symbol: sym, candles: c60, analysis: a, marketPrice: c60[c60.length - 1].c }, { minNetRR: EXECUTION_CONFIG.minNetRR });
           a.structures.yigitalSequence = pretrade.sequence || null;
-          if (!pretrade.valid) recordStrategyRejection(yigital, sym, a.yigitalSetup.side, { reason: pretrade.reason, state: pretrade.stage });
+          if (!pretrade.valid) {
+            watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, pretrade, 'BEKLİYOR / RED', pretrade.reason);
+            recordStrategyRejection(yigital, sym, a.yigitalSetup.side, { reason: pretrade.reason, state: pretrade.stage });
+          }
           else {
             const context = { sequence: pretrade.sequence, targetDecision: pretrade.targetDecision, execution: pretrade.execution };
             const tr = tryOpen(yigital, sym, a, c60[c60.length - 1].c, context, pretrade, 'YIGITAL', a.yigitalSetup);
+            watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, pretrade, tr ? 'İŞLEM AÇILDI' : 'HAZIR / AÇILMADI', tr ? null : 'PORTFÖY VEYA TEKRAR SİNYAL KONTROLÜ');
             if (tr) opened.YIGITAL++;
           }
         }
