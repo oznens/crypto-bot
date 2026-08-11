@@ -14,7 +14,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 875.731915,
-     "mkt": 849.9,
+     "mkt": 849.07,
      "slip": 0.0005,
      "entryFee": 0.3919,
      "qty": 2.23758273,
@@ -979,7 +979,7 @@
       }
      },
      "openedAt": 1786136886141,
-     "lastCheck": 1786467900000,
+     "lastCheck": 1786468500000,
      "status": "open",
      "deriskDone": false,
      "realized": 0,
@@ -993,7 +993,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 76.74161,
-     "mkt": 74.9,
+     "mkt": 74.92,
      "slip": 0.0005,
      "entryFee": 1.1369,
      "qty": 37.03787758,
@@ -1958,7 +1958,7 @@
       }
      },
      "openedAt": 1786316005002,
-     "lastCheck": 1786467900000,
+     "lastCheck": 1786468500000,
      "status": "open",
      "deriskDone": true,
      "realized": 72.03,
@@ -1980,7 +1980,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 88.01597,
-     "mkt": 87.47,
+     "mkt": 87.48,
      "slip": 0.0005,
      "entryFee": 1.4918,
      "qty": 42.37310229,
@@ -2945,7 +2945,7 @@
       }
      },
      "openedAt": 1786444646834,
-     "lastCheck": 1786467900000,
+     "lastCheck": 1786468500000,
      "status": "open",
      "deriskDone": true,
      "realized": 71.28,
@@ -2967,7 +2967,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 81.749105,
-     "mkt": 82.44,
+     "mkt": 82.48,
      "slip": 0.0005,
      "entryFee": 0.6685,
      "qty": 40.88912197,
@@ -3932,7 +3932,7 @@
       }
      },
      "openedAt": 1786447859828,
-     "lastCheck": 1786467900000,
+     "lastCheck": 1786468500000,
      "status": "open",
      "deriskDone": false,
      "realized": 0,
@@ -13416,6 +13416,11 @@
      "t": 1786467960624,
      "eq": 9943.25,
      "open": 4
+    },
+    {
+     "t": 1786468583003,
+     "eq": 9943.25,
+     "open": 4
     }
    ],
    "stats": {
@@ -13445,7 +13450,7 @@
     "weeklyStopR": 5,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786467947958,
+     "generatedAt": 1786468567337,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13461,6 +13466,48 @@
     "configSource": "strategy_config.js + dreyko pipeline"
    },
    "strategyRejections": [
+    {
+     "t": 1786468582406,
+     "symbol": "NAS100_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468578699,
+     "symbol": "TAO_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468577102,
+     "symbol": "SUI_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468576462,
+     "symbol": "PEPE_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468574872,
+     "symbol": "USOIL_USDT",
+     "side": "SHORT",
+     "reason": "WAITING_LOW_RISK_ENTRY",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468573271,
+     "symbol": "SKHYSTOCK_USDT",
+     "side": "SHORT",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
     {
      "t": 1786467960123,
      "symbol": "NAS100_USDT",
@@ -13639,7 +13686,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786467947958,
+    "generatedAt": 1786468567337,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13675,6 +13722,11 @@
      "t": 1786467960624,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786468583003,
+     "eq": 10000,
+     "open": 0
     }
    ],
    "stats": {
@@ -13704,7 +13756,7 @@
     "weeklyStopR": 5,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786467947958,
+     "generatedAt": 1786468567337,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13721,7 +13773,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786467947958,
+    "generatedAt": 1786468567337,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13735,8 +13787,8 @@
    }
   }
  },
- "lastRun": 1786467960624,
- "runs": 107,
+ "lastRun": 1786468583003,
+ "runs": 108,
  "equity": 9943.25,
  "startEquity": 10000,
  "open": [
@@ -13747,7 +13799,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 875.731915,
-   "mkt": 849.9,
+   "mkt": 849.07,
    "slip": 0.0005,
    "entryFee": 0.3919,
    "qty": 2.23758273,
@@ -14712,7 +14764,7 @@
     }
    },
    "openedAt": 1786136886141,
-   "lastCheck": 1786467900000,
+   "lastCheck": 1786468500000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -14726,7 +14778,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 74.9,
+   "mkt": 74.92,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 37.03787758,
@@ -15691,7 +15743,7 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1786467900000,
+   "lastCheck": 1786468500000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.03,
@@ -15713,7 +15765,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 88.01597,
-   "mkt": 87.47,
+   "mkt": 87.48,
    "slip": 0.0005,
    "entryFee": 1.4918,
    "qty": 42.37310229,
@@ -16678,7 +16730,7 @@
     }
    },
    "openedAt": 1786444646834,
-   "lastCheck": 1786467900000,
+   "lastCheck": 1786468500000,
    "status": "open",
    "deriskDone": true,
    "realized": 71.28,
@@ -16700,7 +16752,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 81.749105,
-   "mkt": 82.44,
+   "mkt": 82.48,
    "slip": 0.0005,
    "entryFee": 0.6685,
    "qty": 40.88912197,
@@ -17665,7 +17717,7 @@
     }
    },
    "openedAt": 1786447859828,
-   "lastCheck": 1786467900000,
+   "lastCheck": 1786468500000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -27149,6 +27201,11 @@
    "t": 1786467960624,
    "eq": 9943.25,
    "open": 4
+  },
+  {
+   "t": 1786468583003,
+   "eq": 9943.25,
+   "open": 4
   }
  ],
  "stats": {
@@ -27178,7 +27235,7 @@
   "weeklyStopR": 5,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786467947958,
+   "generatedAt": 1786468567337,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -27198,6 +27255,48 @@
   "migratedAt": 1786467374157
  },
  "strategyRejections": [
+  {
+   "t": 1786468582406,
+   "symbol": "NAS100_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468578699,
+   "symbol": "TAO_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468577102,
+   "symbol": "SUI_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468576462,
+   "symbol": "PEPE_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468574872,
+   "symbol": "USOIL_USDT",
+   "side": "SHORT",
+   "reason": "WAITING_LOW_RISK_ENTRY",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468573271,
+   "symbol": "SKHYSTOCK_USDT",
+   "side": "SHORT",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
   {
    "t": 1786467960123,
    "symbol": "NAS100_USDT",
@@ -27376,7 +27475,7 @@
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786467947958,
+  "generatedAt": 1786468567337,
   "blocked": false,
   "allowed": true,
   "reason": null,
