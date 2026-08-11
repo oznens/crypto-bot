@@ -14,7 +14,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 875.731915,
-     "mkt": 853.09,
+     "mkt": 852.8,
      "slip": 0.0005,
      "entryFee": 0.3919,
      "qty": 2.23758273,
@@ -979,7 +979,7 @@
       }
      },
      "openedAt": 1786136886141,
-     "lastCheck": 1786468500000,
+     "lastCheck": 1786468800000,
      "status": "open",
      "deriskDone": false,
      "realized": 0,
@@ -993,7 +993,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 76.74161,
-     "mkt": 74.91,
+     "mkt": 74.94,
      "slip": 0.0005,
      "entryFee": 1.1369,
      "qty": 37.03787758,
@@ -1958,7 +1958,7 @@
       }
      },
      "openedAt": 1786316005002,
-     "lastCheck": 1786468500000,
+     "lastCheck": 1786468800000,
      "status": "open",
      "deriskDone": true,
      "realized": 72.03,
@@ -1980,7 +1980,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 88.01597,
-     "mkt": 87.49,
+     "mkt": 87.47,
      "slip": 0.0005,
      "entryFee": 1.4918,
      "qty": 42.37310229,
@@ -2945,7 +2945,7 @@
       }
      },
      "openedAt": 1786444646834,
-     "lastCheck": 1786468500000,
+     "lastCheck": 1786468800000,
      "status": "open",
      "deriskDone": true,
      "realized": 71.28,
@@ -2967,7 +2967,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 81.749105,
-     "mkt": 82.48,
+     "mkt": 82.44,
      "slip": 0.0005,
      "entryFee": 0.6685,
      "qty": 40.88912197,
@@ -3932,7 +3932,7 @@
       }
      },
      "openedAt": 1786447859828,
-     "lastCheck": 1786468500000,
+     "lastCheck": 1786468800000,
      "status": "open",
      "deriskDone": false,
      "realized": 0,
@@ -13426,6 +13426,11 @@
      "t": 1786468735817,
      "eq": 9943.25,
      "open": 4
+    },
+    {
+     "t": 1786468890290,
+     "eq": 9943.25,
+     "open": 4
     }
    ],
    "stats": {
@@ -13452,11 +13457,11 @@
     "maxCorrelatedTrades": 2,
     "losingStreakLimit": 4,
     "cooldownMs": 21600000,
-    "weeklyStopR": 5,
-    "dailyLossLimitR": 3,
+    "weeklyStopR": null,
+    "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786468722405,
+     "generatedAt": 1786468877047,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13464,8 +13469,8 @@
      "todayTrades": 2,
      "losingStreak": 0,
      "blockedUntil": null,
-     "dailyLossLimitR": 3,
-     "dailyLossEnabled": true,
+     "dailyLossLimitR": null,
+     "dailyLossEnabled": false,
      "maxLosingStreak": 4,
      "losingStreakEnabled": true
     },
@@ -13473,6 +13478,48 @@
     "configSource": "strategy_config.js + dreyko pipeline"
    },
    "strategyRejections": [
+    {
+     "t": 1786468889753,
+     "symbol": "NAS100_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468886601,
+     "symbol": "TAO_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468885238,
+     "symbol": "SUI_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468884690,
+     "symbol": "PEPE_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468883324,
+     "symbol": "USOIL_USDT",
+     "side": "SHORT",
+     "reason": "WAITING_LOW_RISK_ENTRY",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468881961,
+     "symbol": "SKHYSTOCK_USDT",
+     "side": "SHORT",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
     {
      "t": 1786468735264,
      "symbol": "NAS100_USDT",
@@ -13735,7 +13782,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786468722405,
+    "generatedAt": 1786468877047,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13743,8 +13790,8 @@
     "todayTrades": 2,
     "losingStreak": 0,
     "blockedUntil": null,
-    "dailyLossLimitR": 3,
-    "dailyLossEnabled": true,
+    "dailyLossLimitR": null,
+    "dailyLossEnabled": false,
     "maxLosingStreak": 4,
     "losingStreakEnabled": true
    }
@@ -13782,6 +13829,11 @@
      "t": 1786468735817,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786468890290,
+     "eq": 10000,
+     "open": 0
     }
    ],
    "stats": {
@@ -13812,7 +13864,7 @@
     "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786468722405,
+     "generatedAt": 1786468877047,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13830,7 +13882,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786468722405,
+    "generatedAt": 1786468877047,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13845,8 +13897,8 @@
    }
   }
  },
- "lastRun": 1786468735817,
- "runs": 109,
+ "lastRun": 1786468890290,
+ "runs": 110,
  "equity": 9943.25,
  "startEquity": 10000,
  "open": [
@@ -13857,7 +13909,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 875.731915,
-   "mkt": 853.09,
+   "mkt": 852.8,
    "slip": 0.0005,
    "entryFee": 0.3919,
    "qty": 2.23758273,
@@ -14822,7 +14874,7 @@
     }
    },
    "openedAt": 1786136886141,
-   "lastCheck": 1786468500000,
+   "lastCheck": 1786468800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -14836,7 +14888,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 74.91,
+   "mkt": 74.94,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 37.03787758,
@@ -15801,7 +15853,7 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1786468500000,
+   "lastCheck": 1786468800000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.03,
@@ -15823,7 +15875,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 88.01597,
-   "mkt": 87.49,
+   "mkt": 87.47,
    "slip": 0.0005,
    "entryFee": 1.4918,
    "qty": 42.37310229,
@@ -16788,7 +16840,7 @@
     }
    },
    "openedAt": 1786444646834,
-   "lastCheck": 1786468500000,
+   "lastCheck": 1786468800000,
    "status": "open",
    "deriskDone": true,
    "realized": 71.28,
@@ -16810,7 +16862,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 81.749105,
-   "mkt": 82.48,
+   "mkt": 82.44,
    "slip": 0.0005,
    "entryFee": 0.6685,
    "qty": 40.88912197,
@@ -17775,7 +17827,7 @@
     }
    },
    "openedAt": 1786447859828,
-   "lastCheck": 1786468500000,
+   "lastCheck": 1786468800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -27269,6 +27321,11 @@
    "t": 1786468735817,
    "eq": 9943.25,
    "open": 4
+  },
+  {
+   "t": 1786468890290,
+   "eq": 9943.25,
+   "open": 4
   }
  ],
  "stats": {
@@ -27295,11 +27352,11 @@
   "maxCorrelatedTrades": 2,
   "losingStreakLimit": 4,
   "cooldownMs": 21600000,
-  "weeklyStopR": 5,
-  "dailyLossLimitR": 3,
+  "weeklyStopR": null,
+  "dailyLossLimitR": null,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786468722405,
+   "generatedAt": 1786468877047,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -27307,8 +27364,8 @@
    "todayTrades": 2,
    "losingStreak": 0,
    "blockedUntil": null,
-   "dailyLossLimitR": 3,
-   "dailyLossEnabled": true,
+   "dailyLossLimitR": null,
+   "dailyLossEnabled": false,
    "maxLosingStreak": 4,
    "losingStreakEnabled": true
   },
@@ -27320,6 +27377,48 @@
   "migratedAt": 1786467374157
  },
  "strategyRejections": [
+  {
+   "t": 1786468889753,
+   "symbol": "NAS100_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468886601,
+   "symbol": "TAO_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468885238,
+   "symbol": "SUI_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468884690,
+   "symbol": "PEPE_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468883324,
+   "symbol": "USOIL_USDT",
+   "side": "SHORT",
+   "reason": "WAITING_LOW_RISK_ENTRY",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468881961,
+   "symbol": "SKHYSTOCK_USDT",
+   "side": "SHORT",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
   {
    "t": 1786468735264,
    "symbol": "NAS100_USDT",
@@ -27582,7 +27681,7 @@
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786468722405,
+  "generatedAt": 1786468877047,
   "blocked": false,
   "allowed": true,
   "reason": null,
@@ -27590,8 +27689,8 @@
   "todayTrades": 2,
   "losingStreak": 0,
   "blockedUntil": null,
-  "dailyLossLimitR": 3,
-  "dailyLossEnabled": true,
+  "dailyLossLimitR": null,
+  "dailyLossEnabled": false,
   "maxLosingStreak": 4,
   "losingStreakEnabled": true
  }
