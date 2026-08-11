@@ -33,6 +33,7 @@ const RISK_CONFIG = {
 };
 const YIGITAL_RISK_CONFIG = {
   ...RISK_CONFIG,
+  weeklyStopR: 0,
   enforceTotalRisk: false,
   enforceDirectionalRisk: false,
   enforceCorrelation: false
@@ -42,7 +43,7 @@ const CIRCUIT_CONFIG = {
   maxLosingStreak: +(process.env.PAPER_MAX_LOSING_STREAK || CFG.MAX_LOSING_STREAK),
   cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS)
 };
-const YIGITAL_CIRCUIT_CONFIG = { ...CIRCUIT_CONFIG, losingStreakEnabled: false };
+const YIGITAL_CIRCUIT_CONFIG = { ...CIRCUIT_CONFIG, dailyLossEnabled: false, losingStreakEnabled: false };
 const REQUIRE_DREYKO_SEQUENCE = process.env.PAPER_REQUIRE_DREYKO_SEQUENCE !== '0';
 const EXECUTION_CONFIG = {
   minNetRR: +(process.env.PAPER_MIN_NET_RR || CFG.MIN_NET_RR),
@@ -279,7 +280,8 @@ function updateStats(portfolio, strategyId) {
     maxCorrelatedTrades: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxCorrelatedTrades,
     losingStreakLimit: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.maxLosingStreak,
     cooldownMs: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.cooldownMs,
-    weeklyStopR: RISK_CONFIG.weeklyStopR,
+    weeklyStopR: strategyId === 'YIGITAL' ? null : RISK_CONFIG.weeklyStopR,
+    dailyLossLimitR: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.dailyLossLimitR,
     circuitBreaker: portfolio.circuitBreaker,
     minNetRR: EXECUTION_CONFIG.minNetRR,
     configSource: strategyId === 'DREYKO' ? 'strategy_config.js + dreyko pipeline' : 'yigital archive model'
