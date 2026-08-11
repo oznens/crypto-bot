@@ -117,6 +117,7 @@ function renderState(root){
     ['Özkaynak',fmt(st.equity,2)+' $',eqPnl>=0?'g':'r'],
     ['Net PnL',(eqPnl>=0?'+':'')+fmt(eqPnl,2)+' $',eqPnl>=0?'g':'r'],
     ['Toplam R',(s.totalR>0?'+':'')+fmt(s.totalR,2)+'R',s.totalR>=0?'g':'r'],
+    ['Maks. Drawdown','%'+fmt(s.maxDrawdownPct,2),s.maxDrawdownPct>5?'r':'y'],
     ['Win Rate',s.winRate!=null?'%'+s.winRate:'-','b'],
     ['Kapanan',fmt(s.closed,0)+' (W'+fmt(s.wins,0)+'/L'+fmt(s.losses,0)+')','b'],
     ['Açık',st.open.length,'y']
