@@ -19,4 +19,13 @@ assert.equal(migrated.portfolios.YIGITAL.equity, 10000);
 assert.equal(migrated.portfolios.YIGITAL.open.length, 0);
 assert.strictEqual(migrated.open, migrated.portfolios.DREYKO.open);
 
+const yigitalBefore = migrated.portfolios.YIGITAL;
+State.resetPortfolio(migrated, 'DREYKO', 10000);
+assert.equal(migrated.portfolios.DREYKO.equity, 10000);
+assert.equal(migrated.portfolios.DREYKO.open.length, 0);
+assert.equal(migrated.portfolios.DREYKO.closed.length, 0);
+assert.equal(migrated.portfolios.DREYKO.equityHistory.length, 0);
+assert.strictEqual(migrated.portfolios.YIGITAL, yigitalBefore);
+assert.strictEqual(migrated.open, migrated.portfolios.DREYKO.open);
+
 console.log('dual_portfolio_state tests passed');

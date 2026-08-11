@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '*/5 * * * *'   # ~5 dk'da bir (GitHub yoğunlukta geciktirebilir)
   workflow_dispatch:
+    inputs:
+      reset_dreyko:
+        description: 'DREYKO portföyünü 10.000$ ve sıfır istatistikle başlat'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -22,6 +28,8 @@ jobs:
         with:
           node-version: 20
       - name: Motoru çalıştır
+        env:
+          PAPER_RESET_DREYKO: ${{ github.event.inputs.reset_dreyko || 'false' }}
         run: node paper_engine.js
       - name: Durumu commit'le
         run: |
