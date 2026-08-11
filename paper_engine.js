@@ -5,6 +5,12 @@
 const https = require('https'), fs = require('fs'), path = require('path');
 const A = require('./analysis');
 const CFG = require('./strategy_config');
+const Risk = require('./core/risk_engine');
+const Circuit = require('./core/trading_circuit_breaker');
+const SMT = require('./core/smt_divergence_engine');
+const StateStore = require('./core/paper_state_store');
+const DreykoAudit = require('./core/dreyko_audit_trace');
+const DreykoPretrade = require('./core/dreyko_pretrade_pipeline');
 
 const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
 const DOCS_F = path.join(__dirname, 'docs', 'paper_state.json');
@@ -18,6 +24,22 @@ const MIN_RISK = CFG.MIN_RISK;
 const MAX_OPEN = CFG.MAX_OPEN;
 const MAX_NEW_PER_RUN = CFG.MAX_NEW_PER_RUN;
 const TP1_R = CFG.TP1_R;
+const RISK_CONFIG = {
+  maxTotalRiskPct: +(process.env.PAPER_MAX_TOTAL_RISK_PCT || CFG.MAX_TOTAL_RISK_PCT),
+  maxDirectionalRiskPct: +(process.env.PAPER_MAX_DIRECTIONAL_RISK_PCT || CFG.MAX_DIRECTIONAL_RISK_PCT),
+  maxCorrelatedTrades: +(process.env.PAPER_MAX_CORRELATED_TRADES || CFG.MAX_CORRELATED_TRADES),
+  weeklyStopR: +(process.env.PAPER_WEEKLY_STOP_R || CFG.WEEKLY_STOP_R)
+};
+const CIRCUIT_CONFIG = {
+  dailyLossLimitR: +(process.env.PAPER_DAILY_LOSS_LIMIT_R || CFG.DAILY_LOSS_LIMIT_R),
+  maxLosingStreak: +(process.env.PAPER_MAX_LOSING_STREAK || CFG.MAX_LOSING_STREAK),
+  cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS)
+};
+const REQUIRE_DREYKO_SEQUENCE = process.env.PAPER_REQUIRE_DREYKO_SEQUENCE !== '0';
+const EXECUTION_CONFIG = {
+  minNetRR: +(process.env.PAPER_MIN_NET_RR || CFG.MIN_NET_RR),
+  spreadBps: +(process.env.PAPER_SPREAD_BPS || CFG.SPREAD_BPS)
+};
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -62,15 +84,30 @@ async function klines(sym, iv, bars) {
   return raw.map(r => ({ t: +r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4], v: +r[5] })).filter(x => isFinite(x.c) && x.c > 0);
 }
 
+async function openInterest(sym, iv, limit = 200) {
+  const symbol = sym.replace('_', '');
+  const period = { '5m': '5m', '15m': '15m', '60m': '1h' }[iv] || '1h';
+  try {
+    const raw = await get('https://fapi.binance.com/futures/data/openInterestHist?symbol=' + encodeURIComponent(symbol) + '&period=' + period + '&limit=' + Math.min(500, limit));
+    if (!Array.isArray(raw) || !raw.length) return null;
+    const rows = raw.map(x => ({ t: +x.timestamp, oi: +x.sumOpenInterest })).filter(x => Number.isFinite(x.t) && Number.isFinite(x.oi));
+    return rows.length >= 10 ? rows : null;
+  } catch (_) { return null; }
+}
+
+function peerSymbol(sym) {
+  const normalized = sym.replace('_', '');
+  if (normalized === 'BTCUSDT') return SRC === 'perp' ? 'ETH_USDT' : 'ETHUSDT';
+  return SRC === 'perp' ? 'BTC_USDT' : 'BTCUSDT';
+}
+
 function loadState() {
-  try { return JSON.parse(fs.readFileSync(STATE_F, 'utf8')); }
-  catch (e) { return { equity: START_EQ, startEquity: START_EQ, open: [], closed: [], recentSigs: [], equityHistory: [], lastRun: null, runs: 0 }; }
+  return StateStore.loadState(STATE_F, START_EQ);
 }
 function saveState(st) {
-  const s = JSON.stringify(st, null, 1);
-  fs.writeFileSync(STATE_F, s);
+  StateStore.saveAtomic(STATE_F, st);
   if (!process.env.PAPER_STATE) {
-    try { fs.mkdirSync(path.dirname(DOCS_F), { recursive: true }); fs.writeFileSync(DOCS_F, s); } catch (e) {}
+    StateStore.saveAtomic(DOCS_F, st);
   }
 }
 
@@ -78,9 +115,21 @@ function makeSnap(a) {
   const c = a.candles.slice(-132);
   const off = a.candles.length - c.length;
   const mp = a.structures.manipulation;
+  const seq = a.structures.dreykoSequence;
+  const shiftZone = zone => zone ? { ...zone, from: zone.from == null ? null : zone.from - off, to: zone.to == null ? null : zone.to - off } : null;
   return {
     candles: c.map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]),
-    manip: mp ? { rangeFrom: mp.rangeFrom - off, rangeTo: mp.rangeTo - off, sweepAt: mp.sweepAt - off, at: mp.at - off, rangeHigh: mp.rangeHigh, rangeLow: mp.rangeLow, wick: mp.wick, side: mp.side } : null
+    manip: mp ? { rangeFrom: mp.rangeFrom - off, rangeTo: mp.rangeTo - off, sweepAt: mp.sweepAt - off, at: mp.at - off, rangeHigh: mp.rangeHigh, rangeLow: mp.rangeLow, wick: mp.wick, side: mp.side } : null,
+    sequence: seq ? {
+      state: seq.state,
+      entryModel: seq.entryModel,
+      displacementAt: seq.displacement ? seq.displacement.index - off : null,
+      retestAt: seq.retestIndex == null ? null : seq.retestIndex - off,
+      firstFvg: shiftZone(seq.firstFvg),
+      iofed: seq.iofed ? { ...seq.iofed, zone: shiftZone(seq.iofed.zone), flipIndex: seq.iofed.flipIndex - off, retestIndex: seq.iofed.retestIndex - off } : null,
+      breakaway: seq.breakaway ? { ...seq.breakaway, zone: shiftZone(seq.breakaway.zone) } : null
+    } : null,
+    anchors: a.structures.timePolicy?.anchors || null
   };
 }
 
@@ -135,7 +184,7 @@ async function manageOpen(st) {
   }
 }
 
-function tryOpen(st, sym, a, mktPx) {
+function tryOpen(st, sym, a, mktPx, context, pretrade) {
   const s = a.setup;
   if (!s || s.confidence < MIN_CONF) return null;
   if (st.open.length >= MAX_OPEN) return null;
@@ -147,36 +196,51 @@ function tryOpen(st, sym, a, mktPx) {
   const sig = sym + '|' + TF + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
   if (st.recentSigs.includes(sig)) return null;
 
+  if (!pretrade?.valid) return null;
   const long = s.side === 'LONG';
-  const entry = mktPx * (long ? 1 + SLIP : 1 - SLIP);
-  const sl = s.stop, tps = s.tps;
-  if (long ? sl >= entry : sl <= entry) return null;
-  const tpF = tps[tps.length - 1];
-  if (long ? entry >= tpF : entry <= tpF) return null;
-  const riskDist = Math.abs(entry - sl);
-  if (riskDist / entry < MIN_RISK) return null;
-  const rrAct = Math.abs(tpF - entry) / riskDist;
-  if (rrAct < 1) return null;
+  const entry = pretrade.entry;
+  const sl = pretrade.stop;
+  const tpF = pretrade.target;
+  const riskDist = pretrade.riskDist;
+  const rrAct = pretrade.grossRR;
+  const targetDecision = pretrade.targetDecision;
+  const execution = pretrade.execution;
 
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
   const qty = riskUSD / riskDist;
   if (!(qty > 0)) return null;
+  const riskDecision = Risk.evaluateTrade(st, { symbol: sym, side: s.side, riskUSD }, { ...RISK_CONFIG, now: Date.now() });
+  if (!riskDecision.allowed) {
+    st.riskRejections = st.riskRejections || [];
+    st.riskRejections.unshift({ t: Date.now(), symbol: sym, side: s.side, reason: riskDecision.reason });
+    if (st.riskRejections.length > 200) st.riskRejections.length = 200;
+    return null;
+  }
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
   const tr = {
     id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf: TF,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
-    sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
+    sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: rnd(rrAct, 2),
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),
+    context: context ? { ...context, targetDecision, execution } : { targetDecision, execution },
+    audit: DreykoAudit.build({ ...(context || {}), targetDecision, execution }),
+    riskDecision,
     snap: makeSnap(a),
     openedAt: Date.now(), lastCheck: Date.now(), status: 'open', deriskDone: false, realized: 0, feeCharged: false, fills: []
   };
   st.open.push(tr);
   st.recentSigs.push(sig); if (st.recentSigs.length > 300) st.recentSigs.splice(0, st.recentSigs.length - 300);
   return tr;
+}
+
+function recordStrategyRejection(st, sym, side, decision) {
+  st.strategyRejections = st.strategyRejections || [];
+  st.strategyRejections.unshift({ t: Date.now(), symbol: sym, side, reason: decision.reason, state: decision.state });
+  if (st.strategyRejections.length > 200) st.strategyRejections.length = 200;
 }
 
 (async () => {
@@ -188,22 +252,50 @@ function tryOpen(st, sym, a, mktPx) {
 
   await manageOpen(st);
 
+  const circuitDecision = Circuit.evaluate(st, { ...CIRCUIT_CONFIG, now: Date.now() });
+  Circuit.apply(st, circuitDecision);
+
   let scanned = 0, opened = 0, errors = 0;
   for (const sym of syms) {
-    if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;
+    if (circuitDecision.blocked || opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;
     if (st.open.find(t => t.symbol === sym)) continue;
     try {
       const c60 = await klines(sym, TF, 500);
       if (c60.length < 80) { await sleep(80); continue; }
-      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', '') });
+      const [oi, peer] = await Promise.all([
+        openInterest(sym, TF),
+        klines(peerSymbol(sym), TF, 500).catch(() => null)
+      ]);
+      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi });
       scanned++;
       if (a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') {
         try {
           const c15 = await klines(sym, LTF, 500);
-          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), ltf: { interval: LTF, candles: c15 } });
+          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi, ltf: { interval: LTF, candles: c15 } });
         } catch (e) {}
         if (a.setup && a.setup.confidence >= MIN_CONF) {
-          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c);
+          const smt = peer ? SMT.evaluate(c60, peer, a.setup.side) : { available: false, confirmed: false, reason: 'PEER_DATA_MISSING', score: 0 };
+          a.structures.smt = smt;
+          if (smt.confirmed) a.setup.reasons.push('SMT korelasyon teyidi ✓');
+          const pretrade = DreykoPretrade.evaluate({ symbol: sym, candles: c60, analysis: a, marketPrice: c60[c60.length - 1].c }, {
+            slippagePct: SLIP,
+            feeBps: FEE_TAKER * 10000,
+            spreadBps: EXECUTION_CONFIG.spreadBps,
+            minNetRR: EXECUTION_CONFIG.minNetRR,
+            minRiskPct: MIN_RISK
+          });
+          const { timePolicy, anchorContext, sequence } = pretrade;
+          a.structures.dreykoSequence = sequence;
+          a.structures.timePolicy = timePolicy;
+          if (!pretrade.valid) {
+            recordStrategyRejection(st, sym, a.setup.side, { reason: pretrade.reason, state: pretrade.stage });
+            await sleep(120);
+            continue;
+          }
+          a.setup.reasons.push(anchorContext.mode === 'OPEN_SWEEP_RECLAIM' ? 'Açılış seviyesi sweep/reclaim ✓' : 'Açılış seviyeleri flow hizası ✓');
+          a.setup.reasons.push(sequence.valid ? 'DREYKO sıra teyidi ✓ ' + sequence.entryModel : 'DREYKO sıra teyidi kapalı');
+          const context = { oiAvailable: !!oi, oiState: a.structures.oiState || null, smt, timePolicy, anchorContext, sequence };
+          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c, context, pretrade);
           if (tr) {
             opened++;
             console.log('AÇILDI:', sym, TF, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade);
@@ -236,6 +328,14 @@ function tryOpen(st, sym, a, mktPx) {
     maxNewPerRun: MAX_NEW_PER_RUN,
     minRiskPct: MIN_RISK,
     leverageCap: null,
+    maxTotalRiskPct: RISK_CONFIG.maxTotalRiskPct,
+    maxDirectionalRiskPct: RISK_CONFIG.maxDirectionalRiskPct,
+    maxCorrelatedTrades: RISK_CONFIG.maxCorrelatedTrades,
+    weeklyStopR: RISK_CONFIG.weeklyStopR,
+    circuitBreaker: st.circuitBreaker,
+    requireDreykoSequence: REQUIRE_DREYKO_SEQUENCE,
+    minNetRR: EXECUTION_CONFIG.minNetRR,
+    spreadBps: EXECUTION_CONFIG.spreadBps,
     configSource: 'strategy_config.js'
   };
   saveState(st);

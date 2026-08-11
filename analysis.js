@@ -1099,7 +1099,7 @@ function buildDreykoSetup(candles, ctx) {
   }
   // 7) HOB (gizli OB) bandı: giriş model yönlü son OB bölgesiyle kesişiyor mu
   if (hob && entry >= hob.bottom * 0.998 && entry <= hob.top * 1.002) { conf++; reasons.push('HOB (gizli OB) girişte [' + round(hob.bottom) + '–' + round(hob.top) + '] (JB 2xHOB)'); }
-  reasons.push('Market Maker ' + (long ? 'Buy' : 'Sell') + ' Model · Wyckoff: ' + (long ? 'Spring → Test → SOS' : 'UTAD → Test → SOW') + ' · Hedef: karşı range / IPDA');
+  reasons.push('Market Maker ' + (long ? 'Buy' : 'Sell') + ' Model · Hedef: karşı range / IPDA');
   // stop/TP olmuş mu (manipulation sonrası)
   const o = manip.at; const tF = tps[tps.length - 1];
   let entryIdx = -1;
