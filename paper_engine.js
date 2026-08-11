@@ -11,6 +11,7 @@ const SMT = require('./core/smt_divergence_engine');
 const StateStore = require('./core/paper_state_store');
 const DreykoAudit = require('./core/dreyko_audit_trace');
 const DreykoPretrade = require('./core/dreyko_pretrade_pipeline');
+const YigitalPretrade = require('./core/yigital_pretrade_pipeline');
 
 const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
 const DOCS_F = path.join(__dirname, 'docs', 'paper_state.json');
@@ -184,16 +185,19 @@ async function manageOpen(st) {
   }
 }
 
-function tryOpen(st, sym, a, mktPx, context, pretrade) {
-  const s = a.setup;
+function tryOpen(st, sym, a, mktPx, context, pretrade, strategyId, candidate) {
+  const s = candidate || a.setup;
+  strategyId = strategyId || 'DREYKO';
   if (!s || s.confidence < MIN_CONF) return null;
   if (st.open.length >= MAX_OPEN) return null;
   if (s.grade === 'B') return null;
-  if (!s.mmxm || !s.mmxm.valid) return null;
+  if (strategyId === 'DREYKO' && (!s.mmxm || !s.mmxm.valid)) return null;
   if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== (s.side === 'LONG'))) return null;
   if (st.open.find(t => t.symbol === sym)) return null;
-  const mp = a.structures.manipulation; if (!mp) return null;
-  const sig = sym + '|' + TF + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
+  const mp = a.structures.manipulation;
+  const origin = s.sweepAt != null ? s.sweepAt : (mp && mp.sweepAt);
+  if (origin == null) return null;
+  const sig = strategyId + '|' + sym + '|' + TF + '|' + s.side + '|' + (a.candles[origin] ? a.candles[origin].t : origin);
   if (st.recentSigs.includes(sig)) return null;
 
   if (!pretrade?.valid) return null;
@@ -221,13 +225,13 @@ function tryOpen(st, sym, a, mktPx, context, pretrade) {
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
   const tr = {
-    id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf: TF,
+    id: strategyId + '-' + sym + '-' + Date.now(), strategyId, symbol: sym, side: s.side, src: SRC, tf: TF,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
     sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: rnd(rrAct, 2),
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),
     context: context ? { ...context, targetDecision, execution } : { targetDecision, execution },
-    audit: DreykoAudit.build({ ...(context || {}), targetDecision, execution }),
+    audit: strategyId === 'DREYKO' ? DreykoAudit.build({ ...(context || {}), targetDecision, execution }) : null,
     riskDecision,
     snap: makeSnap(a),
     openedAt: Date.now(), lastCheck: Date.now(), status: 'open', deriskDone: false, realized: 0, feeCharged: false, fills: []
@@ -243,22 +247,48 @@ function recordStrategyRejection(st, sym, side, decision) {
   if (st.strategyRejections.length > 200) st.strategyRejections.length = 200;
 }
 
+function updateStats(portfolio, strategyId) {
+  const wins = portfolio.closed.filter(t => t.realized > 0).length;
+  portfolio.stats = {
+    closed: portfolio.closed.length, wins,
+    losses: portfolio.closed.filter(t => t.realized <= 0).length,
+    winRate: portfolio.closed.length ? rnd(100 * wins / portfolio.closed.length, 1) : null,
+    netPnl: rnd(portfolio.equity - portfolio.startEquity, 2),
+    totalR: rnd(portfolio.closed.reduce((sum, trade) => sum + (trade.r || 0), 0), 2),
+    strategyId, source: SRC, minConf: MIN_CONF, tf: TF, ltf: LTF,
+    maxSymbols: MAX_SYMS, riskPct: RISK_PCT, tp1R: TP1_R,
+    maxOpen: MAX_OPEN, maxNewPerRun: MAX_NEW_PER_RUN, minRiskPct: MIN_RISK,
+    maxTotalRiskPct: RISK_CONFIG.maxTotalRiskPct,
+    maxDirectionalRiskPct: RISK_CONFIG.maxDirectionalRiskPct,
+    maxCorrelatedTrades: RISK_CONFIG.maxCorrelatedTrades,
+    weeklyStopR: RISK_CONFIG.weeklyStopR,
+    circuitBreaker: portfolio.circuitBreaker,
+    minNetRR: EXECUTION_CONFIG.minNetRR,
+    configSource: strategyId === 'DREYKO' ? 'strategy_config.js + dreyko pipeline' : 'yigital archive model'
+  };
+}
+
 (async () => {
   const st = loadState();
+  const dreyko = st.portfolios.DREYKO;
+  const yigital = st.portfolios.YIGITAL;
   st.runs = (st.runs || 0) + 1;
   console.log('== PAPER RUN #' + st.runs + ' ==');
   const syms = await topSymbols();
-  console.log('kaynak:', SRC, '| sembol:', syms.length, '| özkaynak:', st.equity);
+  console.log('kaynak:', SRC, '| sembol:', syms.length, '| DREYKO:', dreyko.equity, '| Yigital:', yigital.equity);
 
-  await manageOpen(st);
+  await manageOpen(dreyko);
+  await manageOpen(yigital);
 
-  const circuitDecision = Circuit.evaluate(st, { ...CIRCUIT_CONFIG, now: Date.now() });
-  Circuit.apply(st, circuitDecision);
+  const circuits = {};
+  for (const [id, portfolio] of Object.entries(st.portfolios)) {
+    circuits[id] = Circuit.evaluate(portfolio, { ...CIRCUIT_CONFIG, now: Date.now() });
+    Circuit.apply(portfolio, circuits[id]);
+  }
 
-  let scanned = 0, opened = 0, errors = 0;
+  let scanned = 0, errors = 0;
+  const opened = { DREYKO: 0, YIGITAL: 0 };
   for (const sym of syms) {
-    if (circuitDecision.blocked || opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;
-    if (st.open.find(t => t.symbol === sym)) continue;
     try {
       const c60 = await klines(sym, TF, 500);
       if (c60.length < 80) { await sleep(80); continue; }
@@ -268,12 +298,12 @@ function recordStrategyRejection(st, sym, side, decision) {
       ]);
       let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi });
       scanned++;
-      if (a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') {
+      if ((a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') || (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B')) {
         try {
           const c15 = await klines(sym, LTF, 500);
           a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi, ltf: { interval: LTF, candles: c15 } });
         } catch (e) {}
-        if (a.setup && a.setup.confidence >= MIN_CONF) {
+        if (a.setup && a.setup.confidence >= MIN_CONF && !circuits.DREYKO.blocked && opened.DREYKO < MAX_NEW_PER_RUN && dreyko.open.length < MAX_OPEN) {
           const smt = peer ? SMT.evaluate(c60, peer, a.setup.side) : { available: false, confirmed: false, reason: 'PEER_DATA_MISSING', score: 0 };
           a.structures.smt = smt;
           if (smt.confirmed) a.setup.reasons.push('SMT korelasyon teyidi ✓');
@@ -288,17 +318,23 @@ function recordStrategyRejection(st, sym, side, decision) {
           a.structures.dreykoSequence = sequence;
           a.structures.timePolicy = timePolicy;
           if (!pretrade.valid) {
-            recordStrategyRejection(st, sym, a.setup.side, { reason: pretrade.reason, state: pretrade.stage });
-            await sleep(120);
-            continue;
+            recordStrategyRejection(dreyko, sym, a.setup.side, { reason: pretrade.reason, state: pretrade.stage });
+          } else {
+            a.setup.reasons.push(anchorContext.mode === 'OPEN_SWEEP_RECLAIM' ? 'Açılış seviyesi sweep/reclaim ✓' : 'Açılış seviyeleri flow hizası ✓');
+            a.setup.reasons.push(sequence.valid ? 'DREYKO sıra teyidi ✓ ' + sequence.entryModel : 'DREYKO sıra teyidi kapalı');
+            const context = { oiAvailable: !!oi, oiState: a.structures.oiState || null, smt, timePolicy, anchorContext, sequence };
+            const tr = tryOpen(dreyko, sym, a, c60[c60.length - 1].c, context, pretrade, 'DREYKO', a.setup);
+            if (tr) opened.DREYKO++;
           }
-          a.setup.reasons.push(anchorContext.mode === 'OPEN_SWEEP_RECLAIM' ? 'Açılış seviyesi sweep/reclaim ✓' : 'Açılış seviyeleri flow hizası ✓');
-          a.setup.reasons.push(sequence.valid ? 'DREYKO sıra teyidi ✓ ' + sequence.entryModel : 'DREYKO sıra teyidi kapalı');
-          const context = { oiAvailable: !!oi, oiState: a.structures.oiState || null, smt, timePolicy, anchorContext, sequence };
-          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c, context, pretrade);
-          if (tr) {
-            opened++;
-            console.log('AÇILDI:', sym, TF, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade);
+        }
+        if (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B' && !circuits.YIGITAL.blocked && opened.YIGITAL < MAX_NEW_PER_RUN && yigital.open.length < MAX_OPEN) {
+          const pretrade = YigitalPretrade.evaluate({ symbol: sym, candles: c60, analysis: a, marketPrice: c60[c60.length - 1].c }, { minNetRR: EXECUTION_CONFIG.minNetRR });
+          a.structures.yigitalSequence = pretrade.sequence || null;
+          if (!pretrade.valid) recordStrategyRejection(yigital, sym, a.yigitalSetup.side, { reason: pretrade.reason, state: pretrade.stage });
+          else {
+            const context = { sequence: pretrade.sequence, targetDecision: pretrade.targetDecision, execution: pretrade.execution };
+            const tr = tryOpen(yigital, sym, a, c60[c60.length - 1].c, context, pretrade, 'YIGITAL', a.yigitalSetup);
+            if (tr) opened.YIGITAL++;
           }
         }
       }
@@ -307,38 +343,12 @@ function recordStrategyRejection(st, sym, side, decision) {
   }
 
   st.lastRun = Date.now();
-  st.equityHistory.push({ t: st.lastRun, eq: st.equity, open: st.open.length });
-  if (st.equityHistory.length > 2000) st.equityHistory.splice(0, st.equityHistory.length - 2000);
-  const wins = st.closed.filter(t => t.realized > 0).length;
-  st.stats = {
-    closed: st.closed.length,
-    wins,
-    losses: st.closed.filter(t => t.realized <= 0).length,
-    winRate: st.closed.length ? rnd(100 * wins / st.closed.length, 1) : null,
-    netPnl: rnd(st.equity - st.startEquity, 2),
-    totalR: rnd(st.closed.reduce((s2, t) => s2 + (t.r || 0), 0), 2),
-    source: SRC,
-    minConf: MIN_CONF,
-    tf: TF,
-    ltf: LTF,
-    maxSymbols: MAX_SYMS,
-    riskPct: RISK_PCT,
-    tp1R: TP1_R,
-    maxOpen: MAX_OPEN,
-    maxNewPerRun: MAX_NEW_PER_RUN,
-    minRiskPct: MIN_RISK,
-    leverageCap: null,
-    maxTotalRiskPct: RISK_CONFIG.maxTotalRiskPct,
-    maxDirectionalRiskPct: RISK_CONFIG.maxDirectionalRiskPct,
-    maxCorrelatedTrades: RISK_CONFIG.maxCorrelatedTrades,
-    weeklyStopR: RISK_CONFIG.weeklyStopR,
-    circuitBreaker: st.circuitBreaker,
-    requireDreykoSequence: REQUIRE_DREYKO_SEQUENCE,
-    minNetRR: EXECUTION_CONFIG.minNetRR,
-    spreadBps: EXECUTION_CONFIG.spreadBps,
-    configSource: 'strategy_config.js'
-  };
+  for (const [id, portfolio] of Object.entries(st.portfolios)) {
+    portfolio.equityHistory.push({ t: st.lastRun, eq: portfolio.equity, open: portfolio.open.length });
+    if (portfolio.equityHistory.length > 2000) portfolio.equityHistory.splice(0, portfolio.equityHistory.length - 2000);
+    updateStats(portfolio, id);
+  }
   saveState(st);
-  console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
-  console.log('özkaynak:', st.equity, '| net PnL:', st.stats.netPnl, '| WR:', st.stats.winRate);
+  console.log('tarandı:', scanned, '| açıldı D/Y:', opened.DREYKO + '/' + opened.YIGITAL, '| hata:', errors);
+  console.log('DREYKO:', dreyko.stats.totalR + 'R', '| Yigital:', yigital.stats.totalR + 'R');
 })().catch(e => { console.error('HATA', e.stack); process.exit(1); });
