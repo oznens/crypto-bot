@@ -295,6 +295,14 @@ function updateStats(portfolio, strategyId) {
 
 (async () => {
   const st = loadState();
+  if (process.env.PAPER_RESET_DREYKO === 'true') {
+    StateStore.resetPortfolio(st, 'DREYKO', START_EQ);
+    st.lastRun = Date.now();
+    updateStats(st.portfolios.DREYKO, 'DREYKO');
+    saveState(st);
+    console.log('DREYKO portföyü sıfırlandı: özkaynak', START_EQ, '| açık 0 | kapalı 0 | toplam 0R');
+    return;
+  }
   const dreyko = st.portfolios.DREYKO;
   const yigital = st.portfolios.YIGITAL;
   st.runs = (st.runs || 0) + 1;

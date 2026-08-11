@@ -39,6 +39,13 @@ function syncLegacyView(state) {
   return state;
 }
 
+function resetPortfolio(state, id, startEquity) {
+  if (!PORTFOLIO_IDS.includes(id)) throw new Error(`bilinmeyen portföy: ${id}`);
+  state.portfolios[id] = initialPortfolio(id, startEquity);
+  state.portfolios[id].resetAt = Date.now();
+  return syncLegacyView(state);
+}
+
 function migrateState(state, startEquity) {
   if (state && state.portfolios) {
     for (const id of PORTFOLIO_IDS) state.portfolios[id] = state.portfolios[id] || initialPortfolio(id, startEquity);
@@ -128,4 +135,4 @@ function saveAtomic(filename, state) {
   }
 }
 
-module.exports = { PORTFOLIO_IDS, initialPortfolio, initialState, migrateState, syncLegacyView, validateState, parseState, loadState, saveAtomic };
+module.exports = { PORTFOLIO_IDS, initialPortfolio, initialState, migrateState, syncLegacyView, resetPortfolio, validateState, parseState, loadState, saveAtomic };
