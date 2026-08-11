@@ -29,7 +29,10 @@ const RISK_CONFIG = {
   maxTotalRiskPct: +(process.env.PAPER_MAX_TOTAL_RISK_PCT || CFG.MAX_TOTAL_RISK_PCT),
   maxDirectionalRiskPct: +(process.env.PAPER_MAX_DIRECTIONAL_RISK_PCT || CFG.MAX_DIRECTIONAL_RISK_PCT),
   maxCorrelatedTrades: +(process.env.PAPER_MAX_CORRELATED_TRADES || CFG.MAX_CORRELATED_TRADES),
-  weeklyStopR: 0
+  weeklyStopR: 0,
+  enforceTotalRisk: false,
+  enforceDirectionalRisk: false,
+  enforceCorrelation: false
 };
 const YIGITAL_RISK_CONFIG = {
   ...RISK_CONFIG,
@@ -42,7 +45,8 @@ const CIRCUIT_CONFIG = {
   dailyLossLimitR: +(process.env.PAPER_DAILY_LOSS_LIMIT_R || CFG.DAILY_LOSS_LIMIT_R),
   dailyLossEnabled: false,
   maxLosingStreak: +(process.env.PAPER_MAX_LOSING_STREAK || CFG.MAX_LOSING_STREAK),
-  cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS)
+  cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS),
+  losingStreakEnabled: false
 };
 const YIGITAL_CIRCUIT_CONFIG = { ...CIRCUIT_CONFIG, dailyLossEnabled: false, losingStreakEnabled: false };
 const REQUIRE_DREYKO_SEQUENCE = process.env.PAPER_REQUIRE_DREYKO_SEQUENCE !== '0';
@@ -276,11 +280,11 @@ function updateStats(portfolio, strategyId) {
     strategyId, source: SRC, minConf: MIN_CONF, tf: TF, ltf: LTF,
     maxSymbols: MAX_SYMS, riskPct: RISK_PCT, tp1R: TP1_R,
     maxOpen: MAX_OPEN, maxNewPerRun: MAX_NEW_PER_RUN, minRiskPct: MIN_RISK,
-    maxTotalRiskPct: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxTotalRiskPct,
-    maxDirectionalRiskPct: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxDirectionalRiskPct,
-    maxCorrelatedTrades: strategyId === 'YIGITAL' ? null : RISK_CONFIG.maxCorrelatedTrades,
-    losingStreakLimit: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.maxLosingStreak,
-    cooldownMs: strategyId === 'YIGITAL' ? null : CIRCUIT_CONFIG.cooldownMs,
+    maxTotalRiskPct: null,
+    maxDirectionalRiskPct: null,
+    maxCorrelatedTrades: null,
+    losingStreakLimit: null,
+    cooldownMs: null,
     weeklyStopR: null,
     dailyLossLimitR: null,
     circuitBreaker: portfolio.circuitBreaker,

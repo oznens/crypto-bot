@@ -13,18 +13,24 @@ const risk = Risk.evaluateTrade(state, { symbol: 'BTC_USDT', side: 'LONG', riskU
   maxDirectionalRiskPct: 0.03,
   maxCorrelatedTrades: 2,
   weeklyStopR: 0,
+  enforceTotalRisk: false,
+  enforceDirectionalRisk: false,
+  enforceCorrelation: false,
   now
 });
 assert.equal(risk.allowed, true);
 
 const circuit = Circuit.evaluate(state, {
   dailyLossEnabled: false,
+  losingStreakEnabled: false,
   maxLosingStreak: 4,
   cooldownMs: 6 * 3600000,
   now
 });
-assert.equal(circuit.reason, 'LOSING_STREAK_LIMIT');
+assert.equal(circuit.blocked, false);
 assert.equal(circuit.dailyLossEnabled, false);
 assert.equal(circuit.dailyLossLimitR, null);
+assert.equal(circuit.losingStreakEnabled, false);
+assert.equal(circuit.maxLosingStreak, null);
 
 console.log('dreyko_loss_stop_policy tests passed');
