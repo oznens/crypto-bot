@@ -14,7 +14,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 875.731915,
-     "mkt": 849.07,
+     "mkt": 853.09,
      "slip": 0.0005,
      "entryFee": 0.3919,
      "qty": 2.23758273,
@@ -993,7 +993,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 76.74161,
-     "mkt": 74.92,
+     "mkt": 74.91,
      "slip": 0.0005,
      "entryFee": 1.1369,
      "qty": 37.03787758,
@@ -1980,7 +1980,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 88.01597,
-     "mkt": 87.48,
+     "mkt": 87.49,
      "slip": 0.0005,
      "entryFee": 1.4918,
      "qty": 42.37310229,
@@ -13421,6 +13421,11 @@
      "t": 1786468583003,
      "eq": 9943.25,
      "open": 4
+    },
+    {
+     "t": 1786468735817,
+     "eq": 9943.25,
+     "open": 4
     }
    ],
    "stats": {
@@ -13448,9 +13453,10 @@
     "losingStreakLimit": 4,
     "cooldownMs": 21600000,
     "weeklyStopR": 5,
+    "dailyLossLimitR": 3,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786468567337,
+     "generatedAt": 1786468722405,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13459,6 +13465,7 @@
      "losingStreak": 0,
      "blockedUntil": null,
      "dailyLossLimitR": 3,
+     "dailyLossEnabled": true,
      "maxLosingStreak": 4,
      "losingStreakEnabled": true
     },
@@ -13466,6 +13473,48 @@
     "configSource": "strategy_config.js + dreyko pipeline"
    },
    "strategyRejections": [
+    {
+     "t": 1786468735264,
+     "symbol": "NAS100_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468732119,
+     "symbol": "TAO_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468730760,
+     "symbol": "SUI_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468730219,
+     "symbol": "PEPE_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468728867,
+     "symbol": "USOIL_USDT",
+     "side": "SHORT",
+     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786468727519,
+     "symbol": "SKHYSTOCK_USDT",
+     "side": "SHORT",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
     {
      "t": 1786468582406,
      "symbol": "NAS100_USDT",
@@ -13686,7 +13735,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786468567337,
+    "generatedAt": 1786468722405,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13695,6 +13744,7 @@
     "losingStreak": 0,
     "blockedUntil": null,
     "dailyLossLimitR": 3,
+    "dailyLossEnabled": true,
     "maxLosingStreak": 4,
     "losingStreakEnabled": true
    }
@@ -13727,6 +13777,11 @@
      "t": 1786468583003,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786468735817,
+     "eq": 10000,
+     "open": 0
     }
    ],
    "stats": {
@@ -13753,10 +13808,11 @@
     "maxCorrelatedTrades": null,
     "losingStreakLimit": null,
     "cooldownMs": null,
-    "weeklyStopR": 5,
+    "weeklyStopR": null,
+    "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786468567337,
+     "generatedAt": 1786468722405,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13764,7 +13820,8 @@
      "todayTrades": 0,
      "losingStreak": 0,
      "blockedUntil": null,
-     "dailyLossLimitR": 3,
+     "dailyLossLimitR": null,
+     "dailyLossEnabled": false,
      "maxLosingStreak": null,
      "losingStreakEnabled": false
     },
@@ -13773,7 +13830,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786468567337,
+    "generatedAt": 1786468722405,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13781,14 +13838,15 @@
     "todayTrades": 0,
     "losingStreak": 0,
     "blockedUntil": null,
-    "dailyLossLimitR": 3,
+    "dailyLossLimitR": null,
+    "dailyLossEnabled": false,
     "maxLosingStreak": null,
     "losingStreakEnabled": false
    }
   }
  },
- "lastRun": 1786468583003,
- "runs": 108,
+ "lastRun": 1786468735817,
+ "runs": 109,
  "equity": 9943.25,
  "startEquity": 10000,
  "open": [
@@ -13799,7 +13857,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 875.731915,
-   "mkt": 849.07,
+   "mkt": 853.09,
    "slip": 0.0005,
    "entryFee": 0.3919,
    "qty": 2.23758273,
@@ -14778,7 +14836,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 74.92,
+   "mkt": 74.91,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 37.03787758,
@@ -15765,7 +15823,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 88.01597,
-   "mkt": 87.48,
+   "mkt": 87.49,
    "slip": 0.0005,
    "entryFee": 1.4918,
    "qty": 42.37310229,
@@ -27206,6 +27264,11 @@
    "t": 1786468583003,
    "eq": 9943.25,
    "open": 4
+  },
+  {
+   "t": 1786468735817,
+   "eq": 9943.25,
+   "open": 4
   }
  ],
  "stats": {
@@ -27233,9 +27296,10 @@
   "losingStreakLimit": 4,
   "cooldownMs": 21600000,
   "weeklyStopR": 5,
+  "dailyLossLimitR": 3,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786468567337,
+   "generatedAt": 1786468722405,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -27244,6 +27308,7 @@
    "losingStreak": 0,
    "blockedUntil": null,
    "dailyLossLimitR": 3,
+   "dailyLossEnabled": true,
    "maxLosingStreak": 4,
    "losingStreakEnabled": true
   },
@@ -27255,6 +27320,48 @@
   "migratedAt": 1786467374157
  },
  "strategyRejections": [
+  {
+   "t": 1786468735264,
+   "symbol": "NAS100_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468732119,
+   "symbol": "TAO_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468730760,
+   "symbol": "SUI_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468730219,
+   "symbol": "PEPE_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468728867,
+   "symbol": "USOIL_USDT",
+   "side": "SHORT",
+   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786468727519,
+   "symbol": "SKHYSTOCK_USDT",
+   "side": "SHORT",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
   {
    "t": 1786468582406,
    "symbol": "NAS100_USDT",
@@ -27475,7 +27582,7 @@
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786468567337,
+  "generatedAt": 1786468722405,
   "blocked": false,
   "allowed": true,
   "reason": null,
@@ -27484,6 +27591,7 @@
   "losingStreak": 0,
   "blockedUntil": null,
   "dailyLossLimitR": 3,
+  "dailyLossEnabled": true,
   "maxLosingStreak": 4,
   "losingStreakEnabled": true
  }
