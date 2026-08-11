@@ -14,7 +14,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 875.731915,
-     "mkt": 853.3,
+     "mkt": 852.31,
      "slip": 0.0005,
      "entryFee": 0.3919,
      "qty": 2.23758273,
@@ -2967,7 +2967,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 81.749105,
-     "mkt": 82.42,
+     "mkt": 82.44,
      "slip": 0.0005,
      "entryFee": 0.6685,
      "qty": 40.88912197,
@@ -13406,6 +13406,11 @@
      "t": 1786467394179,
      "eq": 9943.25,
      "open": 4
+    },
+    {
+     "t": 1786467619328,
+     "eq": 9943.25,
+     "open": 4
     }
    ],
    "stats": {
@@ -13415,6 +13420,7 @@
     "winRate": 33.3,
     "netPnl": -56.75,
     "totalR": -2.01,
+    "maxDrawdownPct": 3.14,
     "strategyId": "DREYKO",
     "source": "perp",
     "minConf": 75,
@@ -13432,7 +13438,7 @@
     "weeklyStopR": 5,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786467375130,
+     "generatedAt": 1786467600187,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13447,6 +13453,55 @@
     "configSource": "strategy_config.js + dreyko pipeline"
    },
    "strategyRejections": [
+    {
+     "t": 1786467618677,
+     "symbol": "NAS100_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786467615160,
+     "symbol": "UKOIL_USDT",
+     "side": "SHORT",
+     "reason": "NET_RR_TOO_LOW",
+     "state": "EXECUTION"
+    },
+    {
+     "t": 1786467614404,
+     "symbol": "TAO_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786467612576,
+     "symbol": "SUI_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786467611828,
+     "symbol": "PEPE_USDT",
+     "side": "LONG",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786467609901,
+     "symbol": "USOIL_USDT",
+     "side": "SHORT",
+     "reason": "WAITING_LOW_RISK_ENTRY",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786467607663,
+     "symbol": "SKHYSTOCK_USDT",
+     "side": "SHORT",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
     {
      "t": 1786467393533,
      "symbol": "NAS100_USDT",
@@ -13534,7 +13589,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786467375130,
+    "generatedAt": 1786467600187,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13559,6 +13614,11 @@
      "t": 1786467394179,
      "eq": 10000,
      "open": 0
+    },
+    {
+     "t": 1786467619328,
+     "eq": 10000,
+     "open": 0
     }
    ],
    "stats": {
@@ -13568,6 +13628,7 @@
     "winRate": null,
     "netPnl": 0,
     "totalR": 0,
+    "maxDrawdownPct": 0,
     "strategyId": "YIGITAL",
     "source": "perp",
     "minConf": 75,
@@ -13585,7 +13646,7 @@
     "weeklyStopR": 5,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786467375130,
+     "generatedAt": 1786467600187,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -13601,7 +13662,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786467375130,
+    "generatedAt": 1786467600187,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -13614,8 +13675,8 @@
    }
   }
  },
- "lastRun": 1786467394179,
- "runs": 105,
+ "lastRun": 1786467619328,
+ "runs": 106,
  "equity": 9943.25,
  "startEquity": 10000,
  "open": [
@@ -13626,7 +13687,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 875.731915,
-   "mkt": 853.3,
+   "mkt": 852.31,
    "slip": 0.0005,
    "entryFee": 0.3919,
    "qty": 2.23758273,
@@ -16579,7 +16640,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 81.749105,
-   "mkt": 82.42,
+   "mkt": 82.44,
    "slip": 0.0005,
    "entryFee": 0.6685,
    "qty": 40.88912197,
@@ -27018,6 +27079,11 @@
    "t": 1786467394179,
    "eq": 9943.25,
    "open": 4
+  },
+  {
+   "t": 1786467619328,
+   "eq": 9943.25,
+   "open": 4
   }
  ],
  "stats": {
@@ -27027,6 +27093,7 @@
   "winRate": 33.3,
   "netPnl": -56.75,
   "totalR": -2.01,
+  "maxDrawdownPct": 3.14,
   "strategyId": "DREYKO",
   "source": "perp",
   "minConf": 75,
@@ -27044,7 +27111,7 @@
   "weeklyStopR": 5,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786467375130,
+   "generatedAt": 1786467600187,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -27063,6 +27130,55 @@
   "migratedAt": 1786467374157
  },
  "strategyRejections": [
+  {
+   "t": 1786467618677,
+   "symbol": "NAS100_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786467615160,
+   "symbol": "UKOIL_USDT",
+   "side": "SHORT",
+   "reason": "NET_RR_TOO_LOW",
+   "state": "EXECUTION"
+  },
+  {
+   "t": 1786467614404,
+   "symbol": "TAO_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786467612576,
+   "symbol": "SUI_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786467611828,
+   "symbol": "PEPE_USDT",
+   "side": "LONG",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786467609901,
+   "symbol": "USOIL_USDT",
+   "side": "SHORT",
+   "reason": "WAITING_LOW_RISK_ENTRY",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786467607663,
+   "symbol": "SKHYSTOCK_USDT",
+   "side": "SHORT",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
   {
    "t": 1786467393533,
    "symbol": "NAS100_USDT",
@@ -27150,7 +27266,7 @@
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786467375130,
+  "generatedAt": 1786467600187,
   "blocked": false,
   "allowed": true,
   "reason": null,
