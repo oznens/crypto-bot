@@ -15,7 +15,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 969.07522,
-     "mkt": 973.5,
+     "mkt": 973.72,
      "slip": 0.0005,
      "entryFee": 0.8561,
      "qty": 4.41731418,
@@ -1355,7 +1355,7 @@
       }
      },
      "openedAt": 1786718518157,
-     "lastCheck": 1786750200000,
+     "lastCheck": 1786751700000,
      "status": "open",
      "deriskDone": false,
      "realized": 0,
@@ -7246,6 +7246,11 @@
      "t": 1786750360032,
      "eq": 9583.38,
      "open": 1
+    },
+    {
+     "t": 1786751815992,
+     "eq": 9583.38,
+     "open": 1
     }
    ],
    "stats": {
@@ -7276,7 +7281,7 @@
     "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786750343246,
+     "generatedAt": 1786751803552,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -7314,7 +7319,7 @@
       "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bearish)",
-      "RSI 66",
+      "RSI 63",
       "⚠ FVG EQ (8.8075) henüz kazanılmadı — yigit: teyit bekle",
       "OTE 0.618–0.786 desteği [8.9789–8.9943] (JB: fib-backed giriş)",
       "Market Maker Sell Model · Hedef: karşı range / IPDA",
@@ -8249,7 +8254,7 @@
         8.939,
         9.008,
         8.938,
-        8.996
+        8.967
        ]
       ],
       "manip": {
@@ -8276,8 +8281,8 @@
        "monthly": 8.166
       }
      },
-     "openedAt": 1786750355261,
-     "observedAt": 1786750355261
+     "openedAt": 1786751812424,
+     "observedAt": 1786751812424
     },
     {
      "id": "DREYKO|PEPE_USDT",
@@ -8300,7 +8305,7 @@
       "Smart Money Reversal",
       "CISD / displacement teyidi (güçlü geri alım mumu)",
       "Bias uyumlu (Bullish)",
-      "⚠ FVG EQ (0.00000266) henüz kazanılmadı — yigit: teyit bekle",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "OTE 0.618–0.786 desteği [0.00000262–0.00000264] (JB: fib-backed giriş)",
       "HOB (gizli OB) girişte [0.00000262–0.00000265] (JB 2xHOB)",
       "Market Maker Buy Model · Hedef: karşı range / IPDA"
@@ -9269,8 +9274,8 @@
        "monthly": 0.0000027535
       }
      },
-     "openedAt": 1786750352392,
-     "observedAt": 1786750352392
+     "openedAt": 1786751810157,
+     "observedAt": 1786751810157
     },
     {
      "id": "DREYKO|SUI_USDT",
@@ -9279,29 +9284,29 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 55,
-     "grade": "B",
+     "conf": 75,
+     "grade": "A+",
      "entry": 0.6732,
      "sl": 0.669984,
      "tp1": 0.6945,
      "tpF": 0.6963,
      "rrPlan": 7.2,
-     "status": "ÖN İZLEME",
-     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
+     "status": "BEKLİYOR / RED",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "CISD / displacement teyidi (güçlü geri alım mumu)",
       "Bias uyumlu (Bullish)",
-      "⚠ FVG EQ (0.6815) henüz kazanılmadı — yigit: teyit bekle",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (0.67415) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
-      "MMxM 3/5 (LTF verisi yok — ön izleme)"
+      "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
      ],
      "mmxm": {
-      "score": 3,
+      "score": 4,
       "max": 5,
-      "valid": false
+      "valid": true
      },
      "snap": {
       "candles": [
@@ -10225,9 +10230,9 @@
        [
         1786748400,
         0.6778,
-        0.6794,
+        0.6824,
         0.6777,
-        0.6793
+        0.6821
        ]
       ],
       "manip": {
@@ -10240,11 +10245,22 @@
        "wick": 0.672,
        "side": "LONG"
       },
-      "sequence": null,
-      "anchors": null
+      "sequence": {
+       "state": "WAITING_FIRST_FVG",
+       "displacementAt": 123,
+       "retestAt": null,
+       "firstFvg": null,
+       "iofed": null,
+       "breakaway": null
+      },
+      "anchors": {
+       "daily": 0.6891,
+       "weekly": 0.6861,
+       "monthly": 0.6816
+      }
      },
-     "openedAt": 1786750351677,
-     "observedAt": 1786750351677
+     "openedAt": 1786751809646,
+     "observedAt": 1786751809646
     },
     {
      "id": "DREYKO|ZEC_USDT",
@@ -10253,12 +10269,12 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 75,
+     "conf": 95,
      "grade": "A+",
-     "entry": 490.395075,
+     "entry": 493.60668,
      "sl": 479.0485,
      "tp1": 497.5,
-     "tpF": 506.68,
+     "tpF": 508.435,
      "rrPlan": 5,
      "status": "BEKLİYOR / RED",
      "reason": "NET_RR_TOO_LOW",
@@ -10266,7 +10282,7 @@
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "⚠ FVG EQ (490.585) henüz kazanılmadı — yigit: teyit bekle",
+      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
       "⚠ Hedef likiditesi (484.72) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: Value Area içinde [480.7575–497.4175] (SolCJ)",
       "OTE 0.618–0.786 desteği [483.3747–485.6394] (JB: fib-backed giriş)",
@@ -11199,9 +11215,9 @@
        [
         1786748400,
         490.89,
-        491.21,
+        493.6,
         489.25,
-        490.15
+        493.36
        ]
       ],
       "manip": {
@@ -11237,8 +11253,8 @@
        "monthly": 457.52
       }
      },
-     "openedAt": 1786750350637,
-     "observedAt": 1786750350637
+     "openedAt": 1786751808737,
+     "observedAt": 1786751808737
     },
     {
      "id": "DREYKO|SPCXSTOCK_USDT",
@@ -12193,9 +12209,9 @@
        [
         1786748400,
         140.45,
-        140.64,
+        140.71,
         140.29,
-        140.57
+        140.64
        ]
       ],
       "manip": {
@@ -12226,7 +12242,7 @@
        "breakaway": {
         "confirmed": true,
         "barsUntouched": 6,
-        "extensionInGaps": 9.793103448276142,
+        "extensionInGaps": 10.034482758620953,
         "zone": {
          "side": "LONG",
          "type": "bull",
@@ -12244,8 +12260,8 @@
        "monthly": 107.97
       }
      },
-     "openedAt": 1786750349896,
-     "observedAt": 1786750349896
+     "openedAt": 1786751808203,
+     "observedAt": 1786751808203
     },
     {
      "id": "DREYKO|HYPE_USDT",
@@ -12254,29 +12270,29 @@
      "tf": "60m",
      "side": "LONG",
      "model": "MM Buy Model",
-     "conf": 75,
-     "grade": "A+",
+     "conf": 55,
+     "grade": "B",
      "entry": 55.374,
      "sl": 55.0344,
      "tp1": 58.471,
      "tpF": 58.471,
      "rrPlan": 9.1,
-     "status": "BEKLİYOR / RED",
-     "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+     "status": "ÖN İZLEME",
+     "reason": "GÜVEN_EŞİĞİ_ALTINDA",
      "reasons": [
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "Bias uyumlu (Bullish)",
-      "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
+      "⚠ FVG EQ (56.744) henüz kazanılmadı — yigit: teyit bekle",
       "⚠ Hedef likiditesi (55.5724) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: Value Area içinde [53.917–56.491] (SolCJ)",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
-      "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
+      "MMxM 3/5 (LTF verisi yok — ön izleme)"
      ],
      "mmxm": {
-      "score": 4,
+      "score": 3,
       "max": 5,
-      "valid": true
+      "valid": false
      },
      "snap": {
       "candles": [
@@ -13200,9 +13216,9 @@
        [
         1786748400,
         56.394,
-        56.496,
-        56.215,
-        56.287
+        56.521,
+        56.2,
+        56.478
        ]
       ],
       "manip": {
@@ -13215,31 +13231,11 @@
        "wick": 55.2,
        "side": "LONG"
       },
-      "sequence": {
-       "state": "WAITING_FVG_RETEST",
-       "entryModel": null,
-       "displacementAt": 129,
-       "retestAt": null,
-       "firstFvg": {
-        "side": "LONG",
-        "type": "bull",
-        "from": 128,
-        "to": 130,
-        "bottom": 55.753,
-        "top": 55.926,
-        "ce": 55.8395
-       },
-       "iofed": null,
-       "breakaway": null
-      },
-      "anchors": {
-       "daily": 57.47,
-       "weekly": 53.873,
-       "monthly": 52.558
-      }
+      "sequence": null,
+      "anchors": null
      },
-     "openedAt": 1786750349173,
-     "observedAt": 1786750349173
+     "openedAt": 1786751807683,
+     "observedAt": 1786751807683
     },
     {
      "id": "DREYKO|XRP_USDT",
@@ -13261,7 +13257,7 @@
       "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
       "Smart Money Reversal",
       "CISD / displacement teyidi (güçlü geri alım mumu)",
-      "RSI 39",
+      "RSI 43",
       "⚠ FVG EQ (1.0081) henüz kazanılmadı — yigit: teyit bekle",
       "⚠ Hedef likiditesi (1.0102) son 20 barda zaten alınmış — yigit: kovalamak riskli",
       "Hacim Profili confluence: POC yakını (1.004) (SolCJ)",
@@ -14194,9 +14190,9 @@
        [
         1786748400,
         0.9921,
-        0.9962,
+        0.9986,
         0.9916,
-        0.9961
+        0.9983
        ]
       ],
       "manip": {
@@ -14212,8 +14208,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750347920,
-     "observedAt": 1786750347920
+     "openedAt": 1786751806920,
+     "observedAt": 1786751806920
     },
     {
      "id": "DREYKO|SILVER_USDT",
@@ -15168,9 +15164,9 @@
        [
         1786748400,
         65.02,
-        65.03,
+        65.1,
         65,
-        65.02
+        65.05
        ]
       ],
       "manip": {
@@ -15186,8 +15182,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750347393,
-     "observedAt": 1786750347393
+     "openedAt": 1786751806541,
+     "observedAt": 1786751806541
     },
     {
      "id": "DREYKO|SNDKSTOCK_USDT",
@@ -15208,7 +15204,7 @@
      "reasons": [
       "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
       "Smart Money Reversal",
-      "RSI 77",
+      "RSI 78",
       "⚠ FVG EQ (1551.78) henüz kazanılmadı — yigit: teyit bekle",
       "Hacim Profili confluence: Value Area içinde [1272.45–1678.38] (SolCJ)",
       "Market Maker Sell Model · Hedef: karşı range / IPDA",
@@ -16144,7 +16140,7 @@
         1655.86,
         1661.67,
         1654,
-        1656.05
+        1658.08
        ]
       ],
       "manip": {
@@ -16160,8 +16156,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750346880,
-     "observedAt": 1786750346880
+     "openedAt": 1786751806152,
+     "observedAt": 1786751806152
     },
     {
      "id": "DREYKO|SOXL_USDT",
@@ -17117,8 +17113,8 @@
         1786748400,
         144.75,
         145.17,
-        144.65,
-        145.07
+        144.64,
+        144.72
        ]
       ],
       "manip": {
@@ -17134,8 +17130,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750346353,
-     "observedAt": 1786750346353
+     "openedAt": 1786751805757,
+     "observedAt": 1786751805757
     },
     {
      "id": "DREYKO|SOL_USDT",
@@ -17159,7 +17155,7 @@
       "Bias uyumlu (Bullish)",
       "⚠ FVG EQ (75.465) henüz kazanılmadı — yigit: teyit bekle",
       "⚠ Hedef likiditesi (74.9167) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-      "OTE 0.618–0.786 desteği [74.7619–74.8812] (JB: fib-backed giriş)",
+      "OTE 0.618–0.786 desteği [74.7748–74.9041] (JB: fib-backed giriş)",
       "Market Maker Buy Model · Hedef: karşı range / IPDA",
       "MMxM 3/5 (LTF verisi yok — ön izleme)"
      ],
@@ -18090,9 +18086,9 @@
        [
         1786748400,
         75.16,
-        75.31,
+        75.38,
         75.11,
-        75.29
+        75.35
        ]
       ],
       "manip": {
@@ -18108,8 +18104,8 @@
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750345276,
-     "observedAt": 1786750345276
+     "openedAt": 1786751804984,
+     "observedAt": 1786751804984
     },
     {
      "id": "DREYKO|MUSTOCK_USDT",
@@ -38767,7 +38763,7 @@
    ],
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786750343246,
+    "generatedAt": 1786751803552,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -38781,6 +38777,41 @@
     "losingStreakEnabled": false
    },
    "strategyRejections": [
+    {
+     "t": 1786751812424,
+     "symbol": "LINK_USDT",
+     "side": "SHORT",
+     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786751810157,
+     "symbol": "PEPE_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_INVALIDATED",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786751809646,
+     "symbol": "SUI_USDT",
+     "side": "LONG",
+     "reason": "FIRST_PRESENTED_FVG_MISSING",
+     "state": "SEQUENCE"
+    },
+    {
+     "t": 1786751808737,
+     "symbol": "ZEC_USDT",
+     "side": "LONG",
+     "reason": "NET_RR_TOO_LOW",
+     "state": "EXECUTION"
+    },
+    {
+     "t": 1786751808203,
+     "symbol": "SPCXSTOCK_USDT",
+     "side": "LONG",
+     "reason": "WAITING_LOW_RISK_ENTRY",
+     "state": "SEQUENCE"
+    },
     {
      "t": 1786750355261,
      "symbol": "LINK_USDT",
@@ -40145,41 +40176,6 @@
      "side": "LONG",
      "reason": "FIRST_PRESENTED_FVG_MISSING",
      "state": "SEQUENCE"
-    },
-    {
-     "t": 1786622897325,
-     "symbol": "XAUT_USDT",
-     "side": "LONG",
-     "reason": "STOP_DISTANCE_TOO_SMALL",
-     "state": "GEOMETRY"
-    },
-    {
-     "t": 1786622896624,
-     "symbol": "SILVER_USDT",
-     "side": "LONG",
-     "reason": "DRAW_ON_LIQUIDITY_MISSING",
-     "state": "TARGET"
-    },
-    {
-     "t": 1786622894938,
-     "symbol": "XAU_USDT",
-     "side": "LONG",
-     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
-     "state": "SEQUENCE"
-    },
-    {
-     "t": 1786620064467,
-     "symbol": "TAO_USDT",
-     "side": "LONG",
-     "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
-     "state": "SEQUENCE"
-    },
-    {
-     "t": 1786620059971,
-     "symbol": "XAUT_USDT",
-     "side": "LONG",
-     "reason": "STOP_DISTANCE_TOO_SMALL",
-     "state": "GEOMETRY"
     }
    ]
   },
@@ -40197,7 +40193,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 7731.3,
-     "mkt": 7772.7,
+     "mkt": 7770.9,
      "slip": 0.0005,
      "entryFee": 7.1519,
      "qty": 2.31264637,
@@ -41182,7 +41178,7 @@
       "anchors": null
      },
      "openedAt": 1786508802010,
-     "lastCheck": 1786750200000,
+     "lastCheck": 1786751700000,
      "status": "open",
      "deriskDone": true,
      "realized": 65.12,
@@ -41205,7 +41201,7 @@
      "src": "perp",
      "tf": "60m",
      "entry": 1209.39,
-     "mkt": 1171.55,
+     "mkt": 1170.25,
      "slip": 0.0005,
      "entryFee": 1.5706,
      "qty": 3.24665776,
@@ -42211,7 +42207,7 @@
       }
      },
      "openedAt": 1786661639337,
-     "lastCheck": 1786750200000,
+     "lastCheck": 1786751700000,
      "status": "open",
      "deriskDone": true,
      "realized": 70.9,
@@ -55918,6 +55914,11 @@
      "t": 1786750360032,
      "eq": 9889.81,
      "open": 2
+    },
+    {
+     "t": 1786751815992,
+     "eq": 9889.81,
+     "open": 2
     }
    ],
    "stats": {
@@ -55948,7 +55949,7 @@
     "dailyLossLimitR": null,
     "circuitBreaker": {
      "version": "32.0",
-     "generatedAt": 1786750343246,
+     "generatedAt": 1786751803552,
      "blocked": false,
      "allowed": true,
      "reason": null,
@@ -55966,7 +55967,7 @@
    },
    "circuitBreaker": {
     "version": "32.0",
-    "generatedAt": 1786750343246,
+    "generatedAt": 1786751803552,
     "blocked": false,
     "allowed": true,
     "reason": null,
@@ -56925,16 +56926,16 @@
         1786748400,
         7773.9,
         7775.6,
-        7771.4,
-        7772.7
+        7770.7,
+        7770.7
        ]
       ],
       "manip": null,
       "sequence": null,
       "anchors": null
      },
-     "openedAt": 1786750353453,
-     "observedAt": 1786750353453
+     "openedAt": 1786751811320,
+     "observedAt": 1786751811320
     },
     {
      "id": "YIGITAL|XRP_USDT",
@@ -81066,8 +81067,8 @@
    ]
   }
  },
- "lastRun": 1786750360032,
- "runs": 182,
+ "lastRun": 1786751815992,
+ "runs": 183,
  "equity": 9583.38,
  "startEquity": 10000,
  "open": [
@@ -81079,7 +81080,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 969.07522,
-   "mkt": 973.5,
+   "mkt": 973.72,
    "slip": 0.0005,
    "entryFee": 0.8561,
    "qty": 4.41731418,
@@ -82419,7 +82420,7 @@
     }
    },
    "openedAt": 1786718518157,
-   "lastCheck": 1786750200000,
+   "lastCheck": 1786751700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -88310,6 +88311,11 @@
    "t": 1786750360032,
    "eq": 9583.38,
    "open": 1
+  },
+  {
+   "t": 1786751815992,
+   "eq": 9583.38,
+   "open": 1
   }
  ],
  "stats": {
@@ -88340,7 +88346,7 @@
   "dailyLossLimitR": null,
   "circuitBreaker": {
    "version": "32.0",
-   "generatedAt": 1786750343246,
+   "generatedAt": 1786751803552,
    "blocked": false,
    "allowed": true,
    "reason": null,
@@ -88381,7 +88387,7 @@
     "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bearish)",
-    "RSI 66",
+    "RSI 63",
     "⚠ FVG EQ (8.8075) henüz kazanılmadı — yigit: teyit bekle",
     "OTE 0.618–0.786 desteği [8.9789–8.9943] (JB: fib-backed giriş)",
     "Market Maker Sell Model · Hedef: karşı range / IPDA",
@@ -89316,7 +89322,7 @@
       8.939,
       9.008,
       8.938,
-      8.996
+      8.967
      ]
     ],
     "manip": {
@@ -89343,8 +89349,8 @@
      "monthly": 8.166
     }
    },
-   "openedAt": 1786750355261,
-   "observedAt": 1786750355261
+   "openedAt": 1786751812424,
+   "observedAt": 1786751812424
   },
   {
    "id": "DREYKO|PEPE_USDT",
@@ -89367,7 +89373,7 @@
     "Smart Money Reversal",
     "CISD / displacement teyidi (güçlü geri alım mumu)",
     "Bias uyumlu (Bullish)",
-    "⚠ FVG EQ (0.00000266) henüz kazanılmadı — yigit: teyit bekle",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "OTE 0.618–0.786 desteği [0.00000262–0.00000264] (JB: fib-backed giriş)",
     "HOB (gizli OB) girişte [0.00000262–0.00000265] (JB 2xHOB)",
     "Market Maker Buy Model · Hedef: karşı range / IPDA"
@@ -90336,8 +90342,8 @@
      "monthly": 0.0000027535
     }
    },
-   "openedAt": 1786750352392,
-   "observedAt": 1786750352392
+   "openedAt": 1786751810157,
+   "observedAt": 1786751810157
   },
   {
    "id": "DREYKO|SUI_USDT",
@@ -90346,29 +90352,29 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 55,
-   "grade": "B",
+   "conf": 75,
+   "grade": "A+",
    "entry": 0.6732,
    "sl": 0.669984,
    "tp1": 0.6945,
    "tpF": 0.6963,
    "rrPlan": 7.2,
-   "status": "ÖN İZLEME",
-   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
+   "status": "BEKLİYOR / RED",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "CISD / displacement teyidi (güçlü geri alım mumu)",
     "Bias uyumlu (Bullish)",
-    "⚠ FVG EQ (0.6815) henüz kazanılmadı — yigit: teyit bekle",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (0.67415) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
-    "MMxM 3/5 (LTF verisi yok — ön izleme)"
+    "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
    ],
    "mmxm": {
-    "score": 3,
+    "score": 4,
     "max": 5,
-    "valid": false
+    "valid": true
    },
    "snap": {
     "candles": [
@@ -91292,9 +91298,9 @@
      [
       1786748400,
       0.6778,
-      0.6794,
+      0.6824,
       0.6777,
-      0.6793
+      0.6821
      ]
     ],
     "manip": {
@@ -91307,11 +91313,22 @@
      "wick": 0.672,
      "side": "LONG"
     },
-    "sequence": null,
-    "anchors": null
+    "sequence": {
+     "state": "WAITING_FIRST_FVG",
+     "displacementAt": 123,
+     "retestAt": null,
+     "firstFvg": null,
+     "iofed": null,
+     "breakaway": null
+    },
+    "anchors": {
+     "daily": 0.6891,
+     "weekly": 0.6861,
+     "monthly": 0.6816
+    }
    },
-   "openedAt": 1786750351677,
-   "observedAt": 1786750351677
+   "openedAt": 1786751809646,
+   "observedAt": 1786751809646
   },
   {
    "id": "DREYKO|ZEC_USDT",
@@ -91320,12 +91337,12 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 75,
+   "conf": 95,
    "grade": "A+",
-   "entry": 490.395075,
+   "entry": 493.60668,
    "sl": 479.0485,
    "tp1": 497.5,
-   "tpF": 506.68,
+   "tpF": 508.435,
    "rrPlan": 5,
    "status": "BEKLİYOR / RED",
    "reason": "NET_RR_TOO_LOW",
@@ -91333,7 +91350,7 @@
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "⚠ FVG EQ (490.585) henüz kazanılmadı — yigit: teyit bekle",
+    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
     "⚠ Hedef likiditesi (484.72) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: Value Area içinde [480.7575–497.4175] (SolCJ)",
     "OTE 0.618–0.786 desteği [483.3747–485.6394] (JB: fib-backed giriş)",
@@ -92266,9 +92283,9 @@
      [
       1786748400,
       490.89,
-      491.21,
+      493.6,
       489.25,
-      490.15
+      493.36
      ]
     ],
     "manip": {
@@ -92304,8 +92321,8 @@
      "monthly": 457.52
     }
    },
-   "openedAt": 1786750350637,
-   "observedAt": 1786750350637
+   "openedAt": 1786751808737,
+   "observedAt": 1786751808737
   },
   {
    "id": "DREYKO|SPCXSTOCK_USDT",
@@ -93260,9 +93277,9 @@
      [
       1786748400,
       140.45,
-      140.64,
+      140.71,
       140.29,
-      140.57
+      140.64
      ]
     ],
     "manip": {
@@ -93293,7 +93310,7 @@
      "breakaway": {
       "confirmed": true,
       "barsUntouched": 6,
-      "extensionInGaps": 9.793103448276142,
+      "extensionInGaps": 10.034482758620953,
       "zone": {
        "side": "LONG",
        "type": "bull",
@@ -93311,8 +93328,8 @@
      "monthly": 107.97
     }
    },
-   "openedAt": 1786750349896,
-   "observedAt": 1786750349896
+   "openedAt": 1786751808203,
+   "observedAt": 1786751808203
   },
   {
    "id": "DREYKO|HYPE_USDT",
@@ -93321,29 +93338,29 @@
    "tf": "60m",
    "side": "LONG",
    "model": "MM Buy Model",
-   "conf": 75,
-   "grade": "A+",
+   "conf": 55,
+   "grade": "B",
    "entry": 55.374,
    "sl": 55.0344,
    "tp1": 58.471,
    "tpF": 58.471,
    "rrPlan": 9.1,
-   "status": "BEKLİYOR / RED",
-   "reason": "FIRST_PRESENTED_FVG_RETEST_MISSING",
+   "status": "ÖN İZLEME",
+   "reason": "GÜVEN_EŞİĞİ_ALTINDA",
    "reasons": [
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "Bias uyumlu (Bullish)",
-    "FVG EQ kazanımı ✓ (yigit: EQ kazanılmadan işlem yok)",
+    "⚠ FVG EQ (56.744) henüz kazanılmadı — yigit: teyit bekle",
     "⚠ Hedef likiditesi (55.5724) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: Value Area içinde [53.917–56.491] (SolCJ)",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
-    "GERÇEK MMxM ✓ 4/5 — LTF CISD/MSS onaylı (backtest: +0.34R/işlem)"
+    "MMxM 3/5 (LTF verisi yok — ön izleme)"
    ],
    "mmxm": {
-    "score": 4,
+    "score": 3,
     "max": 5,
-    "valid": true
+    "valid": false
    },
    "snap": {
     "candles": [
@@ -94267,9 +94284,9 @@
      [
       1786748400,
       56.394,
-      56.496,
-      56.215,
-      56.287
+      56.521,
+      56.2,
+      56.478
      ]
     ],
     "manip": {
@@ -94282,31 +94299,11 @@
      "wick": 55.2,
      "side": "LONG"
     },
-    "sequence": {
-     "state": "WAITING_FVG_RETEST",
-     "entryModel": null,
-     "displacementAt": 129,
-     "retestAt": null,
-     "firstFvg": {
-      "side": "LONG",
-      "type": "bull",
-      "from": 128,
-      "to": 130,
-      "bottom": 55.753,
-      "top": 55.926,
-      "ce": 55.8395
-     },
-     "iofed": null,
-     "breakaway": null
-    },
-    "anchors": {
-     "daily": 57.47,
-     "weekly": 53.873,
-     "monthly": 52.558
-    }
+    "sequence": null,
+    "anchors": null
    },
-   "openedAt": 1786750349173,
-   "observedAt": 1786750349173
+   "openedAt": 1786751807683,
+   "observedAt": 1786751807683
   },
   {
    "id": "DREYKO|XRP_USDT",
@@ -94328,7 +94325,7 @@
     "Manipulation: range altı süpürüldü, geri alındı (likidite avı / Turtle Soup)",
     "Smart Money Reversal",
     "CISD / displacement teyidi (güçlü geri alım mumu)",
-    "RSI 39",
+    "RSI 43",
     "⚠ FVG EQ (1.0081) henüz kazanılmadı — yigit: teyit bekle",
     "⚠ Hedef likiditesi (1.0102) son 20 barda zaten alınmış — yigit: kovalamak riskli",
     "Hacim Profili confluence: POC yakını (1.004) (SolCJ)",
@@ -95261,9 +95258,9 @@
      [
       1786748400,
       0.9921,
-      0.9962,
+      0.9986,
       0.9916,
-      0.9961
+      0.9983
      ]
     ],
     "manip": {
@@ -95279,8 +95276,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786750347920,
-   "observedAt": 1786750347920
+   "openedAt": 1786751806920,
+   "observedAt": 1786751806920
   },
   {
    "id": "DREYKO|SILVER_USDT",
@@ -96235,9 +96232,9 @@
      [
       1786748400,
       65.02,
-      65.03,
+      65.1,
       65,
-      65.02
+      65.05
      ]
     ],
     "manip": {
@@ -96253,8 +96250,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786750347393,
-   "observedAt": 1786750347393
+   "openedAt": 1786751806541,
+   "observedAt": 1786751806541
   },
   {
    "id": "DREYKO|SNDKSTOCK_USDT",
@@ -96275,7 +96272,7 @@
    "reasons": [
     "Manipulation: range üstü süpürüldü, geri alındı (Turtle Soup)",
     "Smart Money Reversal",
-    "RSI 77",
+    "RSI 78",
     "⚠ FVG EQ (1551.78) henüz kazanılmadı — yigit: teyit bekle",
     "Hacim Profili confluence: Value Area içinde [1272.45–1678.38] (SolCJ)",
     "Market Maker Sell Model · Hedef: karşı range / IPDA",
@@ -97211,7 +97208,7 @@
       1655.86,
       1661.67,
       1654,
-      1656.05
+      1658.08
      ]
     ],
     "manip": {
@@ -97227,8 +97224,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786750346880,
-   "observedAt": 1786750346880
+   "openedAt": 1786751806152,
+   "observedAt": 1786751806152
   },
   {
    "id": "DREYKO|SOXL_USDT",
@@ -98184,8 +98181,8 @@
       1786748400,
       144.75,
       145.17,
-      144.65,
-      145.07
+      144.64,
+      144.72
      ]
     ],
     "manip": {
@@ -98201,8 +98198,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786750346353,
-   "observedAt": 1786750346353
+   "openedAt": 1786751805757,
+   "observedAt": 1786751805757
   },
   {
    "id": "DREYKO|SOL_USDT",
@@ -98226,7 +98223,7 @@
     "Bias uyumlu (Bullish)",
     "⚠ FVG EQ (75.465) henüz kazanılmadı — yigit: teyit bekle",
     "⚠ Hedef likiditesi (74.9167) son 20 barda zaten alınmış — yigit: kovalamak riskli",
-    "OTE 0.618–0.786 desteği [74.7619–74.8812] (JB: fib-backed giriş)",
+    "OTE 0.618–0.786 desteği [74.7748–74.9041] (JB: fib-backed giriş)",
     "Market Maker Buy Model · Hedef: karşı range / IPDA",
     "MMxM 3/5 (LTF verisi yok — ön izleme)"
    ],
@@ -99157,9 +99154,9 @@
      [
       1786748400,
       75.16,
-      75.31,
+      75.38,
       75.11,
-      75.29
+      75.35
      ]
     ],
     "manip": {
@@ -99175,8 +99172,8 @@
     "sequence": null,
     "anchors": null
    },
-   "openedAt": 1786750345276,
-   "observedAt": 1786750345276
+   "openedAt": 1786751804984,
+   "observedAt": 1786751804984
   },
   {
    "id": "DREYKO|MUSTOCK_USDT",
@@ -119834,6 +119831,41 @@
  ],
  "strategyRejections": [
   {
+   "t": 1786751812424,
+   "symbol": "LINK_USDT",
+   "side": "SHORT",
+   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786751810157,
+   "symbol": "PEPE_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_INVALIDATED",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786751809646,
+   "symbol": "SUI_USDT",
+   "side": "LONG",
+   "reason": "FIRST_PRESENTED_FVG_MISSING",
+   "state": "SEQUENCE"
+  },
+  {
+   "t": 1786751808737,
+   "symbol": "ZEC_USDT",
+   "side": "LONG",
+   "reason": "NET_RR_TOO_LOW",
+   "state": "EXECUTION"
+  },
+  {
+   "t": 1786751808203,
+   "symbol": "SPCXSTOCK_USDT",
+   "side": "LONG",
+   "reason": "WAITING_LOW_RISK_ENTRY",
+   "state": "SEQUENCE"
+  },
+  {
    "t": 1786750355261,
    "symbol": "LINK_USDT",
    "side": "SHORT",
@@ -121197,46 +121229,11 @@
    "side": "LONG",
    "reason": "FIRST_PRESENTED_FVG_MISSING",
    "state": "SEQUENCE"
-  },
-  {
-   "t": 1786622897325,
-   "symbol": "XAUT_USDT",
-   "side": "LONG",
-   "reason": "STOP_DISTANCE_TOO_SMALL",
-   "state": "GEOMETRY"
-  },
-  {
-   "t": 1786622896624,
-   "symbol": "SILVER_USDT",
-   "side": "LONG",
-   "reason": "DRAW_ON_LIQUIDITY_MISSING",
-   "state": "TARGET"
-  },
-  {
-   "t": 1786622894938,
-   "symbol": "XAU_USDT",
-   "side": "LONG",
-   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
-   "state": "SEQUENCE"
-  },
-  {
-   "t": 1786620064467,
-   "symbol": "TAO_USDT",
-   "side": "LONG",
-   "reason": "POST_RECLAIM_DISPLACEMENT_MISSING",
-   "state": "SEQUENCE"
-  },
-  {
-   "t": 1786620059971,
-   "symbol": "XAUT_USDT",
-   "side": "LONG",
-   "reason": "STOP_DISTANCE_TOO_SMALL",
-   "state": "GEOMETRY"
   }
  ],
  "circuitBreaker": {
   "version": "32.0",
-  "generatedAt": 1786750343246,
+  "generatedAt": 1786751803552,
   "blocked": false,
   "allowed": true,
   "reason": null,
