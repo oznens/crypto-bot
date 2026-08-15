@@ -2,6 +2,9 @@ name: ict-paper
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/ict-paper.yml'
   schedule:
     - cron: '*/5 * * * *'
 
