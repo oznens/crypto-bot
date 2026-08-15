@@ -1,5 +1,5 @@
 name: ict-paper
-# scanner includes Bybit slots fix
+# Bybit-first scanner with OKX fallback for GitHub-hosted runners
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p engine/scanner_v1/data ict-paper-state
           if [ -f ict-paper-state/setups.db ]; then cp ict-paper-state/setups.db engine/scanner_v1/data/setups.db; fi
-      - name: Scan Bybit top 50
+      - name: Scan futures top 50
         working-directory: engine/scanner_v1
         env:
           TOP_N: '50'
