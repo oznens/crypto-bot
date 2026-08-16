@@ -123,8 +123,8 @@ async function buildUniverse() {
   src=src.replace(levNeedle,levReplacement);
 
   src=src.replace(
-    /say\('\\nNOT: semboller BUGÜNKÜ hacim top-' \+ N_SYM \+ "'i \(seçim yanlılığı\); giriş = ortak DREYKO pre-trade kapısının kabul verdiği mum kapanışı;"\);/,
-    `say('\\nNOT: sembol evreni HER GUN yeniden hesaplanan tarihsel turnover Top${TOPN}; mevcut/delist olmayan kontratlar nedeniyle kalan survivorship riski vardir;');\n  say('Toplam portfoy notional limiti = ${TOTAL_LEV_CAP}x equity; tarama/bucket basina max yeni = ${MAX_NEW_TEST}; giris = ortak DREYKO pre-trade kapisinin kabul verdigi mum kapanisi;');`
+    /say\('\\nNOT: semboller BUGÜNKÜ hacim top-' \+ N_SYM \+ "'i \(seçim yanlılığı\); giriş = reclaim barı kapanışı;"\);/,
+    `say('\\nNOT: sembol evreni HER GUN yeniden hesaplanan tarihsel turnover Top${TOPN}; mevcut/delist olmayan kontratlar nedeniyle kalan survivorship riski vardir;');\n  say('Toplam portfoy notional limiti = ${TOTAL_LEV_CAP}x equity; tarama/bucket basina max yeni = ${MAX_NEW_TEST}; giris = reclaim bari kapanisi;');`
   );
 
   process.env.SYMS=String(hist.union.length);

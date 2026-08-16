@@ -62,9 +62,6 @@ function evaluateTrade(state, candidate, config) {
   const maxDirectionalRiskPct = n(config.maxDirectionalRiskPct, 0.03);
   const maxCorrelatedTrades = Math.max(1, n(config.maxCorrelatedTrades, 2));
   const weeklyStopR = Math.abs(n(config.weeklyStopR, 5));
-  const enforceTotalRisk = config.enforceTotalRisk !== false;
-  const enforceDirectionalRisk = config.enforceDirectionalRisk !== false;
-  const enforceCorrelation = config.enforceCorrelation !== false;
 
   if (!equity || !riskUSD || !candidate.side || !candidate.symbol) {
     return { allowed: false, reason: 'INVALID_CANDIDATE' };
@@ -76,17 +73,17 @@ function evaluateTrade(state, candidate, config) {
   }
 
   const totalAfter = openRiskUSD(state.open) + riskUSD;
-  if (enforceTotalRisk && totalAfter > equity * maxTotalRiskPct) {
+  if (totalAfter > equity * maxTotalRiskPct) {
     return { allowed: false, reason: 'MAX_TOTAL_RISK', totalRiskUSD: totalAfter };
   }
 
   const directionalAfter = openRiskUSD(state.open, candidate.side) + riskUSD;
-  if (enforceDirectionalRisk && directionalAfter > equity * maxDirectionalRiskPct) {
+  if (directionalAfter > equity * maxDirectionalRiskPct) {
     return { allowed: false, reason: 'MAX_DIRECTIONAL_RISK', directionalRiskUSD: directionalAfter };
   }
 
   const correlated = correlationCount(state.open, candidate);
-  if (enforceCorrelation && correlated >= maxCorrelatedTrades) {
+  if (correlated >= maxCorrelatedTrades) {
     return { allowed: false, reason: 'MAX_CORRELATED_TRADES', correlated };
   }
 
@@ -96,8 +93,7 @@ function evaluateTrade(state, candidate, config) {
     weekR,
     totalRiskUSD: totalAfter,
     directionalRiskUSD: directionalAfter,
-    correlated,
-    limits: { enforceTotalRisk, enforceDirectionalRisk, enforceCorrelation }
+    correlated
   };
 }
 

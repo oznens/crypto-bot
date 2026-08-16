@@ -5,13 +5,6 @@
 const https = require('https'), fs = require('fs'), path = require('path');
 const A = require('./analysis');
 const CFG = require('./strategy_config');
-const Risk = require('./core/risk_engine');
-const Circuit = require('./core/trading_circuit_breaker');
-const SMT = require('./core/smt_divergence_engine');
-const StateStore = require('./core/paper_state_store');
-const DreykoAudit = require('./core/dreyko_audit_trace');
-const DreykoPretrade = require('./core/dreyko_pretrade_pipeline');
-const YigitalPretrade = require('./core/yigital_pretrade_pipeline');
 
 const STATE_F = process.env.PAPER_STATE ? path.resolve(process.env.PAPER_STATE) : path.join(__dirname, 'paper_state.json');
 const DOCS_F = path.join(__dirname, 'docs', 'paper_state.json');
@@ -25,35 +18,6 @@ const MIN_RISK = CFG.MIN_RISK;
 const MAX_OPEN = CFG.MAX_OPEN;
 const MAX_NEW_PER_RUN = CFG.MAX_NEW_PER_RUN;
 const TP1_R = CFG.TP1_R;
-const RISK_CONFIG = {
-  maxTotalRiskPct: +(process.env.PAPER_MAX_TOTAL_RISK_PCT || CFG.MAX_TOTAL_RISK_PCT),
-  maxDirectionalRiskPct: +(process.env.PAPER_MAX_DIRECTIONAL_RISK_PCT || CFG.MAX_DIRECTIONAL_RISK_PCT),
-  maxCorrelatedTrades: +(process.env.PAPER_MAX_CORRELATED_TRADES || CFG.MAX_CORRELATED_TRADES),
-  weeklyStopR: 0,
-  enforceTotalRisk: false,
-  enforceDirectionalRisk: false,
-  enforceCorrelation: false
-};
-const YIGITAL_RISK_CONFIG = {
-  ...RISK_CONFIG,
-  weeklyStopR: 0,
-  enforceTotalRisk: false,
-  enforceDirectionalRisk: false,
-  enforceCorrelation: false
-};
-const CIRCUIT_CONFIG = {
-  dailyLossLimitR: +(process.env.PAPER_DAILY_LOSS_LIMIT_R || CFG.DAILY_LOSS_LIMIT_R),
-  dailyLossEnabled: false,
-  maxLosingStreak: +(process.env.PAPER_MAX_LOSING_STREAK || CFG.MAX_LOSING_STREAK),
-  cooldownMs: +(process.env.PAPER_COOLDOWN_MS || CFG.COOLDOWN_MS),
-  losingStreakEnabled: false
-};
-const YIGITAL_CIRCUIT_CONFIG = { ...CIRCUIT_CONFIG, dailyLossEnabled: false, losingStreakEnabled: false };
-const REQUIRE_DREYKO_SEQUENCE = process.env.PAPER_REQUIRE_DREYKO_SEQUENCE !== '0';
-const EXECUTION_CONFIG = {
-  minNetRR: +(process.env.PAPER_MIN_NET_RR || CFG.MIN_NET_RR),
-  spreadBps: +(process.env.PAPER_SPREAD_BPS || CFG.SPREAD_BPS)
-};
 
 function get(url, timeout) {
   return new Promise((res, rej) => {
@@ -98,30 +62,15 @@ async function klines(sym, iv, bars) {
   return raw.map(r => ({ t: +r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4], v: +r[5] })).filter(x => isFinite(x.c) && x.c > 0);
 }
 
-async function openInterest(sym, iv, limit = 200) {
-  const symbol = sym.replace('_', '');
-  const period = { '5m': '5m', '15m': '15m', '60m': '1h' }[iv] || '1h';
-  try {
-    const raw = await get('https://fapi.binance.com/futures/data/openInterestHist?symbol=' + encodeURIComponent(symbol) + '&period=' + period + '&limit=' + Math.min(500, limit));
-    if (!Array.isArray(raw) || !raw.length) return null;
-    const rows = raw.map(x => ({ t: +x.timestamp, oi: +x.sumOpenInterest })).filter(x => Number.isFinite(x.t) && Number.isFinite(x.oi));
-    return rows.length >= 10 ? rows : null;
-  } catch (_) { return null; }
-}
-
-function peerSymbol(sym) {
-  const normalized = sym.replace('_', '');
-  if (normalized === 'BTCUSDT') return SRC === 'perp' ? 'ETH_USDT' : 'ETHUSDT';
-  return SRC === 'perp' ? 'BTC_USDT' : 'BTCUSDT';
-}
-
 function loadState() {
-  return StateStore.loadState(STATE_F, START_EQ);
+  try { return JSON.parse(fs.readFileSync(STATE_F, 'utf8')); }
+  catch (e) { return { equity: START_EQ, startEquity: START_EQ, open: [], closed: [], recentSigs: [], equityHistory: [], lastRun: null, runs: 0 }; }
 }
 function saveState(st) {
-  StateStore.saveAtomic(STATE_F, st);
+  const s = JSON.stringify(st, null, 1);
+  fs.writeFileSync(STATE_F, s);
   if (!process.env.PAPER_STATE) {
-    StateStore.saveAtomic(DOCS_F, st);
+    try { fs.mkdirSync(path.dirname(DOCS_F), { recursive: true }); fs.writeFileSync(DOCS_F, s); } catch (e) {}
   }
 }
 
@@ -129,21 +78,9 @@ function makeSnap(a) {
   const c = a.candles.slice(-132);
   const off = a.candles.length - c.length;
   const mp = a.structures.manipulation;
-  const seq = a.structures.dreykoSequence;
-  const shiftZone = zone => zone ? { ...zone, from: zone.from == null ? null : zone.from - off, to: zone.to == null ? null : zone.to - off } : null;
   return {
     candles: c.map(k => [Math.round(k.t / 1000), rnd(k.o), rnd(k.h), rnd(k.l), rnd(k.c)]),
-    manip: mp ? { rangeFrom: mp.rangeFrom - off, rangeTo: mp.rangeTo - off, sweepAt: mp.sweepAt - off, at: mp.at - off, rangeHigh: mp.rangeHigh, rangeLow: mp.rangeLow, wick: mp.wick, side: mp.side } : null,
-    sequence: seq ? {
-      state: seq.state,
-      entryModel: seq.entryModel,
-      displacementAt: seq.displacement ? seq.displacement.index - off : null,
-      retestAt: seq.retestIndex == null ? null : seq.retestIndex - off,
-      firstFvg: shiftZone(seq.firstFvg),
-      iofed: seq.iofed ? { ...seq.iofed, zone: shiftZone(seq.iofed.zone), flipIndex: seq.iofed.flipIndex - off, retestIndex: seq.iofed.retestIndex - off } : null,
-      breakaway: seq.breakaway ? { ...seq.breakaway, zone: shiftZone(seq.breakaway.zone) } : null
-    } : null,
-    anchors: a.structures.timePolicy?.anchors || null
+    manip: mp ? { rangeFrom: mp.rangeFrom - off, rangeTo: mp.rangeTo - off, sweepAt: mp.sweepAt - off, at: mp.at - off, rangeHigh: mp.rangeHigh, rangeLow: mp.rangeLow, wick: mp.wick, side: mp.side } : null
   };
 }
 
@@ -198,55 +135,42 @@ async function manageOpen(st) {
   }
 }
 
-function tryOpen(st, sym, a, mktPx, context, pretrade, strategyId, candidate) {
-  const s = candidate || a.setup;
-  strategyId = strategyId || 'DREYKO';
+function tryOpen(st, sym, a, mktPx) {
+  const s = a.setup;
   if (!s || s.confidence < MIN_CONF) return null;
   if (st.open.length >= MAX_OPEN) return null;
   if (s.grade === 'B') return null;
-  if (strategyId === 'DREYKO' && (!s.mmxm || !s.mmxm.valid)) return null;
+  if (!s.mmxm || !s.mmxm.valid) return null;
   if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== (s.side === 'LONG'))) return null;
   if (st.open.find(t => t.symbol === sym)) return null;
-  const mp = a.structures.manipulation;
-  const origin = s.sweepAt != null ? s.sweepAt : (mp && mp.sweepAt);
-  if (origin == null) return null;
-  const sig = strategyId + '|' + sym + '|' + TF + '|' + s.side + '|' + (a.candles[origin] ? a.candles[origin].t : origin);
+  const mp = a.structures.manipulation; if (!mp) return null;
+  const sig = sym + '|' + TF + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
   if (st.recentSigs.includes(sig)) return null;
 
-  if (!pretrade?.valid) return null;
   const long = s.side === 'LONG';
-  const entry = pretrade.entry;
-  const sl = pretrade.stop;
-  const tpF = pretrade.target;
-  const riskDist = pretrade.riskDist;
-  const rrAct = pretrade.grossRR;
-  const targetDecision = pretrade.targetDecision;
-  const execution = pretrade.execution;
+  const entry = mktPx * (long ? 1 + SLIP : 1 - SLIP);
+  const sl = s.stop, tps = s.tps;
+  if (long ? sl >= entry : sl <= entry) return null;
+  const tpF = tps[tps.length - 1];
+  if (long ? entry >= tpF : entry <= tpF) return null;
+  const riskDist = Math.abs(entry - sl);
+  if (riskDist / entry < MIN_RISK) return null;
+  const rrAct = Math.abs(tpF - entry) / riskDist;
+  if (rrAct < 1) return null;
 
   let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
   if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
   const riskUSD = rnd(st.equity * RISK_PCT, 2);
   const qty = riskUSD / riskDist;
   if (!(qty > 0)) return null;
-  const portfolioRiskConfig = strategyId === 'YIGITAL' ? YIGITAL_RISK_CONFIG : RISK_CONFIG;
-  const riskDecision = Risk.evaluateTrade(st, { symbol: sym, side: s.side, riskUSD }, { ...portfolioRiskConfig, now: Date.now() });
-  if (!riskDecision.allowed) {
-    st.riskRejections = st.riskRejections || [];
-    st.riskRejections.unshift({ t: Date.now(), symbol: sym, side: s.side, reason: riskDecision.reason });
-    if (st.riskRejections.length > 200) st.riskRejections.length = 200;
-    return null;
-  }
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
   const tr = {
-    id: strategyId + '-' + sym + '-' + Date.now(), strategyId, symbol: sym, side: s.side, src: SRC, tf: TF,
+    id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf: TF,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
-    sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: rnd(rrAct, 2),
+    sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
     conf: s.confidence, grade: s.grade, model: s.model,
     mmxm: s.mmxm || null, reasons: (s.reasons || []).slice(0, 6),
-    context: context ? { ...context, targetDecision, execution } : { targetDecision, execution },
-    audit: strategyId === 'DREYKO' ? DreykoAudit.build({ ...(context || {}), targetDecision, execution }) : null,
-    riskDecision,
     snap: makeSnap(a),
     openedAt: Date.now(), lastCheck: Date.now(), status: 'open', deriskDone: false, realized: 0, feeCharged: false, fills: []
   };
@@ -255,151 +179,34 @@ function tryOpen(st, sym, a, mktPx, context, pretrade, strategyId, candidate) {
   return tr;
 }
 
-function recordStrategyRejection(st, sym, side, decision) {
-  st.strategyRejections = st.strategyRejections || [];
-  st.strategyRejections.unshift({ t: Date.now(), symbol: sym, side, reason: decision.reason, state: decision.state });
-  if (st.strategyRejections.length > 200) st.strategyRejections.length = 200;
-}
-
-function watchSetup(portfolio, strategyId, sym, analysis, candidate, pretrade, status, reason) {
-  if (!candidate) return;
-  const target = pretrade?.target ?? (candidate.tps || []).slice(-1)[0];
-  const item = {
-    id: strategyId + '|' + sym,
-    strategyId, symbol: sym, tf: TF, side: candidate.side,
-    model: candidate.model, conf: candidate.confidence, grade: candidate.grade,
-    entry: rnd(pretrade?.entry ?? candidate.entry),
-    sl: rnd(pretrade?.stop ?? candidate.stop),
-    tp1: candidate.tps?.[0] == null ? null : rnd(candidate.tps[0]),
-    tpF: target == null ? null : rnd(target),
-    rrPlan: rnd(pretrade?.grossRR ?? candidate.rr, 2),
-    status: status || 'İZLENİYOR', reason: reason || null,
-    reasons: (candidate.reasons || []).slice(0, 8),
-    mmxm: candidate.mmxm || null,
-    snap: makeSnap(analysis), openedAt: Date.now(), observedAt: Date.now()
-  };
-  portfolio.watchedSetups = portfolio.watchedSetups || [];
-  portfolio.watchedSetups = portfolio.watchedSetups.filter(x => x.id !== item.id);
-  portfolio.watchedSetups.unshift(item);
-  if (portfolio.watchedSetups.length > 60) portfolio.watchedSetups.length = 60;
-}
-
-function updateStats(portfolio, strategyId) {
-  const wins = portfolio.closed.filter(t => t.realized > 0).length;
-  let peak = portfolio.startEquity, maxDrawdownPct = 0;
-  for (const point of portfolio.equityHistory.concat([{ eq: portfolio.equity }])) {
-    const equity = +point.eq;
-    if (!Number.isFinite(equity)) continue;
-    peak = Math.max(peak, equity);
-    if (peak > 0) maxDrawdownPct = Math.max(maxDrawdownPct, (peak - equity) / peak * 100);
-  }
-  portfolio.stats = {
-    closed: portfolio.closed.length, wins,
-    losses: portfolio.closed.filter(t => t.realized <= 0).length,
-    winRate: portfolio.closed.length ? rnd(100 * wins / portfolio.closed.length, 1) : null,
-    netPnl: rnd(portfolio.equity - portfolio.startEquity, 2),
-    totalR: rnd(portfolio.closed.reduce((sum, trade) => sum + (trade.r || 0), 0), 2),
-    maxDrawdownPct: rnd(maxDrawdownPct, 2),
-    strategyId, source: SRC, minConf: MIN_CONF, tf: TF, ltf: LTF,
-    maxSymbols: MAX_SYMS, riskPct: RISK_PCT, tp1R: TP1_R,
-    maxOpen: MAX_OPEN, maxNewPerRun: MAX_NEW_PER_RUN, minRiskPct: MIN_RISK,
-    maxTotalRiskPct: null,
-    maxDirectionalRiskPct: null,
-    maxCorrelatedTrades: null,
-    losingStreakLimit: null,
-    cooldownMs: null,
-    weeklyStopR: null,
-    dailyLossLimitR: null,
-    circuitBreaker: portfolio.circuitBreaker,
-    minNetRR: EXECUTION_CONFIG.minNetRR,
-    configSource: strategyId === 'DREYKO' ? 'strategy_config.js + dreyko pipeline' : 'yigital archive model'
-  };
-}
-
 (async () => {
   const st = loadState();
-  if (process.env.PAPER_RESET_DREYKO === 'true') {
-    StateStore.resetPortfolio(st, 'DREYKO', START_EQ);
-    st.lastRun = Date.now();
-    updateStats(st.portfolios.DREYKO, 'DREYKO');
-    saveState(st);
-    console.log('DREYKO portföyü sıfırlandı: özkaynak', START_EQ, '| açık 0 | kapalı 0 | toplam 0R');
-    return;
-  }
-  const dreyko = st.portfolios.DREYKO;
-  const yigital = st.portfolios.YIGITAL;
   st.runs = (st.runs || 0) + 1;
   console.log('== PAPER RUN #' + st.runs + ' ==');
   const syms = await topSymbols();
-  console.log('kaynak:', SRC, '| sembol:', syms.length, '| DREYKO:', dreyko.equity, '| Yigital:', yigital.equity);
+  console.log('kaynak:', SRC, '| sembol:', syms.length, '| özkaynak:', st.equity);
 
-  await manageOpen(dreyko);
-  await manageOpen(yigital);
+  await manageOpen(st);
 
-  const circuits = {};
-  for (const [id, portfolio] of Object.entries(st.portfolios)) {
-    const circuitConfig = id === 'YIGITAL' ? YIGITAL_CIRCUIT_CONFIG : CIRCUIT_CONFIG;
-    circuits[id] = Circuit.evaluate(portfolio, { ...circuitConfig, now: Date.now() });
-    Circuit.apply(portfolio, circuits[id]);
-  }
-
-  let scanned = 0, errors = 0;
-  const opened = { DREYKO: 0, YIGITAL: 0 };
+  let scanned = 0, opened = 0, errors = 0;
   for (const sym of syms) {
+    if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;
+    if (st.open.find(t => t.symbol === sym)) continue;
     try {
       const c60 = await klines(sym, TF, 500);
       if (c60.length < 80) { await sleep(80); continue; }
-      const [oi, peer] = await Promise.all([
-        openInterest(sym, TF),
-        klines(peerSymbol(sym), TF, 500).catch(() => null)
-      ]);
-      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi });
+      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', '') });
       scanned++;
-      watchSetup(dreyko, 'DREYKO', sym, a, a.setup, null, 'ÖN İZLEME', a.setup && a.setup.confidence < MIN_CONF ? 'GÜVEN_EŞİĞİ_ALTINDA' : null);
-      watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, null, 'ÖN İZLEME', a.yigitalSetup && a.yigitalSetup.confidence < MIN_CONF ? 'GÜVEN_EŞİĞİ_ALTINDA' : null);
-      if ((a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') || (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B')) {
+      if (a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') {
         try {
           const c15 = await klines(sym, LTF, 500);
-          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), oi, ltf: { interval: LTF, candles: c15 } });
+          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), ltf: { interval: LTF, candles: c15 } });
         } catch (e) {}
-        if (a.setup && a.setup.confidence >= MIN_CONF && !circuits.DREYKO.blocked && opened.DREYKO < MAX_NEW_PER_RUN && dreyko.open.length < MAX_OPEN) {
-          const smt = peer ? SMT.evaluate(c60, peer, a.setup.side) : { available: false, confirmed: false, reason: 'PEER_DATA_MISSING', score: 0 };
-          a.structures.smt = smt;
-          if (smt.confirmed) a.setup.reasons.push('SMT korelasyon teyidi ✓');
-          const pretrade = DreykoPretrade.evaluate({ symbol: sym, candles: c60, analysis: a, marketPrice: c60[c60.length - 1].c }, {
-            slippagePct: SLIP,
-            feeBps: FEE_TAKER * 10000,
-            spreadBps: EXECUTION_CONFIG.spreadBps,
-            minNetRR: EXECUTION_CONFIG.minNetRR,
-            minRiskPct: MIN_RISK
-          });
-          const { timePolicy, anchorContext, sequence } = pretrade;
-          a.structures.dreykoSequence = sequence;
-          a.structures.timePolicy = timePolicy;
-          if (!pretrade.valid) {
-            watchSetup(dreyko, 'DREYKO', sym, a, a.setup, pretrade, 'BEKLİYOR / RED', pretrade.reason);
-            recordStrategyRejection(dreyko, sym, a.setup.side, { reason: pretrade.reason, state: pretrade.stage });
-          } else {
-            a.setup.reasons.push(anchorContext.mode === 'OPEN_SWEEP_RECLAIM' ? 'Açılış seviyesi sweep/reclaim ✓' : 'Açılış seviyeleri flow hizası ✓');
-            a.setup.reasons.push(sequence.valid ? 'DREYKO sıra teyidi ✓ ' + sequence.entryModel : 'DREYKO sıra teyidi kapalı');
-            const context = { oiAvailable: !!oi, oiState: a.structures.oiState || null, smt, timePolicy, anchorContext, sequence };
-            const tr = tryOpen(dreyko, sym, a, c60[c60.length - 1].c, context, pretrade, 'DREYKO', a.setup);
-            watchSetup(dreyko, 'DREYKO', sym, a, a.setup, pretrade, tr ? 'İŞLEM AÇILDI' : 'HAZIR / AÇILMADI', tr ? null : 'PORTFÖY VEYA TEKRAR SİNYAL KONTROLÜ');
-            if (tr) opened.DREYKO++;
-          }
-        }
-        if (a.yigitalSetup && a.yigitalSetup.confidence >= MIN_CONF && a.yigitalSetup.grade !== 'B' && !circuits.YIGITAL.blocked && opened.YIGITAL < MAX_NEW_PER_RUN && yigital.open.length < MAX_OPEN) {
-          const pretrade = YigitalPretrade.evaluate({ symbol: sym, candles: c60, analysis: a, marketPrice: c60[c60.length - 1].c }, { minNetRR: EXECUTION_CONFIG.minNetRR });
-          a.structures.yigitalSequence = pretrade.sequence || null;
-          if (!pretrade.valid) {
-            watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, pretrade, 'BEKLİYOR / RED', pretrade.reason);
-            recordStrategyRejection(yigital, sym, a.yigitalSetup.side, { reason: pretrade.reason, state: pretrade.stage });
-          }
-          else {
-            const context = { sequence: pretrade.sequence, targetDecision: pretrade.targetDecision, execution: pretrade.execution };
-            const tr = tryOpen(yigital, sym, a, c60[c60.length - 1].c, context, pretrade, 'YIGITAL', a.yigitalSetup);
-            watchSetup(yigital, 'YIGITAL', sym, a, a.yigitalSetup, pretrade, tr ? 'İŞLEM AÇILDI' : 'HAZIR / AÇILMADI', tr ? null : 'PORTFÖY VEYA TEKRAR SİNYAL KONTROLÜ');
-            if (tr) opened.YIGITAL++;
+        if (a.setup && a.setup.confidence >= MIN_CONF) {
+          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c);
+          if (tr) {
+            opened++;
+            console.log('AÇILDI:', sym, TF, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade);
           }
         }
       }
@@ -408,12 +215,30 @@ function updateStats(portfolio, strategyId) {
   }
 
   st.lastRun = Date.now();
-  for (const [id, portfolio] of Object.entries(st.portfolios)) {
-    portfolio.equityHistory.push({ t: st.lastRun, eq: portfolio.equity, open: portfolio.open.length });
-    if (portfolio.equityHistory.length > 2000) portfolio.equityHistory.splice(0, portfolio.equityHistory.length - 2000);
-    updateStats(portfolio, id);
-  }
+  st.equityHistory.push({ t: st.lastRun, eq: st.equity, open: st.open.length });
+  if (st.equityHistory.length > 2000) st.equityHistory.splice(0, st.equityHistory.length - 2000);
+  const wins = st.closed.filter(t => t.realized > 0).length;
+  st.stats = {
+    closed: st.closed.length,
+    wins,
+    losses: st.closed.filter(t => t.realized <= 0).length,
+    winRate: st.closed.length ? rnd(100 * wins / st.closed.length, 1) : null,
+    netPnl: rnd(st.equity - st.startEquity, 2),
+    totalR: rnd(st.closed.reduce((s2, t) => s2 + (t.r || 0), 0), 2),
+    source: SRC,
+    minConf: MIN_CONF,
+    tf: TF,
+    ltf: LTF,
+    maxSymbols: MAX_SYMS,
+    riskPct: RISK_PCT,
+    tp1R: TP1_R,
+    maxOpen: MAX_OPEN,
+    maxNewPerRun: MAX_NEW_PER_RUN,
+    minRiskPct: MIN_RISK,
+    leverageCap: null,
+    configSource: 'strategy_config.js'
+  };
   saveState(st);
-  console.log('tarandı:', scanned, '| açıldı D/Y:', opened.DREYKO + '/' + opened.YIGITAL, '| hata:', errors);
-  console.log('DREYKO:', dreyko.stats.totalR + 'R', '| Yigital:', yigital.stats.totalR + 'R');
+  console.log('tarandı:', scanned, '| açıldı:', opened, '| açık:', st.open.length, '| kapalı:', st.closed.length, '| hata:', errors);
+  console.log('özkaynak:', st.equity, '| net PnL:', st.stats.netPnl, '| WR:', st.stats.winRate);
 })().catch(e => { console.error('HATA', e.stack); process.exit(1); });

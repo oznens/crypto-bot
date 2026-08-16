@@ -1,12 +1,12 @@
 /*
- * backtest3ay.js — paper DREYKO sisteminin SON 3 AY gerçek backtest'i (lookahead yok).
+ * backtest3ay.js — paper v2 sisteminin SON 3 AY gerçek backtest'i (lookahead yok).
  *
- * MOTORLA AYNI PRE-TRADE KAPI: sequence + opening anchor + DOL hedef + net execution RR
+ * MOTORLA BİREBİR AYNI: analysis.js sinyalleri + v2 filtreler (A/A+ · GERÇEK MMxM ✓ · HTF bias · min stop)
  * + portföy kuralları (maks 6 açık, taramada maks 2 yeni, sembol başına 1) + TP1=1.5R derisk & SL→BE
  * + gerçekçi maliyet (market giriş kayma %0.05 + taker %0.02, TP limit maker %0.01).
  *
- * SIZINTI KORUMASI: her karar, yalnız o sinyal mumuna kadarki veriyle üretilir; giriş sequence
- * tamamlanıp pre-trade kapısı ilk kez kabul verdiği mumun kapanışıdır.
+ * SIZINTI KORUMASI: her sinyal, YALNIZCA reclaim barına kadarki veriyle üretilir (hist = candles[0..at]);
+ * LTF onay penceresi sweep → reclaim+8 bar ile sınırlıdır; giriş fiyatı reclaim barının KAPANIŞIDIR.
  * Yönetim 5m barlarla; aynı barda SL+TP çakışırsa SL sayılır (muhafazakâr).
  *
  * Çalıştır: node backtest3ay.js            (varsayılan 30 sembol, 90 gün)
@@ -14,8 +14,6 @@
  */
 const https = require('https'), fs = require('fs');
 const A = require('./analysis');
-const CFG = require('./strategy_config');
-const DreykoPretrade = require('./core/dreyko_pretrade_pipeline');
 
 const N_SYM = +(process.env.SYMS || 30);
 const GUN = +(process.env.GUN || 90);
@@ -124,43 +122,45 @@ function findManips(candles) {
       if (cc.length < 120) continue;
       const manips = findManips(cc);
       for (const m of manips) {
-        if (cc[m.at].t < testStart || m.at >= cc.length - 1) continue;
-        if (!cache[ltfIv]) { try { cache[ltfIv] = await klines(sym, ltfIv, Math.floor(testStart / 1000) - WARMUP * SEC[ltfIv], nowSec); } catch (e) { cache[ltfIv] = []; } }
-        let a = null, decision = null, signalAt = null;
-        const maxSignalAt = Math.min(cc.length - 2, m.at + 24);
-        for (let at = m.at; at <= maxSignalAt; at++) {
-          const barT0 = cc[at].t;
-          const hist = cc.slice(0, at + 1);                                  // SIZINTI YOK
-          if (hist.length < 80) continue;
-          try { a = A.analyze(hist, { interval: tf, symbol: sym.replace('_', '') }); } catch (e) { continue; }
-          const s0 = a.setup;
-          if (!s0 || s0.confidence < MIN_CONF || s0.grade === 'B') continue;
-          const ltfC = cache[ltfIv].filter(k => k.t <= barT0);
-          if (ltfC.length > 40) {
-            try { a = A.analyze(hist, { interval: tf, symbol: sym.replace('_', ''), ltf: { interval: ltfIv, candles: ltfC } }); } catch (e) {}
-          }
-          const sTry = a.setup, mpTry = a.structures.manipulation;
-          if (!sTry || !mpTry || sTry.confidence < MIN_CONF || sTry.grade === 'B' || !sTry.mmxm?.valid) continue;
-          if (mpTry.sweepAt !== m.sweepAt) continue;
-          const longTry = sTry.side === 'LONG';
-          if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== longTry)) continue;
-          decision = DreykoPretrade.evaluate({ symbol: sym, candles: hist, analysis: a, marketPrice: cc[at].c, timestamp: barT0 }, {
-            slippagePct: SLIP, feeBps: FEE_TAKER * 10000, spreadBps: CFG.SPREAD_BPS,
-            minNetRR: CFG.MIN_NET_RR, minRiskPct: MIN_RISK[tf] || 0.01
-          });
-          if (decision.valid) { signalAt = at; break; }
+        const barT = cc[m.at].t;
+        if (barT < testStart || m.at >= cc.length - 1) continue;      // sadece test penceresi
+        const hist = cc.slice(0, m.at + 1);                            // SIZINTI YOK
+        if (hist.length < 80) continue;
+        let a;
+        try { a = A.analyze(hist, { interval: tf, symbol: sym.replace('_', '') }); } catch (e) { continue; }
+        const s0 = a.setup;
+        if (!s0 || s0.confidence < MIN_CONF || s0.grade === 'B') continue;   // ucuz filtreler (motor da böyle yapar)
+        // LTF onayı
+        let ltfC = null;
+        if (ltfIv === '5m') {
+          const w0 = Math.floor(cc[m.sweepAt].t / 1000) - 3600, w1 = Math.floor(barT / 1000) + 9 * SEC[tf];
+          try { ltfC = await klines(sym, '5m', w0, w1); } catch (e) {}
+        } else {
+          if (!cache[ltfIv]) { try { cache[ltfIv] = await klines(sym, ltfIv, Math.floor(testStart / 1000) - WARMUP * SEC[ltfIv], nowSec); } catch (e) { cache[ltfIv] = []; } }
+          ltfC = cache[ltfIv].filter(k => k.t <= barT + 9 * SEC[tf] * 1000);
         }
-        if (!decision?.valid || signalAt == null) continue;
-        const barT = cc[signalAt].t;
-        const s = a.setup;
+        if (ltfC && ltfC.length > 40) {
+          try { a = A.analyze(hist, { interval: tf, symbol: sym.replace('_', ''), ltf: { interval: ltfIv, candles: ltfC } }); } catch (e) {}
+        }
+        const s = a.setup, mp = a.structures.manipulation;
+        if (!s || !mp || s.confidence < MIN_CONF || s.grade === 'B') continue;
+        if (!s.mmxm || !s.mmxm.valid) continue;                              // GERÇEK MMxM ✓
         const long = s.side === 'LONG';
-        const entry = decision.entry, sl = decision.stop, tpF = decision.target, riskDist = decision.riskDist;
+        if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== long)) continue;   // bias
+        const mkt = cc[m.at].c;                                              // giriş: reclaim barının KAPANIŞI
+        const entry = mkt * (long ? 1 + SLIP : 1 - SLIP);
+        const sl = s.stop, tpF = s.tps[s.tps.length - 1];
+        if (long ? sl >= entry : sl <= entry) continue;
+        if (long ? entry >= tpF : entry <= tpF) continue;
+        const riskDist = Math.abs(entry - sl);
+        if (riskDist / entry < (MIN_RISK[tf] || 0.01)) continue;              // min stop mesafesi
+        if (Math.abs(tpF - entry) / riskDist < 1) continue;                   // kalan RR ≥ 1
         let tp1 = long ? entry + TP1_R * riskDist : entry - TP1_R * riskDist;
         if (long ? tp1 > tpF : tp1 < tpF) tp1 = tpF;
         // teşhis alanları (kalibrasyon hipotezleri: stop/ATR, giriş mumu gücü, hedef mesafesi, seans)
         let atr14 = null;
-        { let s2 = 0, k2 = 0; for (let i = Math.max(1, signalAt - 13); i <= signalAt; i++) { const h = cc[i].h, l = cc[i].l, pc = cc[i - 1].c; s2 += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); k2++; } if (k2) atr14 = s2 / k2; }
-        const eb = cc[signalAt];
+        { let s2 = 0, k2 = 0; for (let i = Math.max(1, m.at - 13); i <= m.at; i++) { const h = cc[i].h, l = cc[i].l, pc = cc[i - 1].c; s2 += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); k2++; } if (k2) atr14 = s2 / k2; }
+        const eb = cc[m.at];
         cands.push({ t: barT, sym, tf, side: s.side, entry, sl, tp1, tpF, conf: s.confidence, grade: s.grade,
           mmxm: s.mmxm ? s.mmxm.score : null, sig: sym + '|' + tf + '|' + s.side + '|' + cc[m.sweepAt].t,
           stopATR: atr14 ? rnd(riskDist / atr14, 2) : null, bodyATR: atr14 ? rnd(Math.abs(eb.c - eb.o) / atr14, 2) : null,
@@ -286,7 +286,7 @@ function findManips(candles) {
     say('\nEN İYİ 5:'); [...closed].sort((a, b) => b.r - a.r).slice(0, 5).forEach(t => say('  ' + t.sym.padEnd(15) + t.tf.padEnd(4) + t.side.padEnd(6) + 'R' + t.r.toFixed(2).padStart(6) + '  ' + iso(t.t)));
     say('EN KÖTÜ 5:'); [...closed].sort((a, b) => a.r - b.r).slice(0, 5).forEach(t => say('  ' + t.sym.padEnd(15) + t.tf.padEnd(4) + t.side.padEnd(6) + 'R' + t.r.toFixed(2).padStart(6) + '  ' + iso(t.t)));
   }
-  say('\nNOT: semboller BUGÜNKÜ hacim top-' + N_SYM + "'i (seçim yanlılığı); giriş = ortak DREYKO pre-trade kapısının kabul verdiği mum kapanışı;");
+  say('\nNOT: semboller BUGÜNKÜ hacim top-' + N_SYM + "'i (seçim yanlılığı); giriş = reclaim barı kapanışı;");
   say('yönetim 5m barlarla, aynı barda SL+TP → SL (muhafazakâr); komisyon+kayma dahil.');
   fs.writeFileSync(__dirname + '/backtest3ay_sonuc.txt', L.join('\n'));
   fs.writeFileSync(__dirname + '/backtest3ay_islemler.json', JSON.stringify({ closed: closed.map(t => ({ sym: t.sym, tf: t.tf, side: t.side, t: t.t, sonuc: t.sonuc, r: rnd(t.r, 2), usd: rnd(t.realized, 2), conf: t.conf, mmxm: t.mmxm, stopATR: t.stopATR, bodyATR: t.bodyATR, tpfATR: t.tpfATR, nyHour: t.nyHour })), eqCurve }, null, 1));
