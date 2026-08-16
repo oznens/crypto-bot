@@ -1,5 +1,5 @@
 name: ict-paper
-# Bybit-first scanner with OKX fallback for GitHub-hosted runners
+# Strict ICT/MMXM paper scanner; Bybit-first with OKX fallback for GitHub-hosted runners
 
 on:
   workflow_dispatch:
@@ -47,6 +47,9 @@ jobs:
           STATE_DB: data/setups.db
           PAPER_START_BALANCE: '1000'
           PAPER_RISK_PCT: '0.01'
+          PAPER_MIN_SCORE: '75'
+          PAPER_ALLOWED_GRADES: 'A,A+'
+          PAPER_MAX_OPEN: '5'
           CHARTS_ENABLED: 'false'
           ALERT_ON_CHANGE_ONLY: 'true'
         run: python main.py
