@@ -12,6 +12,12 @@ module.exports = Object.freeze({
   SLIP: 0.0005,
   TF: '60m',
   LTF: '15m',
+  TIMEFRAMES: Object.freeze([
+    Object.freeze({ tf: '15m', ltf: '5m' }),
+    Object.freeze({ tf: '60m', ltf: '15m' }),
+    Object.freeze({ tf: '4h', ltf: '60m' }),
+    Object.freeze({ tf: '1d', ltf: '4h' })
+  ]),
   MIN_RISK: 0.012,
   MAX_OPEN: 6,
   MAX_NEW_PER_RUN: 2,
