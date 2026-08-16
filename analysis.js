@@ -1099,7 +1099,7 @@ function buildDreykoSetup(candles, ctx) {
   }
   // 7) HOB (gizli OB) bandı: giriş model yönlü son OB bölgesiyle kesişiyor mu
   if (hob && entry >= hob.bottom * 0.998 && entry <= hob.top * 1.002) { conf++; reasons.push('HOB (gizli OB) girişte [' + round(hob.bottom) + '–' + round(hob.top) + '] (JB 2xHOB)'); }
-  reasons.push('Market Maker ' + (long ? 'Buy' : 'Sell') + ' Model · Hedef: karşı range / IPDA');
+  reasons.push('Market Maker ' + (long ? 'Buy' : 'Sell') + ' Model · Wyckoff: ' + (long ? 'Spring → Test → SOS' : 'UTAD → Test → SOW') + ' · Hedef: karşı range / IPDA');
   // stop/TP olmuş mu (manipulation sonrası)
   const o = manip.at; const tF = tps[tps.length - 1];
   let entryIdx = -1;
@@ -1232,14 +1232,6 @@ function analyze(candles, opts) {
   const obsAll = orderBlocks(candles, ms);
   const hob = manip ? obsAll.filter(o => o.type === (manip.side === 'LONG' ? 'bull' : 'bear')).slice(-1)[0] || null : null;   // JB: HOB (gizli OB) bandı
   const setup = buildDreykoSetup(candles, { manip, eq, ipda, bias, rsiArr, oi, fvgList: fvgRaw, liq, vp, ifvg, ote, hob });
-  // Yigital modeli ayrı tutulur: Turtle Soup/PO3/FVG-OB + HTF akış ve dış likidite.
-  // DREYKO'nun OI, SMT, MMxM ve zaman politikası bu setup'a taşınmaz.
-  const htfCandles = resample(candles, htfMs);
-  const yigitalSetup = buildSetup(candles, {
-    eq, liq, fvg: fvgRaw, ob: obsAll, rsiArr,
-    htfBias: htfTrend,
-    kls: keyLevels(htfCandles, price)
-  });
 
   // GERÇEK MMxM filtresi (HTF bağlam + LTF teyit) — setup olmasa da izleme için hesaplanır
   const mmxm = mmxmFilter(candles, { manip, bias, interval, ltf: opts.ltf, tps: setup ? setup.tps : null });
@@ -1286,7 +1278,6 @@ function analyze(candles, opts) {
     rsiNow,
     htfBias: bias,
     setup,
-    yigitalSetup,
     comment: dreykoComment(candles, { manip, eq, ipda, bias, rsiNow, base, oi, setup, vp, wyk })
   };
 }
