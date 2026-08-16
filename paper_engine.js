@@ -14,6 +14,7 @@ const START_EQ = CFG.START_EQ;
 const RISK_PCT = CFG.RISK_PCT;
 const FEE_TAKER = CFG.FEE_TAKER, FEE_MAKER = CFG.FEE_MAKER, SLIP = CFG.SLIP;
 const TF = CFG.TF, LTF = CFG.LTF;
+const TIMEFRAMES = CFG.TIMEFRAMES || [{ tf: TF, ltf: LTF }];
 const MIN_RISK = CFG.MIN_RISK;
 const MAX_OPEN = CFG.MAX_OPEN;
 const MAX_NEW_PER_RUN = CFG.MAX_NEW_PER_RUN;
@@ -47,8 +48,8 @@ async function topSymbols() {
       .sort((a, b) => (+b.quoteVolume || 0) - (+a.quoteVolume || 0)).slice(0, MAX_SYMS).map(x => x.symbol);
   }
 }
-const IV_PERP = { '5m': 'Min5', '15m': 'Min15', '60m': 'Min60' };
-const secPerBar = { '5m': 300, '15m': 900, '60m': 3600 };
+const IV_PERP = { '5m': 'Min5', '15m': 'Min15', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
+const secPerBar = { '5m': 300, '15m': 900, '60m': 3600, '4h': 14400, '1d': 86400 };
 async function klines(sym, iv, bars) {
   if (SRC === 'perp') {
     const end = Math.floor(Date.now() / 1000), start = end - bars * secPerBar[iv];
@@ -135,7 +136,7 @@ async function manageOpen(st) {
   }
 }
 
-function tryOpen(st, sym, a, mktPx) {
+function tryOpen(st, sym, a, mktPx, tf) {
   const s = a.setup;
   if (!s || s.confidence < MIN_CONF) return null;
   if (st.open.length >= MAX_OPEN) return null;
@@ -144,7 +145,7 @@ function tryOpen(st, sym, a, mktPx) {
   if (a.htfBias && a.htfBias !== 'Neutral' && ((a.htfBias === 'Bullish') !== (s.side === 'LONG'))) return null;
   if (st.open.find(t => t.symbol === sym)) return null;
   const mp = a.structures.manipulation; if (!mp) return null;
-  const sig = sym + '|' + TF + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
+  const sig = sym + '|' + tf + '|' + s.side + '|' + (a.candles[mp.sweepAt] ? a.candles[mp.sweepAt].t : mp.sweepAt);
   if (st.recentSigs.includes(sig)) return null;
 
   const long = s.side === 'LONG';
@@ -166,7 +167,7 @@ function tryOpen(st, sym, a, mktPx) {
   const entryFee = rnd(entry * qty * FEE_TAKER, 4);
 
   const tr = {
-    id: sym + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf: TF,
+    id: sym + '-' + tf + '-' + Date.now(), symbol: sym, side: s.side, src: SRC, tf,
     entry: rnd(entry), mkt: rnd(mktPx), slip: SLIP, entryFee, qty: rnd(qty, 8), notional: rnd(entry * qty, 2),
     sl: rnd(sl), tp1: rnd(tp1), tpF: rnd(tpF), riskUSD, rrPlan: s.rr,
     conf: s.confidence, grade: s.grade, model: s.model,
@@ -193,20 +194,23 @@ function tryOpen(st, sym, a, mktPx) {
     if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN) break;
     if (st.open.find(t => t.symbol === sym)) continue;
     try {
-      const c60 = await klines(sym, TF, 500);
-      if (c60.length < 80) { await sleep(80); continue; }
-      let a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', '') });
-      scanned++;
-      if (a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') {
-        try {
-          const c15 = await klines(sym, LTF, 500);
-          a = A.analyze(c60, { interval: TF, symbol: sym.replace('_', ''), ltf: { interval: LTF, candles: c15 } });
-        } catch (e) {}
-        if (a.setup && a.setup.confidence >= MIN_CONF) {
-          const tr = tryOpen(st, sym, a, c60[c60.length - 1].c);
-          if (tr) {
-            opened++;
-            console.log('AÇILDI:', sym, TF, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade);
+      for (const frame of TIMEFRAMES) {
+        if (opened >= MAX_NEW_PER_RUN || st.open.length >= MAX_OPEN || st.open.find(t => t.symbol === sym)) break;
+        const candles = await klines(sym, frame.tf, 500);
+        if (candles.length < 80) continue;
+        let a = A.analyze(candles, { interval: frame.tf, symbol: sym.replace('_', '') });
+        scanned++;
+        if (a.setup && a.setup.confidence >= MIN_CONF && a.setup.grade !== 'B') {
+          try {
+            const lower = await klines(sym, frame.ltf, 500);
+            a = A.analyze(candles, { interval: frame.tf, symbol: sym.replace('_', ''), ltf: { interval: frame.ltf, candles: lower } });
+          } catch (e) {}
+          if (a.setup && a.setup.confidence >= MIN_CONF) {
+            const tr = tryOpen(st, sym, a, candles[candles.length - 1].c, frame.tf);
+            if (tr) {
+              opened++;
+              console.log('AÇILDI:', sym, frame.tf, tr.side, 'giriş', tr.entry, 'SL', tr.sl, 'TP', tr.tp1 + '/' + tr.tpF, 'güven %' + tr.conf, tr.grade);
+            }
           }
         }
       }
@@ -227,8 +231,8 @@ function tryOpen(st, sym, a, mktPx) {
     totalR: rnd(st.closed.reduce((s2, t) => s2 + (t.r || 0), 0), 2),
     source: SRC,
     minConf: MIN_CONF,
-    tf: TF,
-    ltf: LTF,
+    tf: TIMEFRAMES.map(x => x.tf).join('/'),
+    ltf: TIMEFRAMES.map(x => x.tf + '→' + x.ltf).join(', '),
     maxSymbols: MAX_SYMS,
     riskPct: RISK_PCT,
     tp1R: TP1_R,
