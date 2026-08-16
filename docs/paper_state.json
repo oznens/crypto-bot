@@ -1,5 +1,5 @@
 {
- "equity": 9841.42,
+ "equity": 9954.81,
  "startEquity": 10000,
  "open": [
   {
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1786894200000,
+   "lastCheck": 1786895700000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.03,
@@ -996,7 +996,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 88.01597,
-   "mkt": 86.13,
+   "mkt": 86.22,
    "slip": 0.0005,
    "entryFee": 1.4918,
    "qty": 42.37310229,
@@ -1961,7 +1961,7 @@
     }
    },
    "openedAt": 1786444646834,
-   "lastCheck": 1786894200000,
+   "lastCheck": 1786895700000,
    "status": "open",
    "deriskDone": true,
    "realized": 71.28,
@@ -1983,7 +1983,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 81.749105,
-   "mkt": 81.14,
+   "mkt": 81.19,
    "slip": 0.0005,
    "entryFee": 0.6685,
    "qty": 40.88912197,
@@ -2948,7 +2948,7 @@
     }
    },
    "openedAt": 1786447859828,
-   "lastCheck": 1786894200000,
+   "lastCheck": 1786895700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -2962,7 +2962,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 488.934345,
-   "mkt": 494.36,
+   "mkt": 493.94,
    "slip": 0.0005,
    "entryFee": 1.347,
    "qty": 13.7751092,
@@ -3927,13 +3927,15 @@
     }
    },
    "openedAt": 1786888267464,
-   "lastCheck": 1786894200000,
+   "lastCheck": 1786895700000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
    "feeCharged": false,
    "fills": []
-  },
+  }
+ ],
+ "closed": [
   {
    "id": "WLD_USDT-15m-1786889948445",
    "symbol": "WLD_USDT",
@@ -3941,10 +3943,10 @@
    "src": "perp",
    "tf": "15m",
    "entry": 0.346773,
-   "mkt": 0.3521,
+   "mkt": 0.3595,
    "slip": 0.0005,
    "entryFee": 1.2639,
-   "qty": 18223.06168176,
+   "qty": 0,
    "notional": 6319.27,
    "sl": 0.341373,
    "tp1": 0.3531,
@@ -4907,14 +4909,23 @@
    },
    "openedAt": 1786889948445,
    "lastCheck": 1786894200000,
-   "status": "open",
+   "status": "closed",
    "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
-  }
- ],
- "closed": [
+   "realized": 113.39,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1786895731165,
+     "px": 0.3531,
+     "part": 1,
+     "why": "TP-final",
+     "pnl": 113.39
+    }
+   ],
+   "closedAt": 1786895731165,
+   "closeReason": "TP",
+   "r": 1.15
+  },
   {
    "id": "MUSTOCK_USDT-1786136886141",
    "symbol": "MUSTOCK_USDT",
@@ -15392,17 +15403,22 @@
    "t": 1786894485591,
    "eq": 9841.42,
    "open": 5
+  },
+  {
+   "t": 1786895750262,
+   "eq": 9954.81,
+   "open": 4
   }
  ],
- "lastRun": 1786894485591,
- "runs": 109,
+ "lastRun": 1786895750262,
+ "runs": 110,
  "stats": {
-  "closed": 10,
-  "wins": 3,
+  "closed": 11,
+  "wins": 4,
   "losses": 7,
-  "winRate": 30,
-  "netPnl": -158.58,
-  "totalR": -3.03,
+  "winRate": 36.4,
+  "netPnl": -45.19,
+  "totalR": -1.88,
   "source": "perp",
   "minConf": 75,
   "tf": "15m/60m/4h/1d",
