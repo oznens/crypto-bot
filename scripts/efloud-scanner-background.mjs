@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 
-const API = 'https://api.binance.com';
+// Binance's market-data-only endpoint is accessible from GitHub-hosted runners.
+const API = 'https://data-api.binance.vision';
 const OUTPUT = new URL('../docs/efloud-scanner-results.json', import.meta.url);
 const ema = (v,n) => { const k=2/(n+1); let e=v[0]; for(let i=1;i<v.length;i++) e=v[i]*k+e*(1-k); return e; };
 const atr = (c,n=14) => { const a=[]; for(let i=1;i<c.length;i++) a.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c))); return a.slice(-n).reduce((s,x)=>s+x,0)/Math.min(n,a.length); };
