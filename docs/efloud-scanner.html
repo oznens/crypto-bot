@@ -6,12 +6,15 @@
 <style>
 :root{--bg:#0b0e13;--p:#12161e;--l:#2c3442;--t:#e6edf3;--d:#8b949e;--g:#5fd99a;--r:#f08a8a;--b:#79c0ff;--y:#e8c34a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:Arial,Segoe UI,sans-serif;padding:14px;font-size:14px}
-h1{font-size:20px;margin:0 0 4px}.sub{color:var(--d);font-size:12px;margin-bottom:12px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.pill,button{border:1px solid var(--l);background:var(--p);color:var(--t);padding:8px 10px;border-radius:8px}button{cursor:pointer}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}.card{background:var(--p);border:1px solid var(--l);border-radius:8px;padding:10px}.k{font-size:11px;color:var(--d)}.v{font-size:18px;font-weight:bold;margin-top:3px}.wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--p);border:1px solid var(--l);font-size:12px}th,td{padding:7px 8px;border-bottom:1px solid var(--l);text-align:right;white-space:nowrap}th{font-size:10px;color:var(--d);text-transform:uppercase;background:#161b24}td:first-child,th:first-child{text-align:left}.score{font-weight:bold}.a{color:var(--g)}.b{color:var(--b)}.c{color:var(--y)}.long{color:var(--g)}.short{color:var(--r)}.muted{color:var(--d)}.why{white-space:normal;min-width:260px;text-align:left}.foot{color:var(--d);font-size:11px;margin-top:12px;line-height:1.5}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:16px;margin:20px 0 8px}.sub{color:var(--d);font-size:12px;margin-bottom:12px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.pill,button{border:1px solid var(--l);background:var(--p);color:var(--t);padding:8px 10px;border-radius:8px}button{cursor:pointer}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}.card{background:var(--p);border:1px solid var(--l);border-radius:8px;padding:10px}.k{font-size:11px;color:var(--d)}.v{font-size:18px;font-weight:bold;margin-top:3px}.wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--p);border:1px solid var(--l);font-size:12px}th,td{padding:7px 8px;border-bottom:1px solid var(--l);text-align:right;white-space:nowrap}th{font-size:10px;color:var(--d);text-transform:uppercase;background:#161b24}td:first-child,th:first-child{text-align:left}.score{font-weight:bold}.a{color:var(--g)}.b{color:var(--b)}.c{color:var(--y)}.long{color:var(--g)}.short{color:var(--r)}.muted{color:var(--d)}.why{white-space:normal;min-width:260px;text-align:left}.foot{color:var(--d);font-size:11px;margin-top:12px;line-height:1.5}
 </style></head><body>
 <h1>🌊 Efloud Setup Scanner</h1>
 <div class="sub">Top 50 USDT · HTF 4H → LTF 15M · Context → Zone → Reaction → Confirmation → Entry → Invalidation</div>
-<div class="bar"><button id="run">Taramayı Başlat</button><span class="pill" id="st">hazır</span><span class="pill">A setup: 8–10</span><span class="pill">İzleme: 6–7</span></div>
+<div class="bar"><button id="run">Taramayı Başlat</button><span class="pill" id="st">hazır</span><span class="pill">Otomatik: 5 dakikada bir</span><span class="pill">A setup: 8–10</span><span class="pill">İzleme: 6–7</span></div>
 <div class="cards" id="cards"></div><div class="wrap"><div id="tbl"></div></div>
+<h2>Son arka plan taraması</h2>
+<div class="bar"><span class="pill" id="bgst">yükleniyor…</span></div>
+<div class="cards" id="bgcards"></div><div class="wrap"><div id="bgtbl"></div></div>
 <div class="foot">Skor, Efloud arşivinden çıkardığımız kuralların botlaştırılmış yorumudur; Efloud'un resmi indikatörü değildir. 4H trend/zone bağlamı, 15M reaksiyon/kapanış/retest, range yapısı ve chop cezası kullanılır. Yatırım tavsiyesi değildir.</div>
 <script>
 const API='https://api.binance.com';
@@ -33,7 +36,19 @@ function scoreOne(sym,h,l){
  const dist=side==='LONG'?(L.c-sw.lo):(sw.hi-L.c); const rr=dist>0?(a*2)/dist:0; if(rr>=1.5){score+=1;why.push('RR alanı uygun')}
  score=Math.max(0,Math.min(10,score)); const grade=score>=8?'A':score>=6?'B':'C'; return {sym,side,score,grade,px:L.c,pos,why,htf:up?'UP':dn?'DOWN':'RANGE'};
 }
+function render(out,cardsId,tableId){
+ out.sort((a,b)=>b.score-a.score); const shown=out.filter(x=>x.score>=6);
+ $(cardsId).innerHTML=[['Taranan',out.length],['A setup',out.filter(x=>x.score>=8).length],['İzleme',out.filter(x=>x.score>=6&&x.score<8).length],['Gösterilen',shown.length]].map(x=>`<div class=card><div class=k>${x[0]}</div><div class=v>${x[1]}</div></div>`).join('');
+ $(tableId).innerHTML=shown.length?`<table><tr><th>Parite</th><th>Skor</th><th>Yön</th><th>HTF</th><th>Fiyat</th><th>Range konumu</th><th>Gerekçe</th></tr>${shown.map(x=>`<tr><td>${x.sym.replace('USDT','/USDT')}</td><td class="score ${x.grade==='A'?'a':'b'}">${x.score}/10 ${x.grade}</td><td class="${x.side==='LONG'?'long':'short'}">${x.side}</td><td>${x.htf}</td><td>${fmt(x.px,6)}</td><td>${Math.round(x.pos*100)}%</td><td class=why>${x.why.join(' · ')}</td></tr>`).join('')}</table>`:'<div class=muted>6+ setup yok.</div>';
+}
+async function loadBackground(){
+ try{
+  const data=await j('./efloud-scanner-results.json?ts='+Date.now()); render(data.results||[],'bgcards','bgtbl');
+  $('bgst').textContent='son güncelleme · '+new Date(data.generatedAt).toLocaleString('tr-TR');
+ }catch(e){$('bgst').textContent='arka plan sonucu henüz yok';$('bgtbl').innerHTML='<div class=muted>İlk saatlik taramadan sonra burada görünecek.</div>'}
+}
 async function run(){
+ if($('run').disabled)return;
  $('run').disabled=true;$('st').textContent='top 50 seçiliyor…';$('tbl').innerHTML='';
  try{
   const t=await j(API+'/api/v3/ticker/24hr');
@@ -43,12 +58,10 @@ async function run(){
   for(let i=0;i<top.length;i+=5){
     const batch=top.slice(i,i+5); const r=await Promise.all(batch.map(async x=>{try{const [h,l]=await Promise.all([kl(x.symbol,'4h',120),kl(x.symbol,'15m',120)]);return scoreOne(x.symbol,h,l)}catch(e){return null}})); out.push(...r.filter(Boolean));done+=batch.length;$('st').textContent=`taranıyor ${done}/50`; await new Promise(r=>setTimeout(r,220));
   }
-  out.sort((a,b)=>b.score-a.score); const shown=out.filter(x=>x.score>=6);
-  $('cards').innerHTML=[['Taranan',out.length],['A setup',out.filter(x=>x.score>=8).length],['İzleme',out.filter(x=>x.score>=6&&x.score<8).length],['Gösterilen',shown.length]].map(x=>`<div class=card><div class=k>${x[0]}</div><div class=v>${x[1]}</div></div>`).join('');
-  $('tbl').innerHTML=shown.length?`<table><tr><th>Parite</th><th>Skor</th><th>Yön</th><th>HTF</th><th>Fiyat</th><th>Range konumu</th><th>Gerekçe</th></tr>${shown.map(x=>`<tr><td>${x.sym.replace('USDT','/USDT')}</td><td class="score ${x.grade==='A'?'a':'b'}">${x.score}/10 ${x.grade}</td><td class="${x.side==='LONG'?'long':'short'}">${x.side}</td><td>${x.htf}</td><td>${fmt(x.px,6)}</td><td>${Math.round(x.pos*100)}%</td><td class=why>${x.why.join(' · ')}</td></tr>`).join('')}</table>`:'<div class=muted>6+ setup yok.</div>';
+  render(out,'cards','tbl');
   $('st').textContent='tamam · '+new Date().toLocaleTimeString('tr-TR');
  }catch(e){$('st').textContent='hata: '+e.message;}
  $('run').disabled=false;
 }
-$('run').onclick=run;run();
+$('run').onclick=run;loadBackground();run();setInterval(run,5*60*1000);setInterval(loadBackground,5*60*1000);
 </script></body></html>
