@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -19,14 +21,24 @@ jobs:
       - name: Fetch one year of Efloud tweets and media
         env:
           XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY || secrets.XQUIK_API_KEY || secrets.XQUICK_API_KEY || secrets.XQUIK_KEY || secrets.XQUICK_KEY || secrets.XQUIKAPI_KEY || secrets.XQUICKAPI_KEY }}
-        run: python efloud-research/fetch_xquik.py
+        run: |
+          if [ -s efloud-research/data/tweets.jsonl ]; then
+            echo "Existing archive found; skipping full XQuick refetch."
+          else
+            python efloud-research/fetch_xquik.py
+          fi
       - name: Analyze archive
         run: python efloud-research/analyze.py
-      - name: Commit archive and analysis
+      - name: Commit archive and analysis safely
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add efloud-research/data efloud-research/media efloud-research/analysis
-          git diff --cached --quiet && exit 0
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
           git commit -m "Update Efloud research archive"
-          git push
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
