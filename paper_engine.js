@@ -48,9 +48,24 @@ async function topSymbols() {
       .sort((a, b) => (+b.quoteVolume || 0) - (+a.quoteVolume || 0)).slice(0, MAX_SYMS).map(x => x.symbol);
   }
 }
-const IV_PERP = { '5m': 'Min5', '15m': 'Min15', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
-const secPerBar = { '5m': 300, '15m': 900, '60m': 3600, '4h': 14400, '1d': 86400 };
+const IV_PERP = { '5m': 'Min5', '15m': 'Min15', '30m': 'Min30', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
+const secPerBar = { '5m': 300, '15m': 900, '30m': 1800, '60m': 3600, '2h': 7200, '4h': 14400, '1d': 86400 };
+function aggregateCandles(rows, seconds) {
+  const bucketMs = seconds * 1000, groups = [];
+  for (const row of rows) {
+    const bucket = Math.floor(row.t / bucketMs) * bucketMs;
+    let g = groups[groups.length - 1];
+    if (!g || g.t !== bucket) {
+      g = { t: bucket, o: row.o, h: row.h, l: row.l, c: row.c, v: row.v || 0 };
+      groups.push(g);
+    } else {
+      g.h = Math.max(g.h, row.h); g.l = Math.min(g.l, row.l); g.c = row.c; g.v += row.v || 0;
+    }
+  }
+  return groups;
+}
 async function klines(sym, iv, bars) {
+  if (iv === '2h') return aggregateCandles(await klines(sym, '60m', bars * 2 + 2), secPerBar['2h']).slice(-bars);
   if (SRC === 'perp') {
     const end = Math.floor(Date.now() / 1000), start = end - bars * secPerBar[iv];
     const j = await get('https://contract.mexc.com/api/v1/contract/kline/' + sym + '?interval=' + IV_PERP[iv] + '&start=' + start + '&end=' + end);

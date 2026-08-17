@@ -11,11 +11,17 @@ const CFG = require('./strategy_config');
 
 process.env.GUN = process.env.GUN || '30';
 process.env.SYMS = process.env.SYMS || String(CFG.MAX_SYMS);
+process.env.HISTORICAL_DAILY_TOP = '1';
 
 const filename = path.join(__dirname, 'backtest3ay.js');
 let src = fs.readFileSync(filename, 'utf8');
 
 const q = v => Number.isFinite(v) ? String(v) : 'Number.POSITIVE_INFINITY';
+const tfList = CFG.TIMEFRAMES.map(({ tf, ltf }) => `['${tf}', '${ltf}']`).join(', ');
+const minRiskByTf = Object.fromEntries(CFG.TIMEFRAMES.map(({ tf }) => [tf, CFG.MIN_RISK]));
+const minRiskLiteral = Object.entries(minRiskByTf)
+  .map(([tf, risk]) => `'${tf}': ${q(risk)}`)
+  .join(', ');
 
 src = src.replace(
   /const START_EQ = 10000, RISK_PCT = 0\.01, LEV_CAP = 10;/,
@@ -35,15 +41,16 @@ src = src.replace(
 );
 src = src.replace(
   "const TF_LIST = [['1d', '60m'], ['4h', '15m'], ['60m', '15m'], ['15m', '5m']];",
-  `const TF_LIST = [['${CFG.TF}', '${CFG.LTF}']];`
+  `const TF_LIST = [${tfList}];`
 );
 src = src.replace(
   /const MIN_RISK = \{ '15m': 0\.008, '60m': 0\.012, '4h': 0\.02, '1d': 0\.03 \};/,
-  `const MIN_RISK = { '${CFG.TF}': ${q(CFG.MIN_RISK)} };`
+  `const MIN_RISK = { ${minRiskLiteral} };`
 );
 
 const checks = [
-  `const TF_LIST = [['${CFG.TF}', '${CFG.LTF}']];`,
+  `const TF_LIST = [${tfList}];`,
+  `const MIN_RISK = { ${minRiskLiteral} };`,
   `RISK_PCT = ${q(CFG.RISK_PCT)}`,
   `MIN_CONF = ${q(CFG.MIN_CONF)}`,
   `TP1_R = ${q(CFG.TP1_R)}`,
@@ -53,7 +60,7 @@ const checks = [
 for (const s of checks) if (!src.includes(s)) throw new Error('Ortak config override uygulanamadı: ' + s);
 
 console.log('strategy_config.js kullanılıyor:', JSON.stringify({
-  syms: CFG.MAX_SYMS, tf: CFG.TF, ltf: CFG.LTF, minConf: CFG.MIN_CONF,
+  syms: CFG.MAX_SYMS, timeframes: CFG.TIMEFRAMES, minConf: CFG.MIN_CONF,
   riskPct: CFG.RISK_PCT, minRisk: CFG.MIN_RISK, tp1R: CFG.TP1_R,
   maxOpen: CFG.MAX_OPEN, maxNew: CFG.MAX_NEW_PER_RUN,
   feeTaker: CFG.FEE_TAKER, feeMaker: CFG.FEE_MAKER, slip: CFG.SLIP,
