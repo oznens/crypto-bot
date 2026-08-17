@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efloud Setup Scanner</title>
+<style>
+:root{--bg:#0b0e13;--p:#12161e;--l:#2c3442;--t:#e6edf3;--d:#8b949e;--g:#5fd99a;--r:#f08a8a;--b:#79c0ff;--y:#e8c34a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:Arial,Segoe UI,sans-serif;padding:14px;font-size:14px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--d);font-size:12px;margin-bottom:12px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.pill,button{border:1px solid var(--l);background:var(--p);color:var(--t);padding:8px 10px;border-radius:8px}button{cursor:pointer}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}.card{background:var(--p);border:1px solid var(--l);border-radius:8px;padding:10px}.k{font-size:11px;color:var(--d)}.v{font-size:18px;font-weight:bold;margin-top:3px}.wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--p);border:1px solid var(--l);font-size:12px}th,td{padding:7px 8px;border-bottom:1px solid var(--l);text-align:right;white-space:nowrap}th{font-size:10px;color:var(--d);text-transform:uppercase;background:#161b24}td:first-child,th:first-child{text-align:left}.score{font-weight:bold}.a{color:var(--g)}.b{color:var(--b)}.c{color:var(--y)}.long{color:var(--g)}.short{color:var(--r)}.muted{color:var(--d)}.why{white-space:normal;min-width:260px;text-align:left}.foot{color:var(--d);font-size:11px;margin-top:12px;line-height:1.5}
+</style></head><body>
+<h1>🌊 Efloud Setup Scanner</h1>
+<div class="sub">Top 50 USDT · HTF 4H → LTF 15M · Context → Zone → Reaction → Confirmation → Entry → Invalidation</div>
+<div class="bar"><button id="run">Taramayı Başlat</button><span class="pill" id="st">hazır</span><span class="pill">A setup: 8–10</span><span class="pill">İzleme: 6–7</span></div>
+<div class="cards" id="cards"></div><div class="wrap"><div id="tbl"></div></div>
+<div class="foot">Skor, Efloud arşivinden çıkardığımız kuralların botlaştırılmış yorumudur; Efloud'un resmi indikatörü değildir. 4H trend/zone bağlamı, 15M reaksiyon/kapanış/retest, range yapısı ve chop cezası kullanılır. Yatırım tavsiyesi değildir.</div>
+<script>
+const API='https://api.binance.com';
+const $=id=>document.getElementById(id); const fmt=(x,d=4)=>Number(x).toLocaleString('en-US',{maximumFractionDigits:d});
+function ema(v,n){const k=2/(n+1);let e=v[0];for(let i=1;i<v.length;i++)e=v[i]*k+e*(1-k);return e}
+function atr(c,n=14){let a=[];for(let i=1;i<c.length;i++)a.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c)));return a.slice(-n).reduce((s,x)=>s+x,0)/Math.min(n,a.length)}
+function swings(c,n=40){const x=c.slice(-n);return {hi:Math.max(...x.map(z=>z.h)),lo:Math.min(...x.map(z=>z.l))}}
+async function j(u){const r=await fetch(u);if(!r.ok)throw Error(r.status);return r.json()}
+async function kl(symbol,intv,limit){const a=await j(`${API}/api/v3/klines?symbol=${symbol}&interval=${intv}&limit=${limit}`);return a.map(x=>({o:+x[1],h:+x[2],l:+x[3],c:+x[4],v:+x[5],t:x[0]}))}
+function scoreOne(sym,h,l){
+ const hc=h.map(x=>x.c),lc=l.map(x=>x.c),H=h[h.length-1],L=l[l.length-1]; const e20=ema(hc.slice(-80),20),e50=ema(hc.slice(-100),50); const a=atr(h); const sw=swings(h,36); const range=sw.hi-sw.lo||1; const pos=(H.c-sw.lo)/range; let side='WAIT',score=0,why=[];
+ const up=e20>e50&&H.c>e20, dn=e20<e50&&H.c<e20; if(up){side='LONG';score+=2;why.push('4H trend bullish')} if(dn){side='SHORT';score+=2;why.push('4H trend bearish')}
+ const nearLow=(H.c-sw.lo)/H.c<0.035,nearHigh=(sw.hi-H.c)/H.c<0.035; if(side==='LONG'&&nearLow){score+=2;why.push('HTF support/demand yakın')} if(side==='SHORT'&&nearHigh){score+=2;why.push('HTF resistance/supply yakın')}
+ const le20=ema(lc.slice(-80),20),le50=ema(lc.slice(-100),50),prev=l[l.length-2];
+ const bullReact=L.l<prev.l&&L.c>prev.c, bearReact=L.h>prev.h&&L.c<prev.c; if(side==='LONG'&&bullReact){score+=1;why.push('15M bullish reaction')} if(side==='SHORT'&&bearReact){score+=1;why.push('15M bearish reaction')}
+ const reclaimLong=L.c>le20&&prev.c<=le20, reclaimShort=L.c<le20&&prev.c>=le20; if(side==='LONG'&&reclaimLong){score+=2;why.push('15M close/reclaim')} if(side==='SHORT'&&reclaimShort){score+=2;why.push('15M close/breakdown')}
+ const lsw=swings(l,24); const brLong=L.c>lsw.hi*0.9995,brShort=L.c<lsw.lo*1.0005; if(side==='LONG'&&brLong){score+=1;why.push('LTF range high breakout')} if(side==='SHORT'&&brShort){score+=1;why.push('LTF range low breakdown')}
+ const lAtr=atr(l),chop=Math.abs(le20-le50)/(lAtr||1)<0.35; if(chop){score-=1;why.push('chop cezası')}
+ const dist=side==='LONG'?(L.c-sw.lo):(sw.hi-L.c); const rr=dist>0?(a*2)/dist:0; if(rr>=1.5){score+=1;why.push('RR alanı uygun')}
+ score=Math.max(0,Math.min(10,score)); const grade=score>=8?'A':score>=6?'B':'C'; return {sym,side,score,grade,px:L.c,pos,why,htf:up?'UP':dn?'DOWN':'RANGE'};
+}
+async function run(){
+ $('run').disabled=true;$('st').textContent='top 50 seçiliyor…';$('tbl').innerHTML='';
+ try{
+  const t=await j(API+'/api/v3/ticker/24hr');
+  const ex=new Set(['USDCUSDT','FDUSDUSDT','TUSDUSDT','USDPUSDT','DAIUSDT','EURUSDT']);
+  const top=t.filter(x=>x.symbol.endsWith('USDT')&&!ex.has(x.symbol)&&+x.quoteVolume>0).sort((a,b)=>+b.quoteVolume-+a.quoteVolume).slice(0,50);
+  let out=[]; let done=0;
+  for(let i=0;i<top.length;i+=5){
+    const batch=top.slice(i,i+5); const r=await Promise.all(batch.map(async x=>{try{const [h,l]=await Promise.all([kl(x.symbol,'4h',120),kl(x.symbol,'15m',120)]);return scoreOne(x.symbol,h,l)}catch(e){return null}})); out.push(...r.filter(Boolean));done+=batch.length;$('st').textContent=`taranıyor ${done}/50`; await new Promise(r=>setTimeout(r,220));
+  }
+  out.sort((a,b)=>b.score-a.score); const shown=out.filter(x=>x.score>=6);
+  $('cards').innerHTML=[['Taranan',out.length],['A setup',out.filter(x=>x.score>=8).length],['İzleme',out.filter(x=>x.score>=6&&x.score<8).length],['Gösterilen',shown.length]].map(x=>`<div class=card><div class=k>${x[0]}</div><div class=v>${x[1]}</div></div>`).join('');
+  $('tbl').innerHTML=shown.length?`<table><tr><th>Parite</th><th>Skor</th><th>Yön</th><th>HTF</th><th>Fiyat</th><th>Range konumu</th><th>Gerekçe</th></tr>${shown.map(x=>`<tr><td>${x.sym.replace('USDT','/USDT')}</td><td class="score ${x.grade==='A'?'a':'b'}">${x.score}/10 ${x.grade}</td><td class="${x.side==='LONG'?'long':'short'}">${x.side}</td><td>${x.htf}</td><td>${fmt(x.px,6)}</td><td>${Math.round(x.pos*100)}%</td><td class=why>${x.why.join(' · ')}</td></tr>`).join('')}</table>`:'<div class=muted>6+ setup yok.</div>';
+  $('st').textContent='tamam · '+new Date().toLocaleTimeString('tr-TR');
+ }catch(e){$('st').textContent='hata: '+e.message;}
+ $('run').disabled=false;
+}
+$('run').onclick=run;run();
+</script></body></html>
