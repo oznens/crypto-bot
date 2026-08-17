@@ -1,5 +1,5 @@
 {
- "equity": 9783.9,
+ "equity": 9679.86,
  "startEquity": 10000,
  "open": [
   {
@@ -9,7 +9,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 75.79,
+   "mkt": 75.78,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 37.03787758,
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1786995300000,
+   "lastCheck": 1786996500000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.03,
@@ -996,7 +996,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 81.749105,
-   "mkt": 83.61,
+   "mkt": 83.82,
    "slip": 0.0005,
    "entryFee": 0.6685,
    "qty": 40.88912197,
@@ -1961,7 +1961,7 @@
     }
    },
    "openedAt": 1786447859828,
-   "lastCheck": 1786995300000,
+   "lastCheck": 1786996800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1975,7 +1975,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 64.92752,
-   "mkt": 65.99,
+   "mkt": 66.02,
    "slip": 0.0005,
    "entryFee": 0.5686,
    "qty": 43.78749758,
@@ -2940,7 +2940,7 @@
     }
    },
    "openedAt": 1786918720641,
-   "lastCheck": 1786995300000,
+   "lastCheck": 1786996500000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -2954,7 +2954,7 @@
    "src": "perp",
    "tf": "15m",
    "entry": 1892.723165,
-   "mkt": 1908.29,
+   "mkt": 1906.36,
    "slip": 0.0005,
    "entryFee": 1.5174,
    "qty": 4.00862129,
@@ -3919,13 +3919,15 @@
     }
    },
    "openedAt": 1786955737582,
-   "lastCheck": 1786995300000,
+   "lastCheck": 1786996800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
    "feeCharged": false,
    "fills": []
-  },
+  }
+ ],
+ "closed": [
   {
    "id": "WLD_USDT-15m-1786974899851",
    "symbol": "WLD_USDT",
@@ -3933,10 +3935,10 @@
    "src": "perp",
    "tf": "15m",
    "entry": 0.356978,
-   "mkt": 0.3542,
+   "mkt": 0.3505,
    "slip": 0.0005,
    "entryFee": 1.3871,
-   "qty": 19428.67352206,
+   "qty": 0,
    "notional": 6935.62,
    "sl": 0.351941,
    "tp1": 0.364534,
@@ -4898,15 +4900,24 @@
     }
    },
    "openedAt": 1786974899851,
-   "lastCheck": 1786995300000,
-   "status": "open",
+   "lastCheck": 1786995900000,
+   "status": "closed",
    "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
-  }
- ],
- "closed": [
+   "realized": -104.04,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1786996802313,
+     "px": 0.351765,
+     "part": 1,
+     "why": "SL",
+     "pnl": -104.04
+    }
+   ],
+   "closedAt": 1786996802313,
+   "closeReason": "SL",
+   "r": -1.06
+  },
   {
    "id": "UKOIL_USDT-1786444646834",
    "symbol": "UKOIL_USDT",
@@ -22558,17 +22569,22 @@
    "t": 1786995468412,
    "eq": 9783.9,
    "open": 5
+  },
+  {
+   "t": 1786996824170,
+   "eq": 9679.86,
+   "open": 4
   }
  ],
- "lastRun": 1786995468412,
- "runs": 155,
+ "lastRun": 1786996824170,
+ "runs": 156,
  "stats": {
-  "closed": 17,
+  "closed": 18,
   "wins": 6,
-  "losses": 11,
-  "winRate": 35.3,
-  "netPnl": -216.1,
-  "totalR": -2.89,
+  "losses": 12,
+  "winRate": 33.3,
+  "netPnl": -320.14,
+  "totalR": -3.95,
   "source": "perp",
   "minConf": 75,
   "tf": "15m/60m/4h/1d",
