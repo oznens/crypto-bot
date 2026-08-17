@@ -18,7 +18,7 @@ jobs:
         run: pip install -r efloud-research/requirements.txt
       - name: Fetch one year of Efloud tweets and media
         env:
-          XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY || secrets.XQUICK_API_KEY || secrets.XQUIK_KEY || secrets.XQUICK_KEY || secrets.XQUIKAPI_KEY || secrets.XQUICKAPI_KEY }}
+          XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY || secrets.XQUIK_API_KEY || secrets.XQUICK_API_KEY || secrets.XQUIK_KEY || secrets.XQUICK_KEY || secrets.XQUIKAPI_KEY || secrets.XQUICKAPI_KEY }}
         run: python efloud-research/fetch_xquik.py
       - name: Analyze archive
         run: python efloud-research/analyze.py
