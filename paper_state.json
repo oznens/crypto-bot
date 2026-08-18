@@ -1,5 +1,5 @@
 {
- "equity": 9648.96,
+ "equity": 9646.97,
  "startEquity": 10000,
  "open": [
   {
@@ -9,7 +9,7 @@
    "src": "perp",
    "tf": "60m",
    "entry": 76.74161,
-   "mkt": 75.74,
+   "mkt": 75.45,
    "slip": 0.0005,
    "entryFee": 1.1369,
    "qty": 37.03787758,
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1786316005002,
-   "lastCheck": 1787017200000,
+   "lastCheck": 1787020800000,
    "status": "open",
    "deriskDone": true,
    "realized": 72.03,
@@ -996,7 +996,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 64.92752,
-   "mkt": 66.33,
+   "mkt": 65.34,
    "slip": 0.0005,
    "entryFee": 0.5686,
    "qty": 43.78749758,
@@ -1961,7 +1961,7 @@
     }
    },
    "openedAt": 1786918720641,
-   "lastCheck": 1787017200000,
+   "lastCheck": 1787020800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1975,7 +1975,7 @@
    "src": "perp",
    "tf": "15m",
    "entry": 1892.723165,
-   "mkt": 1903.01,
+   "mkt": 1896.74,
    "slip": 0.0005,
    "entryFee": 1.5174,
    "qty": 4.00862129,
@@ -2940,13 +2940,15 @@
     }
    },
    "openedAt": 1786955737582,
-   "lastCheck": 1787017200000,
+   "lastCheck": 1787020800000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
    "feeCharged": false,
    "fills": []
-  },
+  }
+ ],
+ "closed": [
   {
    "id": "SKHYSTOCK_USDT-15m-1787002632820",
    "symbol": "SKHYSTOCK_USDT",
@@ -2954,10 +2956,10 @@
    "src": "perp",
    "tf": "15m",
    "entry": 172.176045,
-   "mkt": 172.72,
+   "mkt": 169.05,
    "slip": 0.0005,
    "entryFee": 1.1353,
-   "qty": 16.48513344,
+   "qty": 0,
    "notional": 5676.69,
    "sl": 172.176045,
    "tp1": 176.534062,
@@ -3920,9 +3922,9 @@
    },
    "openedAt": 1787002632820,
    "lastCheck": 1787017200000,
-   "status": "open",
+   "status": "closed",
    "deriskDone": true,
-   "realized": 70.42,
+   "realized": 68.43,
    "feeCharged": true,
    "fills": [
     {
@@ -3931,11 +3933,19 @@
      "part": 0.5,
      "why": "TP1-derisk",
      "pnl": 70.42
+    },
+    {
+     "t": 1787020995759,
+     "px": 172.089957,
+     "part": 1,
+     "why": "BE/SL",
+     "pnl": -1.99
     }
-   ]
-  }
- ],
- "closed": [
+   ],
+   "closedAt": 1787020995759,
+   "closeReason": "BE",
+   "r": 0.71
+  },
   {
    "id": "USOIL_USDT-1786447859828",
    "symbol": "USOIL_USDT",
@@ -23618,17 +23628,22 @@
    "t": 1787017399166,
    "eq": 9648.96,
    "open": 4
+  },
+  {
+   "t": 1787021018593,
+   "eq": 9646.97,
+   "open": 3
   }
  ],
- "lastRun": 1787017399166,
- "runs": 165,
+ "lastRun": 1787021018593,
+ "runs": 166,
  "stats": {
-  "closed": 19,
-  "wins": 6,
+  "closed": 20,
+  "wins": 7,
   "losses": 13,
-  "winRate": 31.6,
-  "netPnl": -351.04,
-  "totalR": -4.98,
+  "winRate": 35,
+  "netPnl": -353.03,
+  "totalR": -4.27,
   "source": "perp",
   "minConf": 75,
   "tf": "15m/60m/4h/1d",
