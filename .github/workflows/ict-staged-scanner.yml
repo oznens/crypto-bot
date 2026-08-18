@@ -1,0 +1,36 @@
+name: ICT staged scanner
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ict-staged-scanner
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Top 50 Bybit ICT taraması
+        env:
+          ICT_MAX_SYMBOLS: '50'
+        run: node ict_style_scanner.js
+      - name: Scanner verisini commit et
+        run: |
+          git config user.name "ict-scanner-bot"
+          git config user.email "actions@github.com"
+          git add docs/ict-scanner/data.json
+          if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
+          git commit -m "ict-scanner: veriyi güncelle [skip ci]"
+          git pull --rebase origin main || true
+          git push
