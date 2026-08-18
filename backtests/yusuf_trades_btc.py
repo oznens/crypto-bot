@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-SYMBOL='BTCUSDT'; START='2018-01'; END='2026-07'; OUT=Path('backtests/yusuf-btc-results'); OUT.mkdir(parents=True,exist_ok=True)
+SYMBOL='BTCUSDT'; START='2022-01'; END='2026-07'; OUT=Path('backtests/yusuf-btc-results'); OUT.mkdir(parents=True,exist_ok=True)
 
 def months(a,b):
     p=pd.Period(a,'M'); e=pd.Period(b,'M')
