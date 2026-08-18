@@ -1,33 +1,21 @@
-import io,zipfile,urllib.request,json
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
-SYMBOL='BTCUSDT'; START='2022-01'; END='2026-07'; OUT=Path('backtests/yusuf-btc-results'); OUT.mkdir(parents=True,exist_ok=True)
-COLS=['open_time','open','high','low','close','volume','close_time','quote_volume','trades','taker_base','taker_quote','ignore']
-
-def months(a,b):
-    p=pd.Period(a,'M'); e=pd.Period(b,'M')
-    while p<=e:
-        yield str(p); p+=1
-
-def fetch_month(m):
-    url=f'https://data.binance.vision/data/spot/monthly/klines/{SYMBOL}/15m/{SYMBOL}-15m-{m}.zip'
-    try:
-        z=zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url,timeout=20).read())); return pd.read_csv(z.open(z.namelist()[0]),header=None,names=COLS)
-    except Exception as e: print('skip',m,e); return None
+SYMBOL='BTCUSDT'; START='2022-01-01'; OUT=Path('backtests/yusuf-btc-results'); OUT.mkdir(parents=True,exist_ok=True)
+DATA='https://raw.githubusercontent.com/yanniedog/binance-historical-OHLCV-data/main/BTCUSDT_15m.csv'
 
 def load():
-    frames=[]
-    with ThreadPoolExecutor(max_workers=16) as ex:
-        futs={ex.submit(fetch_month,m):m for m in months(START,END)}
-        for f in as_completed(futs):
-            d=f.result()
-            if d is not None: frames.append(d)
-    d=pd.concat(frames,ignore_index=True); d['time']=pd.to_datetime(d.open_time,unit='ms',utc=True,errors='coerce')
+    d=pd.read_csv(DATA); d.columns=[c.lower().strip() for c in d.columns]
+    tc='timestamp' if 'timestamp' in d.columns else ('time' if 'time' in d.columns else d.columns[0])
+    vals=d[tc]
+    if pd.api.types.is_numeric_dtype(vals):
+        unit='ms' if pd.to_numeric(vals,errors='coerce').median()>1e11 else 's'; d['time']=pd.to_datetime(vals,unit=unit,utc=True,errors='coerce')
+    else: d['time']=pd.to_datetime(vals,utc=True,errors='coerce')
     for c in ['open','high','low','close','volume']: d[c]=pd.to_numeric(d[c],errors='coerce')
-    return d.dropna(subset=['time','open','high','low','close']).drop_duplicates('time').sort_values('time').set_index('time')
+    d=d.dropna(subset=['time','open','high','low','close']).drop_duplicates('time').sort_values('time').set_index('time')
+    return d.loc[d.index>=pd.Timestamp(START,tz='UTC')]
 
 def atr(d,n=14):
     pc=d.close.shift(1); return pd.concat([(d.high-d.low).abs(),(d.high-pc).abs(),(d.low-pc).abs()],axis=1).max(axis=1).rolling(n).mean()
