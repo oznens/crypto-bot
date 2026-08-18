@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+# PR-triggered execution marker; logic is unchanged.
 DATA_URL = "https://raw.githubusercontent.com/simom1/XAUUSD-history/main/Gold-Cash/XAUUSD/XAUUSD_M15_2010_2026.csv"
 OUT = Path("backtests/yusuf-results")
 OUT.mkdir(parents=True, exist_ok=True)
