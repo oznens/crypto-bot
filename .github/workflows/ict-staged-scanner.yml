@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - 'ict_style_scanner.js'
+      - '.github/workflows/ict-staged-scanner.yml'
 
 permissions:
   contents: write
