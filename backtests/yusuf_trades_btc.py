@@ -1,22 +1,30 @@
 import io,zipfile,urllib.request,json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
 SYMBOL='BTCUSDT'; START='2022-01'; END='2026-07'; OUT=Path('backtests/yusuf-btc-results'); OUT.mkdir(parents=True,exist_ok=True)
+COLS=['open_time','open','high','low','close','volume','close_time','quote_volume','trades','taker_base','taker_quote','ignore']
 
 def months(a,b):
     p=pd.Period(a,'M'); e=pd.Period(b,'M')
     while p<=e:
         yield str(p); p+=1
 
+def fetch_month(m):
+    url=f'https://data.binance.vision/data/spot/monthly/klines/{SYMBOL}/15m/{SYMBOL}-15m-{m}.zip'
+    try:
+        z=zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url,timeout=20).read())); return pd.read_csv(z.open(z.namelist()[0]),header=None,names=COLS)
+    except Exception as e: print('skip',m,e); return None
+
 def load():
-    frames=[]; cols=['open_time','open','high','low','close','volume','close_time','quote_volume','trades','taker_base','taker_quote','ignore']
-    for m in months(START,END):
-        url=f'https://data.binance.vision/data/spot/monthly/klines/{SYMBOL}/15m/{SYMBOL}-15m-{m}.zip'
-        try:
-            z=zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url,timeout=30).read())); frames.append(pd.read_csv(z.open(z.namelist()[0]),header=None,names=cols))
-        except Exception as e: print('skip',m,e)
+    frames=[]
+    with ThreadPoolExecutor(max_workers=16) as ex:
+        futs={ex.submit(fetch_month,m):m for m in months(START,END)}
+        for f in as_completed(futs):
+            d=f.result()
+            if d is not None: frames.append(d)
     d=pd.concat(frames,ignore_index=True); d['time']=pd.to_datetime(d.open_time,unit='ms',utc=True,errors='coerce')
     for c in ['open','high','low','close','volume']: d[c]=pd.to_numeric(d[c],errors='coerce')
     return d.dropna(subset=['time','open','high','low','close']).drop_duplicates('time').sort_values('time').set_index('time')
