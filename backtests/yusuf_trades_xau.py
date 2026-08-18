@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pandas as pd
 
-# PR-triggered execution marker; logic is unchanged.
 DATA_URL = "https://raw.githubusercontent.com/simom1/XAUUSD-history/main/Gold-Cash/XAUUSD/XAUUSD_M15_2010_2026.csv"
 OUT = Path("backtests/yusuf-results")
 OUT.mkdir(parents=True, exist_ok=True)
@@ -54,8 +53,7 @@ def add_features(m15):
     hb = h1[['bias']].shift(1).reset_index().rename(columns={h1.index.name or 'index':'time'})
     xx = x.reset_index().rename(columns={x.index.name or 'index':'time'})
     xx = pd.merge_asof(xx.sort_values('time'), hb.sort_values('time'), on='time', direction='backward')
-    xx = xx.set_index('time')
-    return xx
+    return xx.set_index('time')
 
 
 def candidate_setups(x):
@@ -75,11 +73,11 @@ def candidate_setups(x):
         for j in range(i-1, max(i-6,0), -1):
             q=x.iloc[j]
             if (side==1 and q.close < q.open) or (side==-1 and q.close > q.open):
-                z=(j, float(q.low), float(q.high))
+                z=(float(q.low), float(q.high))
                 break
         if z is None:
             continue
-        _, zl, zh = z
+        zl, zh = z
         if zh-zl > 1.5*r.atr:
             continue
         setups.append((i, side, zl, zh, float(r.atr)))
@@ -92,22 +90,23 @@ def run_variant(x, setups, rr=2.0, session=False):
     for i,side,zl,zh,a in setups:
         if i <= busy_until:
             continue
-        entry_idx=None
-        entry=None
+        entry_idx=None; entry=None
+        midpoint=(zl+zh)/2
+        stop = zl-0.10*a if side==1 else zh+0.10*a
         for k in range(i+1, min(i+13,len(x))):
             bar=x.iloc[k]
             if session and not (7 <= bar.name.hour < 17):
                 continue
-            if side==1 and bar.low < zl-0.10*a:
-                break
-            if side==-1 and bar.high > zh+0.10*a:
-                break
-            midpoint=(zl+zh)/2
+            # A bar that reaches entry is a fill even if it also reaches SL.
             if bar.low <= midpoint <= bar.high:
                 entry_idx=k; entry=midpoint; break
+            # Only invalidate when price reaches SL without trading through entry.
+            if side==1 and bar.high < midpoint and bar.low <= stop:
+                break
+            if side==-1 and bar.low > midpoint and bar.high >= stop:
+                break
         if entry_idx is None:
             continue
-        stop = zl-0.10*a if side==1 else zh+0.10*a
         risk = abs(entry-stop)
         if risk <= 0:
             continue
