@@ -1,6 +1,11 @@
 name: ICT staged scanner
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'ict_style_scanner.js'
+      - '.github/workflows/ict-staged-scanner.yml'
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
