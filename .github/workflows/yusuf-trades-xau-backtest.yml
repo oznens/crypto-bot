@@ -6,6 +6,10 @@ on:
     paths:
       - 'backtests/yusuf_trades_xau.py'
       - '.github/workflows/yusuf-trades-xau-backtest.yml'
+  pull_request:
+    paths:
+      - 'backtests/yusuf_trades_xau.py'
+      - '.github/workflows/yusuf-trades-xau-backtest.yml'
 
 permissions:
   contents: write
@@ -25,6 +29,7 @@ jobs:
       - name: Show summary
         run: cat backtests/yusuf-results/summary.json
       - name: Commit results
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
