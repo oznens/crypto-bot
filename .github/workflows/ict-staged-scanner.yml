@@ -1,21 +1,16 @@
-name: ICT staged scanner
+name: MEXC ICT staged scanner
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'ict_style_scanner.js'
-      - '.github/workflows/ict-staged-scanner.yml'
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: ict-staged-scanner
-  cancel-in-progress: false
+  group: mexc-ict-staged-scanner
+  cancel-in-progress: true
 
 jobs:
   scan:
@@ -26,16 +21,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Top 50 Bybit ICT taraması
+      - name: MEXC Futures Top 50 ICT taraması
         env:
           ICT_MAX_SYMBOLS: '50'
         run: node ict_style_scanner.js
-      - name: Scanner verisini commit et
+      - name: Setup verisini commit et
         run: |
-          git config user.name "ict-scanner-bot"
+          git config user.name "mexc-ict-scanner-bot"
           git config user.email "actions@github.com"
           git add docs/ict-scanner/data.json
           if git diff --cached --quiet; then echo "değişiklik yok"; exit 0; fi
-          git commit -m "ict-scanner: veriyi güncelle [skip ci]"
+          git commit -m "mexc-ict-scanner: setups güncellendi [skip ci]"
           git pull --rebase origin main || true
           git push
