@@ -27,8 +27,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run scanner
-        run: node reverse_ict_scanner.js
+      - name: Run MEXC Futures scanner
+        run: node reverse_ict_mexc.js
 
       - name: Commit latest data
         run: |
@@ -39,6 +39,6 @@ jobs:
             echo "No changes"
             exit 0
           fi
-          git commit -m "Update reverse ICT scanner data"
+          git commit -m "Update reverse ICT MEXC scanner data"
           git pull --rebase origin main
           git push origin HEAD:main
