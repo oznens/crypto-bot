@@ -1,0 +1,254 @@
+/*
+ * Reverse-engineered ICT signal scanner v1
+ * Based on observed signal format/rules:
+ * D1/H4 bias -> M15 liquidity sweep -> body-close BOS -> FVG -> OB -> MSNR/OCL -> session/killzone
+ * Confidence scoring inferred exactly from supplied samples:
+ * HTF bias 15 + BOS 20 + sweep 15 + FVG 15 + OB 10 + OB/FVG 5 + MSNR 10 + killzone 10 = max 100.
+ * Premium/discount and QT are informational in v1 (observed 100/100 can still be P/D incompatible).
+ * Public Bybit market data only. No orders are placed.
+ */
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+const SYMBOLS = (process.env.RICT_SYMBOLS || 'BTCUSDT,ETHUSDT,XRPUSDT').split(',').map(s => s.trim()).filter(Boolean);
+const OUT = process.env.RICT_OUT || path.join(__dirname, 'docs', 'reverse-ict', 'data.json');
+const BASE = 'https://api.bybit.com';
+const INTERVAL = { M15: '15', H4: '240', D1: 'D' };
+
+function getJSON(url, timeout = 20000) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { 'User-Agent': 'crypto-bot-reverse-ict/1.0' }, timeout }, res => {
+      let body = '';
+      res.on('data', c => body += c);
+      res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) return reject(new Error(`HTTP ${res.statusCode}`));
+        try { resolve(JSON.parse(body)); } catch (e) { reject(e); }
+      });
+    });
+    req.on('timeout', () => req.destroy(new Error('timeout')));
+    req.on('error', reject);
+  });
+}
+
+const round = (x, n = 8) => Number.isFinite(+x) ? +(+x).toFixed(n) : null;
+
+async function klines(symbol, tf, limit = 500) {
+  const j = await getJSON(`${BASE}/v5/market/kline?category=linear&symbol=${encodeURIComponent(symbol)}&interval=${INTERVAL[tf]}&limit=${limit}`);
+  if (j.retCode !== 0) throw new Error(j.retMsg || 'Bybit kline error');
+  const rows = j.result?.list || [];
+  return rows.map(r => ({ t:+r[0], o:+r[1], h:+r[2], l:+r[3], c:+r[4], v:+r[5] }))
+    .filter(k => [k.t,k.o,k.h,k.l,k.c].every(Number.isFinite))
+    .sort((a,b) => a.t-b.t);
+}
+
+function ema(values, p) {
+  if (!values.length) return [];
+  const a = 2/(p+1), out = [values[0]];
+  for (let i=1;i<values.length;i++) out.push(values[i]*a + out[i-1]*(1-a));
+  return out;
+}
+
+function atr(c, p=14) {
+  if (c.length < p+2) return 0;
+  const tr=[];
+  for (let i=1;i<c.length;i++) tr.push(Math.max(c[i].h-c[i].l, Math.abs(c[i].h-c[i-1].c), Math.abs(c[i].l-c[i-1].c)));
+  return tr.slice(-p).reduce((a,b)=>a+b,0)/p;
+}
+
+function pivots(c,w=2) {
+  const highs=[], lows=[];
+  for (let i=w;i<c.length-w;i++) {
+    let hi=true,lo=true;
+    for (let j=i-w;j<=i+w;j++) if (j!==i) {
+      if (c[j].h>=c[i].h) hi=false;
+      if (c[j].l<=c[i].l) lo=false;
+    }
+    if (hi) highs.push({i,t:c[i].t,p:c[i].h});
+    if (lo) lows.push({i,t:c[i].t,p:c[i].l});
+  }
+  return {highs,lows};
+}
+
+function lastBefore(arr,i){ for(let n=arr.length-1;n>=0;n--) if(arr[n].i<i) return arr[n]; return null; }
+
+function htfBias(d1,h4){
+  const dc=d1.slice(0,-1), hc=h4.slice(0,-1);
+  const de=ema(dc.map(x=>x.c),20), he=ema(hc.map(x=>x.c),20);
+  const dBull=dc.at(-1)?.c>de.at(-1), hBull=hc.at(-1)?.c>he.at(-1);
+  const dBear=dc.at(-1)?.c<de.at(-1), hBear=hc.at(-1)?.c<he.at(-1);
+  if(dBull&&hBull) return 'bullish';
+  if(dBear&&hBear) return 'bearish';
+  const dp=pivots(dc,2), hp=pivots(hc,2);
+  const dh=dp.highs.slice(-2), dl=dp.lows.slice(-2), hh=hp.highs.slice(-2), hl=hp.lows.slice(-2);
+  const up=(dh.length===2&&dh[1].p>dh[0].p)+(dl.length===2&&dl[1].p>dl[0].p)+(hh.length===2&&hh[1].p>hh[0].p)+(hl.length===2&&hl[1].p>hl[0].p);
+  return up>=2?'bullish':'bearish';
+}
+
+function latestSweep(c, pv, bias){
+  let best=null;
+  for(let i=Math.max(8,c.length-80);i<c.length;i++){
+    const ph=lastBefore(pv.highs,i), pl=lastBefore(pv.lows,i);
+    if(bias==='bullish' && pl && c[i].l<pl.p && c[i].c>pl.p) best={side:'BUY',i,t:c[i].t,level:pl.p,extreme:c[i].l};
+    if(bias==='bearish' && ph && c[i].h>ph.p && c[i].c<ph.p) best={side:'SELL',i,t:c[i].t,level:ph.p,extreme:c[i].h};
+  }
+  return best;
+}
+
+function bodyCloseBOS(c,pv,sweep,bias){
+  if(!sweep) return null;
+  const ref = bias==='bullish' ? lastBefore(pv.highs,sweep.i+1) : lastBefore(pv.lows,sweep.i+1);
+  if(!ref) return null;
+  for(let i=sweep.i+1;i<c.length;i++){
+    const ok=bias==='bullish'?c[i].c>ref.p:c[i].c<ref.p;
+    const dir=bias==='bullish'?c[i].c>c[i].o:c[i].c<c[i].o;
+    if(ok&&dir) return {i,t:c[i].t,level:ref.p,close:c[i].c};
+  }
+  return null;
+}
+
+function allFVG(c){
+  const a=[];
+  for(let i=2;i<c.length;i++){
+    if(c[i-2].h<c[i].l) a.push({type:'bull',i,t:c[i].t,low:c[i-2].h,high:c[i].l});
+    if(c[i-2].l>c[i].h) a.push({type:'bear',i,t:c[i].t,low:c[i].h,high:c[i-2].l});
+  }
+  return a;
+}
+
+function unmitigatedFVG(c,bos,bias){
+  if(!bos) return null;
+  const type=bias==='bullish'?'bull':'bear';
+  const candidates=allFVG(c).filter(f=>f.type===type && f.i>=Math.max(2,bos.i-2));
+  for(let n=candidates.length-1;n>=0;n--){
+    const f=candidates[n]; let mitigated=false;
+    for(let j=f.i+1;j<c.length;j++){
+      if(type==='bull' && c[j].l<=f.low){ mitigated=true; break; }
+      if(type==='bear' && c[j].h>=f.high){ mitigated=true; break; }
+    }
+    if(!mitigated) return f;
+  }
+  return null;
+}
+
+function orderBlock(c,bos,bias){
+  if(!bos) return null;
+  for(let i=bos.i-1;i>=Math.max(0,bos.i-12);i--){
+    const opp=bias==='bullish'?c[i].c<c[i].o:c[i].c>c[i].o;
+    if(opp) return {i,t:c[i].t,low:c[i].l,high:c[i].h};
+  }
+  return null;
+}
+
+function overlap(a,b){
+  if(!a||!b) return null;
+  const low=Math.max(a.low,b.low), high=Math.min(a.high,b.high);
+  return high>=low?{low,high}:null;
+}
+
+function msnrOcl(c,pv,bias,entry){
+  if(!Number.isFinite(entry)) return null;
+  const A=atr(c)||entry*.002;
+  const candidates = bias==='bullish'?pv.highs:pv.lows;
+  for(let n=candidates.length-1;n>=0;n--){
+    const p=candidates[n];
+    const broke = c.slice(p.i+1).some(k=>bias==='bullish'?k.c>p.p:k.c<p.p);
+    const near = Math.abs(entry-p.p)<=A*.5;
+    if(broke&&near) return {level:p.p,t:p.t};
+  }
+  return null;
+}
+
+function dealingRange(c,pv,entry){
+  const hi=pv.highs.at(-1)?.p ?? Math.max(...c.slice(-80).map(x=>x.h));
+  const lo=pv.lows.at(-1)?.p ?? Math.min(...c.slice(-80).map(x=>x.l));
+  const span=hi-lo;
+  const pos=span>0?(entry-lo)/span:0.5;
+  return {low:lo,high:hi,pos:Math.max(0,Math.min(1,pos)),zone:pos>=0.5?'premium':'discount'};
+}
+
+function sessionInfo(ms){
+  const d=new Date(ms), h=d.getUTCHours()+d.getUTCMinutes()/60;
+  if(h>=7&&h<10) return {session:'LONDON',killZone:true};
+  if(h>=12&&h<15) return {session:'NY_AM',killZone:true};
+  if(h>=15&&h<21) return {session:'NY_PM',killZone:false};
+  return {session:'ASIA',killZone:false};
+}
+
+function quarterly(ms){
+  const h=new Date(ms).getUTCHours();
+  if(h<6) return 'Q1_ACCUMULATION';
+  if(h<12) return 'Q2_MANIPULATION';
+  if(h<18) return 'Q3_DISTRIBUTION';
+  return 'Q4_CONTINUATION_REVERSAL';
+}
+
+function scoreSetup(x){
+  let s=0;
+  if(x.biasAligned) s+=15;
+  if(x.bos) s+=20;
+  if(x.sweep) s+=15;
+  if(x.fvg) s+=15;
+  if(x.ob) s+=10;
+  if(x.obFvg) s+=5;
+  if(x.msnr) s+=10;
+  if(x.killZone) s+=10;
+  return Math.min(100,s);
+}
+
+function formatReasoning(x){
+  const r=[];
+  r.push(`HTF yön (Bias=D1/H4): ${x.bias}`);
+  if(x.bos) r.push(`LTF (M15) BOS teyidi: ${x.bias} yönünde body-close kırılım @ ${x.bos.level}`);
+  if(x.sweep) r.push(`Öncesinde ters yönde likidite süpürüldü (fiyat ≈ ${x.sweep.extreme})`);
+  if(x.fvg) r.push(`Fair Value Gap mevcut ve mitigasyonu tamamlanmamış [${x.fvg.low} - ${x.fvg.high}]`);
+  if(x.ob) r.push(`Order Block mevcut [${x.ob.low} - ${x.ob.high}]${x.obFvg?' (FVG konfluanslı)':''}`);
+  const compatible=x.side==='BUY'?x.range.zone==='discount':x.range.zone==='premium';
+  r.push(`Fiyat ${x.range.zone} bölgesinde (equilibrium konumu: ${x.range.pos.toFixed(2)}) -> ${compatible?'uyumlu':'uyumsuz'}`);
+  if(x.msnr) r.push('Girişe yakın fresh/flipped MSNR (OCL) seviyesi mevcut — ekstra konfluans');
+  r.push(x.killZone?`Kill zone içinde (${x.session})`:`Kill zone dışında (seans: ${x.session}) — düşük öncelik`);
+  return r;
+}
+
+async function analyze(symbol){
+  const [m15,h4,d1]=await Promise.all([klines(symbol,'M15',600),klines(symbol,'H4',300),klines(symbol,'D1',220)]);
+  const c=m15.slice(0,-1), now=m15.at(-1)?.t||Date.now(), bias=htfBias(d1,h4), pv=pivots(c,2);
+  const sweep=latestSweep(c,pv,bias), bos=bodyCloseBOS(c,pv,sweep,bias), fvg=unmitigatedFVG(c,bos,bias), ob=orderBlock(c,bos,bias), obFvg=overlap(ob,fvg);
+  const side=bias==='bullish'?'BUY':'SELL';
+  let entry=null;
+  if(fvg) entry=side==='BUY'?fvg.high:fvg.low;
+  else if(ob) entry=side==='BUY'?ob.high:ob.low;
+  else if(bos) entry=bos.close;
+  const msnr=msnrOcl(c,pv,bias,entry);
+  const A=atr(c)||0;
+  let sl=null;
+  if(sweep&&Number.isFinite(entry)) sl=side==='BUY'?sweep.extreme-A*.10:sweep.extreme+A*.10;
+  const risk=Number.isFinite(sl)&&Number.isFinite(entry)?Math.abs(entry-sl):null;
+  const tp1=risk?(side==='BUY'?entry+2*risk:entry-2*risk):null;
+  const tp2=risk?(side==='BUY'?entry+4*risk:entry-4*risk):null;
+  const sess=sessionInfo(now), range=dealingRange(c,pv,entry??c.at(-1).c);
+  const score=scoreSetup({biasAligned:true,bos,sweep,fvg,ob,obFvg,msnr,killZone:sess.killZone});
+  const signal=!!(sweep&&bos&&ob&&entry&&sl&&score>=50);
+  const out={symbol,side,bias,signal,confidence:score,rrTp1:2,time:new Date(now).toISOString(),session:sess.session,killZone:sess.killZone,qt:quarterly(now),entry:round(entry),sl:round(sl),tp1:round(tp1),tp2:round(tp2),sweep:sweep?{...sweep,level:round(sweep.level),extreme:round(sweep.extreme)}:null,bos:bos?{...bos,level:round(bos.level),close:round(bos.close)}:null,fvg:fvg?{low:round(fvg.low),high:round(fvg.high),time:fvg.t}:null,ob:ob?{low:round(ob.low),high:round(ob.high),time:ob.t}:null,obFvg:obFvg?{low:round(obFvg.low),high:round(obFvg.high)}:null,msnr:msnr?{level:round(msnr.level),time:msnr.t}:null,range:{low:round(range.low),high:round(range.high),pos:round(range.pos,2),zone:range.zone},atr15:round(A),scoreBreakdown:{htf:15,bos:bos?20:0,sweep:sweep?15:0,fvg:fvg?15:0,ob:ob?10:0,obFvg:obFvg?5:0,msnr:msnr?10:0,killZone:sess.killZone?10:0},reasoning:[]};
+  out.reasoning=formatReasoning(out);
+  return out;
+}
+
+function textSignal(x){
+  if(!x.signal) return `[${x.symbol}] UYGUN SİNYAL YOK | Güven: ${x.confidence}/100`;
+  const action=x.side==='BUY'?'AL (BUY)':'SAT (SELL)';
+  return [`[${x.symbol}] ${action}  |  Güven: ${x.confidence}/100  |  RR(TP1): 2.0`,`  Zaman: ${x.time}  Seans: ${x.session} (kill zone: ${x.killZone})  QT: ${x.qt}`,`  Giriş: ${x.entry}   SL: ${x.sl}   TP1: ${x.tp1}   TP2: ${x.tp2}`,'  Gerekçeler:',...x.reasoning.map(s=>`    - ${s}`)].join('\n');
+}
+
+(async()=>{
+  const started=Date.now(), results=[], errors=[];
+  for(const symbol of SYMBOLS){
+    try{ results.push(await analyze(symbol)); }
+    catch(e){ errors.push({symbol,error:e.message}); }
+  }
+  const payload={generatedAt:Date.now(),source:'Bybit Linear public market data',version:'reverse-ict-v1',symbols:SYMBOLS,results,signals:results.filter(x=>x.signal),errors,durationMs:Date.now()-started};
+  fs.mkdirSync(path.dirname(OUT),{recursive:true});
+  fs.writeFileSync(OUT,JSON.stringify(payload,null,2));
+  console.log(`Reverse ICT v1: ${results.length} tarandı | ${payload.signals.length} sinyal | ${errors.length} hata`);
+  results.forEach(x=>console.log('\n'+textSignal(x)));
+})().catch(e=>{console.error(e);process.exit(1)});
