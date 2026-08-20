@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Reverse ICT Scanner</title>
+<style>
+:root{color-scheme:dark;--bg:#090d14;--panel:#111823;--muted:#8b98aa;--line:#243043;--good:#4ade80;--bad:#fb7185;--warn:#fbbf24;--text:#e8eef7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;gap:14px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}h1{font-size:clamp(24px,4vw,38px);margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 30px #0005}.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.sym{font-size:21px;font-weight:800}.score{font-size:21px;font-weight:900}.buy{color:var(--good)}.sell{color:var(--bad)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin:5px 4px 0 0;font-size:12px}.levels{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:13px 0}.lv{background:#0b111a;border:1px solid var(--line);border-radius:10px;padding:9px}.lv b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}.reasons{margin:12px 0 0;padding-left:18px}.reasons li{margin:5px 0}.break{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}.ok{border-color:#265c3b;color:#a7f3d0}.off{opacity:.42}.alert{border-color:#6b4b12;color:#fde68a}.empty{text-align:center;padding:40px;background:var(--panel);border-radius:16px;border:1px solid var(--line)}@media(max-width:480px){.wrap{padding:12px}.card{padding:13px}.levels{grid-template-columns:1fr 1fr}.sym,.score{font-size:18px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div><h1>Reverse ICT Scanner</h1><div class="muted">BTC · ETH · XRP | D1/H4 → M15 | Bybit public data</div></div><div id="updated" class="muted">Yükleniyor…</div></div>
+<div id="grid" class="grid"></div>
+</div>
+<script>
+const fmt=n=>n==null?'—':Number(n).toLocaleString('tr-TR',{maximumFractionDigits:8});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function chip(label,on){return `<span class="pill ${on?'ok':'off'}">${esc(label)}</span>`}
+function card(x){
+ const cls=x.side==='BUY'?'buy':'sell', action=x.side==='BUY'?'AL (BUY)':'SAT (SELL)';
+ const b=x.scoreBreakdown||{};
+ return `<article class="card"><div class="head"><div><div class="sym">${esc(x.symbol)} <span class="${cls}">${action}</span></div><div class="muted">${esc(x.session)} · ${x.killZone?'Kill Zone':'Kill Zone dışı'} · ${esc(x.qt)}</div></div><div class="score ${x.confidence>=85?'buy':x.confidence>=70?'':'alert'}">${x.confidence}/100</div></div>
+ <div class="levels"><div class="lv"><b>Giriş</b>${fmt(x.entry)}</div><div class="lv"><b>Stop Loss</b>${fmt(x.sl)}</div><div class="lv"><b>TP1 · 2R</b>${fmt(x.tp1)}</div><div class="lv"><b>TP2 · 4R</b>${fmt(x.tp2)}</div></div>
+ <div class="break">${chip('HTF +15',b.htf>0)}${chip('BOS +20',b.bos>0)}${chip('Sweep +15',b.sweep>0)}${chip('FVG +15',b.fvg>0)}${chip('OB +10',b.ob>0)}${chip('OB/FVG +5',b.obFvg>0)}${chip('MSNR +10',b.msnr>0)}${chip('KZ +10',b.killZone>0)}</div>
+ <ul class="reasons">${(x.reasoning||[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul></article>`;
+}
+async function load(){try{const r=await fetch(`data.json?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error('data.json henüz oluşmadı');const d=await r.json();document.getElementById('updated').textContent='Son tarama: '+new Date(d.generatedAt).toLocaleString('tr-TR');const arr=d.results||[];document.getElementById('grid').innerHTML=arr.length?arr.map(card).join(''):'<div class="empty">Henüz tarama sonucu yok.</div>';}catch(e){document.getElementById('grid').innerHTML=`<div class="empty">İlk tarama bekleniyor: ${esc(e.message)}</div>`;}}
+load();setInterval(load,60000);
+</script></body></html>
