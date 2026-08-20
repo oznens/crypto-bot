@@ -1,0 +1,6 @@
+.markers{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;margin:10px 0 14px}
+.marker{min-height:54px;padding:7px 9px;background:#0b111a;border:1px solid var(--line);border-left:3px solid var(--accent,#526174);border-radius:8px}
+.marker b{display:block;font-size:10px;letter-spacing:.04em;color:var(--accent,#9aa8ba)}
+.marker span{display:block;font-size:12px;margin-top:2px}.marker.none{opacity:.48}
+.marker.bos{--accent:#fbbf24}.marker.sweep{--accent:#fb923c}.marker.fvg{--accent:#38bdf8}.marker.ob{--accent:#c084fc}.marker.msnr{--accent:#f472b6}.marker.range{--accent:#94a3b8}
+@media(max-width:480px){.markers{grid-template-columns:1fr 1fr}.marker{min-height:50px;padding:6px}}
