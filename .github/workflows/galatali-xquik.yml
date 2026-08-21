@@ -11,6 +11,7 @@ on:
       - ".github/workflows/galatali-xquik.yml"
       - "tools/galatali_xquik_fetch.py"
       - "tools/galatali_method_analyze.py"
+      - "tools/galatali_bist_scanner.py"
 
 permissions:
   contents: write
@@ -36,7 +37,7 @@ jobs:
         env:
           XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY }}
         run: |
-          mkdir -p data/galatali
+          mkdir -p data/galatali data/galatali_bist
           {
             echo "run_id=${GITHUB_RUN_ID}"
             echo "sha=${GITHUB_SHA}"
@@ -68,20 +69,41 @@ jobs:
         if: always()
         run: python tools/galatali_method_analyze.py
 
-      - name: Commit diagnostics archive and method summary
+      - name: Run Galatali BIST scanner
+        id: bist
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
+          rc=$?
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "sha=${GITHUB_SHA}"
+            echo "event=${GITHUB_EVENT_NAME}"
+            echo "exit_code=$rc"
+          } > data/galatali_bist/workflow_status.txt
+          exit $rc
+
+      - name: Commit archive methodology and BIST scan
         if: always()
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/galatali
+          git add -- data/galatali data/galatali_bist
           if git diff --cached --quiet; then
             echo "No Galatali changes to commit"
           else
-            git commit -m "Update Galatali X archive diagnostics"
+            git commit -m "Update Galatali archive and BIST scan"
             git push
           fi
 
       - name: Fail workflow if fetch failed
         if: steps.fetch.outcome == 'failure'
+        run: exit 1
+
+      - name: Fail workflow if BIST scan failed
+        if: steps.bist.outcome == 'failure'
         run: exit 1
