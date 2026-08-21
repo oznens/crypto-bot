@@ -5,13 +5,14 @@ from pathlib import Path
 
 SRC=Path('data/galatali/tweets.json')
 OUT=Path('data/galatali/method_summary.md')
+EX=Path('data/galatali/method_examples.md')
 rows=json.loads(SRC.read_text(encoding='utf-8'))
 texts=[str(x.get('text') or '') for x in rows]
 blob='\n'.join(texts).lower()
 
 patterns={
- 'gartley':['gartley','gartley'],
- 'bat_yarasa':['yarasa','bat'],
+ 'gartley':['gartley'],
+ 'bat_yarasa':['yarasa',' bat '],
  'crab_yengec':['yengeç','yengec','crab'],
  'butterfly_kelebek':['kelebek','butterfly'],
  'shark':['shark','köpekbalığı','kopekbaligi'],
@@ -50,6 +51,29 @@ lines += ['', '## Otomatik çıkarım','',
 '- Paylaşım dili güçlü biçimde formasyon-merkezli; hedefe ulaşma ve hedef sonrası düzeltme ayrı aşamalar olarak takip ediliyor.',
 '- Harmonik formasyon adlarının frekansı, yöntemin ana omurgasının harmonik/geometrik hedefleme olduğunu test etmek için kullanılacak.',
 '- Maliyet, uyarı, kâr realizasyonu ve stop ifadeleri işlem yönetimi katmanını anlamak için ayrıca incelenecek.',
-'- Grafik içi çizimler sonraki aşamada tweet metniyle eşleştirilerek giriş, PRZ/hedef ve geçersizlik mantığına ayrılacak.','']
+'- Grafik içi çizimler tweet metniyle eşleştirilerek giriş, PRZ/hedef ve geçersizlik mantığına ayrılacak.','']
 OUT.write_text('\n'.join(lines),encoding='utf-8')
+
+exlines=['# Galatalı Grafik/Metodoloji Örnekleri','']
+for name, needles in patterns.items():
+    if name in {'formasyon','formasyon_tamamlandi','hedefe_ulasti','uyari','destek','direnc','trend','kanal'}:
+        continue
+    matches=[]
+    for r in rows:
+        txt=str(r.get('text') or '')
+        low=txt.lower()
+        if any(n in low for n in needles) and r.get('media'):
+            matches.append(r)
+    if not matches:
+        continue
+    exlines += [f'## {name} ({len(matches)})','']
+    for r in matches[:12]:
+        text=' '.join(str(r.get('text') or '').split())[:280]
+        exlines.append(f"- {r.get('created_at') or ''} — {text}")
+        exlines.append(f"  - Tweet: {r.get('url') or ''}")
+        for m in (r.get('media') or [])[:4]:
+            exlines.append(f"  - Media: {m}")
+    exlines.append('')
+EX.write_text('\n'.join(exlines),encoding='utf-8')
 print(OUT)
+print(EX)
