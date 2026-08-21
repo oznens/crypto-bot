@@ -8,11 +8,13 @@ on:
     branches: [main]
     paths:
       - "tools/galatali_bist_scanner.py"
+      - "tools/galatali_prz_scanner.py"
       - ".github/workflows/galatali-bist-scanner.yml"
   pull_request:
     branches: [main]
     paths:
       - "tools/galatali_bist_scanner.py"
+      - "tools/galatali_prz_scanner.py"
       - ".github/workflows/galatali-bist-scanner.yml"
       - "tools/galatali_scan_trigger.txt"
 
@@ -45,7 +47,7 @@ jobs:
             echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } > data/galatali_bist/workflow_status.txt
 
-      - name: Run BIST scanner
+      - name: Run completed harmonic scanner
         id: scan
         continue-on-error: true
         shell: bash
@@ -53,13 +55,26 @@ jobs:
           set +e
           python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
           rc=$?
-          echo "exit_code=$rc" >> data/galatali_bist/workflow_status.txt
-          echo "--- scanner stdout ---"
+          echo "completed_exit_code=$rc" >> data/galatali_bist/workflow_status.txt
+          echo "--- completed scanner stdout ---"
           cat data/galatali_bist/stdout.txt || true
-          echo "--- scanner stderr ---"
-          cat data/galatali_bist/stderr.txt || true
-          echo "--- scan preview ---"
-          sed -n '1,260p' data/galatali_bist/scan.md 2>/dev/null || true
+          echo "--- completed scan preview ---"
+          sed -n '1,180p' data/galatali_bist/scan.md 2>/dev/null || true
+          exit $rc
+
+      - name: Run developing PRZ scanner
+        id: prz
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python tools/galatali_prz_scanner.py > data/galatali_bist/prz_stdout.txt 2> data/galatali_bist/prz_stderr.txt
+          rc=$?
+          echo "prz_exit_code=$rc" >> data/galatali_bist/workflow_status.txt
+          echo "--- PRZ scanner stdout ---"
+          cat data/galatali_bist/prz_stdout.txt || true
+          echo "--- PRZ scan preview ---"
+          sed -n '1,220p' data/galatali_bist/prz_scan.md 2>/dev/null || true
           exit $rc
 
       - name: Commit scanner results and diagnostics
@@ -77,5 +92,5 @@ jobs:
           fi
 
       - name: Fail if scanner failed
-        if: steps.scan.outcome == 'failure'
+        if: steps.scan.outcome == 'failure' || steps.prz.outcome == 'failure'
         run: exit 1
