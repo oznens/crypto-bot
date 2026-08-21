@@ -46,6 +46,8 @@ def leg(a,b):return abs(b[2]-a[2])
 def inr(v,r):return r[0]<=v<=r[1]
 def sma(rows,n):
     return sum(x['c'] for x in rows[-n:])/n if len(rows)>=n else rows[-1]['c']
+def pdate(rows,p):
+    return datetime.fromtimestamp(rows[p[0]]['t'],timezone.utc).date().isoformat()
 
 def confirmation(rows,direction,prz_lo,prz_hi,dist):
     last=rows[-1]; prev=rows[-2]
@@ -104,9 +106,10 @@ def analyze(symbol,tf,span):
             cpts,grade,reasons=confirmation(rows,direction,prz_lo,prz_hi,dist)
             score=min(99,base+cpts*2)
             out.append({'symbol':symbol,'timeframe':tf,'pattern':name,'direction':direction,'confidence':score,'grade':grade,'confirmation_score':cpts,'confirmations':reasons,
-              'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),'b_xa':round(bxa,3),'bc_ab':round(bcab,3),
-              'prz_low':round(prz_lo,4),'prz_high':round(prz_hi,4),'prz_mid':round(dmid,4),'last':round(last,4),'distance_to_prz_pct':round(dist,1),'status':status,
-              'c_date':datetime.fromtimestamp(rows[c[0]]['t'],timezone.utc).date().isoformat()})
+              'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),
+              'x_date':pdate(rows,x),'a_date':pdate(rows,a),'b_date':pdate(rows,b),'c_date':pdate(rows,c),
+              'b_xa':round(bxa,3),'bc_ab':round(bcab,3),
+              'prz_low':round(prz_lo,4),'prz_high':round(prz_hi,4),'prz_mid':round(dmid,4),'last':round(last,4),'distance_to_prz_pct':round(dist,1),'status':status})
     gr={'A+':4,'A':3,'B':2,'BEKLE':1}; st={'PRZ içinde':3,'PRZ yaklaşıyor':2,'PRZ sonrası/uzakta':1}
     out.sort(key=lambda z:(gr[z['grade']],st[z['status']],z['confidence'],-z['distance_to_prz_pct']),reverse=True)
     return out[:8],None
