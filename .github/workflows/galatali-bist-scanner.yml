@@ -45,6 +45,7 @@ jobs:
             echo "sha=${GITHUB_SHA}"
             echo "event=${GITHUB_EVENT_NAME}"
             echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "mode=full-bist-production"
           } > data/galatali_bist/workflow_status.txt
 
       - name: Run completed harmonic scanner
