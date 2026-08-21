@@ -9,14 +9,16 @@ on:
     paths:
       - "tools/galatali_bist_scanner.py"
       - "tools/galatali_prz_scanner.py"
+      - "tools/galatali_chart_export.py"
       - ".github/workflows/galatali-bist-scanner.yml"
   pull_request:
     branches: [main]
     paths:
       - "tools/galatali_bist_scanner.py"
       - "tools/galatali_prz_scanner.py"
+      - "tools/galatali_chart_export.py"
+      - "galatali-bist/index.html"
       - ".github/workflows/galatali-bist-scanner.yml"
-      - "tools/galatali_scan_trigger.txt"
 
 permissions:
   contents: write
@@ -35,63 +37,30 @@ jobs:
           python-version: "3.12"
       - name: Install TradingView datafeed
         run: python -m pip install --quiet tradingview-datafeed pandas
-
       - name: Prepare diagnostics
-        shell: bash
         run: |
           mkdir -p data/galatali_bist
-          {
-            echo "run_id=${GITHUB_RUN_ID}"
-            echo "sha=${GITHUB_SHA}"
-            echo "event=${GITHUB_EVENT_NAME}"
-            echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo "mode=full-bist-production"
-          } > data/galatali_bist/workflow_status.txt
-
+          echo "run_id=${GITHUB_RUN_ID}" > data/galatali_bist/workflow_status.txt
+          echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> data/galatali_bist/workflow_status.txt
       - name: Run completed harmonic scanner
         id: scan
         continue-on-error: true
-        shell: bash
-        run: |
-          set +e
-          python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
-          rc=$?
-          echo "completed_exit_code=$rc" >> data/galatali_bist/workflow_status.txt
-          echo "--- completed scanner stdout ---"
-          cat data/galatali_bist/stdout.txt || true
-          echo "--- completed scan preview ---"
-          sed -n '1,180p' data/galatali_bist/scan.md 2>/dev/null || true
-          exit $rc
-
+        run: python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
       - name: Run developing PRZ scanner
         id: prz
         continue-on-error: true
-        shell: bash
-        run: |
-          set +e
-          python tools/galatali_prz_scanner.py > data/galatali_bist/prz_stdout.txt 2> data/galatali_bist/prz_stderr.txt
-          rc=$?
-          echo "prz_exit_code=$rc" >> data/galatali_bist/workflow_status.txt
-          echo "--- PRZ scanner stdout ---"
-          cat data/galatali_bist/prz_stdout.txt || true
-          echo "--- PRZ scan preview ---"
-          sed -n '1,220p' data/galatali_bist/prz_scan.md 2>/dev/null || true
-          exit $rc
-
-      - name: Commit scanner results and diagnostics
+        run: python tools/galatali_prz_scanner.py > data/galatali_bist/prz_stdout.txt 2> data/galatali_bist/prz_stderr.txt
+      - name: Export chart candles
+        id: charts
+        continue-on-error: true
+        run: python tools/galatali_chart_export.py > data/galatali_bist/chart_stdout.txt 2> data/galatali_bist/chart_stderr.txt
+      - name: Commit scanner results
         if: always() && github.event_name != 'pull_request'
-        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/galatali_bist
-          if git diff --cached --quiet; then
-            echo "No scanner changes"
-          else
-            git commit -m "Update Galatali BIST scan diagnostics"
-            git push
-          fi
-
+          if ! git diff --cached --quiet; then git commit -m "Update Galatali BIST scan" && git push; fi
       - name: Fail if scanner failed
-        if: steps.scan.outcome == 'failure' || steps.prz.outcome == 'failure'
+        if: steps.scan.outcome == 'failure' || steps.prz.outcome == 'failure' || steps.charts.outcome == 'failure'
         run: exit 1
