@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-import json, time
+import json, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError, URLError
+from tvDatafeed import TvDatafeed, Interval
 
 TICKERS = [
     'AKBNK','ALARK','ARCLK','ASELS','ASTOR','BIMAS','DOAS','EKGYO','ENJSA','EREGL',
@@ -25,33 +24,29 @@ PATTERNS = {
     'Crab':      {'b':(0.34,0.66),'bc':(0.35,0.92),'cd':(2.10,3.80),'d':(1.50,1.72)},
 }
 
-UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
+_tls = threading.local()
+
+def _tv():
+    if not hasattr(_tls, 'client'):
+        _tls.client = TvDatafeed()
+    return _tls.client
 
 def fetch_chart(symbol, interval='1d', rng='2y'):
-    ysym = symbol + '.IS'
-    last_err = None
-    for host in ('query1.finance.yahoo.com','query2.finance.yahoo.com'):
-        url = f'https://{host}/v8/finance/chart/{ysym}?range={rng}&interval={interval}&includePrePost=false&events=div%2Csplits'
-        req = Request(url, headers={'User-Agent':UA,'Accept':'application/json','Accept-Language':'en-US,en;q=0.9'})
-        try:
-            with urlopen(req, timeout=5) as r:
-                obj = json.load(r)
-            res = obj['chart']['result'][0]
-            ts = res['timestamp']; q = res['indicators']['quote'][0]
-            rows=[]
-            for i,t in enumerate(ts):
-                try:
-                    o,h,l,c = q['open'][i],q['high'][i],q['low'][i],q['close'][i]
-                    if None in (o,h,l,c): continue
-                    rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
-                except Exception:
-                    continue
-            if rows: return rows, None
-        except HTTPError as e:
-            last_err = f'HTTP {e.code} {host}'
-        except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
-            last_err = f'{type(e).__name__}: {e}'
-    return [], last_err or 'no data'
+    try:
+        iv = Interval.in_daily if interval == '1d' else Interval.in_weekly
+        n_bars = 520 if interval == '1d' else 260
+        df = _tv().get_hist(symbol=symbol, exchange='BIST', interval=iv, n_bars=n_bars, extended_session=False)
+        if df is None or len(df) == 0:
+            return [], 'TradingView no data'
+        rows=[]
+        for idx,r in df.iterrows():
+            try:
+                rows.append({'t':int(idx.timestamp()),'o':float(r['open']),'h':float(r['high']),'l':float(r['low']),'c':float(r['close'])})
+            except Exception:
+                continue
+        return rows, None if rows else 'TradingView empty rows'
+    except Exception as e:
+        return [], f'TradingView {type(e).__name__}: {e}'
 
 
 def pivots(rows, span=4):
@@ -142,20 +137,19 @@ def scan_one(task):
 
 
 def main():
-    allf=[]; errors=[]
-    tasks=[]
+    allf=[]; errors=[]; tasks=[]
     for s in TICKERS:
         tasks += [(s,'1d','2y',4),(s,'1wk','5y',2)]
-    with ThreadPoolExecutor(max_workers=16) as ex:
+    with ThreadPoolExecutor(max_workers=4) as ex:
         futures=[ex.submit(scan_one,t) for t in tasks]
         for fut in as_completed(futures):
             f,err=fut.result(); allf += f
             if err: errors.append(err)
     rank={'aktif-takip':5,'doğru maliyet bekle':4,'hedefe yakın-kovalama':2,'tamamlandı-kâr koru':1,'geçersiz':0}
     allf.sort(key=lambda z:(rank.get(z['status'],0),z['confidence'],z['potential_to_t2_pct']),reverse=True)
-    payload={'generated_at':datetime.now(timezone.utc).isoformat(),'universe':len(TICKERS),'findings':allf,'errors':errors}
+    payload={'generated_at':datetime.now(timezone.utc).isoformat(),'source':'TradingView via tvDatafeed','universe':len(TICKERS),'findings':allf,'errors':errors}
     (OUT/'scan.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
-    lines=['# Galatalı Metodu — BIST Tarama','',f"Güncelleme: {payload['generated_at']}",f"Evren: {len(TICKERS)} hisse",f"Aday: {len(allf)}",f"Veri uyarısı: {len(errors)}",'',
+    lines=['# Galatalı Metodu — BIST Tarama','',f"Güncelleme: {payload['generated_at']}",'Veri: TradingView / BIST',f"Evren: {len(TICKERS)} hisse",f"Aday: {len(allf)}",f"Veri uyarısı: {len(errors)}",'',
            '> Harmonik oranlar aday üretmek için klasik literatürden gelir; Galatalı arşivinden kanıtlanan bölüm formasyon → doğru maliyet → hedef → hedef sonrası düzeltme yaşam döngüsüdür.','']
     for f in allf[:50]:
         lines += [f"## {f['symbol']} — {f['pattern']} / {f['timeframe']}",
@@ -168,7 +162,7 @@ def main():
     if errors:
         lines += ['## Veri uyarıları','']+[f"- {e['symbol']} {e['timeframe']}: {e['error']}" for e in errors[:40]]
     (OUT/'scan.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-    (OUT/'status.txt').write_text(f"scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)} generated_at={payload['generated_at']}\n",encoding='utf-8')
-    print(f"scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)}")
+    (OUT/'status.txt').write_text(f"source=tradingview scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)} generated_at={payload['generated_at']}\n",encoding='utf-8')
+    print(f"source=tradingview scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)}")
 
 if __name__=='__main__': main()
