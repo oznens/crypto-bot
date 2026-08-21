@@ -17,11 +17,13 @@ TICKERS = [
 OUT = Path('data/galatali_bist')
 OUT.mkdir(parents=True, exist_ok=True)
 
+# Classical harmonic ranges used only to generate candidates. The Galatali-specific
+# evidence is the lifecycle: formation -> right cost -> technical target -> correction.
 PATTERNS = {
-    'Gartley': {'b':(0.56,0.68),'d':(0.72,0.84)},
-    'Bat': {'b':(0.32,0.55),'d':(0.84,0.93)},
-    'Butterfly': {'b':(0.72,0.84),'d':(1.20,1.70)},
-    'Crab': {'b':(0.32,0.68),'d':(1.50,1.75)},
+    'Gartley':   {'b':(0.56,0.68),'bc':(0.35,0.92),'cd':(1.05,1.70),'d':(0.74,0.82)},
+    'Bat':       {'b':(0.34,0.54),'bc':(0.35,0.92),'cd':(1.50,2.75),'d':(0.84,0.92)},
+    'Butterfly': {'b':(0.74,0.83),'bc':(0.35,0.92),'cd':(1.50,2.35),'d':(1.20,1.68)},
+    'Crab':      {'b':(0.34,0.66),'bc':(0.35,0.92),'cd':(2.10,3.80),'d':(1.50,1.72)},
 }
 
 UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
@@ -47,11 +49,10 @@ def fetch_chart(symbol, interval='1d', rng='2y'):
                         rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
                     except Exception:
                         continue
-                if rows:
-                    return rows, None
+                if rows: return rows, None
             except HTTPError as e:
                 last_err = f'HTTP {e.code} {host}'
-                if e.code in (429, 502, 503): time.sleep(1.2*(attempt+1))
+                if e.code in (429,502,503): time.sleep(1.2*(attempt+1))
                 else: break
             except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
                 last_err = f'{type(e).__name__}: {e}'
@@ -74,60 +75,81 @@ def pivots(rows, span=4):
         if not cleaned or p[1]!=cleaned[-1][1]: cleaned.append(p)
         elif p[1]=='H' and p[2]>cleaned[-1][2]: cleaned[-1]=p
         elif p[1]=='L' and p[2]<cleaned[-1][2]: cleaned[-1]=p
-    return cleaned[-14:]
+    return cleaned[-16:]
 
 
 def leg(a,b): return abs(b[2]-a[2])
 
+def _err_to_mid(v, lo, hi):
+    mid=(lo+hi)/2
+    half=max((hi-lo)/2,1e-9)
+    return abs(v-mid)/half
+
 def score_pattern(x,a,b,c,d,name):
-    xa=leg(x,a)
-    if xa<=0: return None
-    bxa=leg(a,b)/xa
+    xa=leg(x,a); ab=leg(a,b); bc=leg(b,c); cd=leg(c,d)
+    if min(xa,ab,bc,cd)<=0: return None
+    bxa=ab/xa
+    bcab=bc/ab
+    cd_bc=cd/bc
     dxa=abs(d[2]-x[2])/xa
     cfg=PATTERNS[name]
-    if not (cfg['b'][0] <= bxa <= cfg['b'][1] and cfg['d'][0] <= dxa <= cfg['d'][1]): return None
-    midb=sum(cfg['b'])/2; midd=sum(cfg['d'])/2
-    eb=abs(bxa-midb)/((cfg['b'][1]-cfg['b'][0])/2)
-    ed=abs(dxa-midd)/((cfg['d'][1]-cfg['d'][0])/2)
-    score=max(0,100-round(20*eb+25*ed))
-    return score,bxa,dxa
+    vals={'b':bxa,'bc':bcab,'cd':cd_bc,'d':dxa}
+    for k,v in vals.items():
+        lo,hi=cfg[k]
+        if not (lo <= v <= hi): return None
+    # Weight D/XA and B/XA highest because they define the pattern family most strongly.
+    err=(0.30*_err_to_mid(bxa,*cfg['b'])+
+         0.15*_err_to_mid(bcab,*cfg['bc'])+
+         0.20*_err_to_mid(cd_bc,*cfg['cd'])+
+         0.35*_err_to_mid(dxa,*cfg['d']))
+    score=max(0, min(100, round(100-32*err)))
+    return score,bxa,bcab,cd_bc,dxa
 
 
 def analyze(symbol, interval, rng, span):
-    rows, ferr=fetch_chart(symbol,interval,rng)
+    rows,ferr=fetch_chart(symbol,interval,rng)
     if len(rows)<80: return [], ferr or f'insufficient rows={len(rows)}'
     pv=pivots(rows,span)
     if len(pv)<5: return [], f'insufficient pivots={len(pv)}'
     last=rows[-1]['c']; findings=[]
-    for start in range(max(0,len(pv)-10),len(pv)-4):
+    for start in range(max(0,len(pv)-12),len(pv)-4):
         pts=pv[start:start+5]
         if len(pts)<5 or any(pts[i][1]==pts[i+1][1] for i in range(4)): continue
         x,a,b,c,d=pts
         direction='pozitif' if d[1]=='L' else 'negatif'
+        # D must be a relatively recent pivot; ancient completed structures are not fresh setups.
+        bars_since_d=len(rows)-1-d[0]
+        max_age=70 if interval=='1d' else 18
+        if bars_since_d>max_age: continue
         for name in PATTERNS:
             sc=score_pattern(x,a,b,c,d,name)
             if not sc: continue
-            score,bxa,dxa=sc; dprice=d[2]; xa=abs(a[2]-x[2])
+            score,bxa,bcab,cd_bc,dxa=sc
+            dprice=d[2]; xa=abs(a[2]-x[2])
             if direction=='pozitif':
                 target1=dprice+0.382*xa; target2=dprice+0.618*xa; invalid=dprice-0.12*xa
                 progress=(last-dprice)/(target2-dprice) if target2!=dprice else 0
                 potential=(target2-last)/last*100
+                invalidated=last < invalid
             else:
                 target1=dprice-0.382*xa; target2=dprice-0.618*xa; invalid=dprice+0.12*xa
                 progress=(dprice-last)/(dprice-target2) if dprice!=target2 else 0
                 potential=(last-target2)/last*100
+                invalidated=last > invalid
             progress=max(-1.0,min(2.0,progress))
-            if progress>=1.0: status='tamamlandı-kâr koru'
+            if invalidated: status='geçersiz'
+            elif progress>=1.0: status='tamamlandı-kâr koru'
             elif progress>=0.70: status='hedefe yakın-kovalama'
             elif progress>=0.10: status='aktif-takip'
             else: status='doğru maliyet bekle'
             findings.append({
                 'symbol':symbol,'timeframe':interval,'pattern':name,'direction':direction,'confidence':score,
                 'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),'d':round(d[2],4),
-                'b_xa':round(bxa,3),'d_xa':round(dxa,3),'last':round(last,4),'invalid':round(invalid,4),
-                'target1':round(target1,4),'target2':round(target2,4),'progress_pct':round(progress*100,1),
-                'status':status,'potential_to_t2_pct':round(potential,1),
+                'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'cd_bc':round(cd_bc,3),'d_xa':round(dxa,3),
+                'last':round(last,4),'invalid':round(invalid,4),'target1':round(target1,4),'target2':round(target2,4),
+                'progress_pct':round(progress*100,1),'status':status,'potential_to_t2_pct':round(potential,1),
                 'd_date':datetime.fromtimestamp(rows[d[0]]['t'],timezone.utc).date().isoformat(),
+                'bars_since_d':bars_since_d,
             })
     findings.sort(key=lambda z:(z['confidence'],-abs(z['progress_pct']-35)),reverse=True)
     return findings[:4], None
@@ -143,7 +165,7 @@ def main():
             except Exception as e:
                 errors.append({'symbol':s,'timeframe':interval,'error':f'{type(e).__name__}: {e}'})
         time.sleep(0.08)
-    rank={'doğru maliyet bekle':3,'aktif-takip':4,'hedefe yakın-kovalama':1,'tamamlandı-kâr koru':0}
+    rank={'aktif-takip':5,'doğru maliyet bekle':4,'hedefe yakın-kovalama':2,'tamamlandı-kâr koru':1,'geçersiz':0}
     allf.sort(key=lambda z:(rank.get(z['status'],0),z['confidence'],z['potential_to_t2_pct']),reverse=True)
     payload={'generated_at':datetime.now(timezone.utc).isoformat(),'universe':len(TICKERS),'findings':allf,'errors':errors}
     (OUT/'scan.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
@@ -155,7 +177,8 @@ def main():
                   f"- Fiyat: {f['last']} | D/PRZ: {f['d']} | Invalidasyon: {f['invalid']}",
                   f"- Hedef 1: {f['target1']} | Hedef 2: {f['target2']} | H2 kalan: %{f['potential_to_t2_pct']}",
                   f"- X-A-B-C-D: {f['x']} / {f['a']} / {f['b']} / {f['c']} / {f['d']}",
-                  f"- B/XA: {f['b_xa']} | D/XA: {f['d_xa']} | Hedef ilerleme: %{f['progress_pct']}",'']
+                  f"- B/XA: {f['b_xa']} | BC/AB: {f['bc_ab']} | CD/BC: {f['cd_bc']} | D/XA: {f['d_xa']}",
+                  f"- Hedef ilerleme: %{f['progress_pct']} | D'den beri bar: {f['bars_since_d']}",'']
     if errors:
         lines += ['## Veri uyarıları','']+[f"- {e['symbol']} {e['timeframe']}: {e['error']}" for e in errors[:40]]
     (OUT/'scan.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
