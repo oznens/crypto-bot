@@ -1,0 +1,46 @@
+name: Galatali XQuik Archive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galatali-xquik
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch GalataliBorsaci tweets
+        env:
+          XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY }}
+          XQUIK_USERNAME: GalataliBorsaci
+          XQUIK_MAX_PAGES: "25"
+          XQUIK_LIMIT: "200"
+        run: python tools/galatali_xquik_fetch.py
+
+      - name: Commit archive updates
+        shell: bash
+        run: |
+          if git diff --quiet -- data/galatali; then
+            echo "No archive changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/galatali
+          git commit -m "Update Galatali X archive"
+          git push
