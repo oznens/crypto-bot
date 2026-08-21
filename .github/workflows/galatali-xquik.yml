@@ -33,7 +33,7 @@ jobs:
       - name: Prepare diagnostics
         shell: bash
         env:
-          XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY }}
+          XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY }}
         run: |
           mkdir -p data/galatali
           {
@@ -51,7 +51,7 @@ jobs:
         id: fetch
         continue-on-error: true
         env:
-          XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY }}
+          XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY }}
           XQUIK_USERNAME: GalataliBorsaci
           XQUIK_MAX_PAGES: "25"
           XQUIK_LIMIT: "200"
