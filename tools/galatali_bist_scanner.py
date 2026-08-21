@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, math, time
+import json, time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -24,32 +24,39 @@ PATTERNS = {
     'Crab': {'b':(0.32,0.68),'d':(1.50,1.75)},
 }
 
-UA='Mozilla/5.0 crypto-bot-galatali-bist/1.0'
+UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
 
 def fetch_chart(symbol, interval='1d', rng='2y'):
     ysym = symbol + '.IS'
-    url = f'https://query1.finance.yahoo.com/v8/finance/chart/{ysym}?range={rng}&interval={interval}&includePrePost=false&events=div%2Csplits'
-    req = Request(url, headers={'User-Agent':UA,'Accept':'application/json'})
-    try:
-        with urlopen(req, timeout=25) as r:
-            obj = json.load(r)
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
-        return []
-    try:
-        res = obj['chart']['result'][0]
-        ts = res['timestamp']
-        q = res['indicators']['quote'][0]
-    except Exception:
-        return []
-    rows=[]
-    for i,t in enumerate(ts):
-        try:
-            o,h,l,c = q['open'][i],q['high'][i],q['low'][i],q['close'][i]
-            if None in (o,h,l,c): continue
-            rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
-        except Exception:
-            continue
-    return rows
+    last_err = None
+    for host in ('query1.finance.yahoo.com','query2.finance.yahoo.com'):
+        url = f'https://{host}/v8/finance/chart/{ysym}?range={rng}&interval={interval}&includePrePost=false&events=div%2Csplits'
+        for attempt in range(3):
+            req = Request(url, headers={'User-Agent':UA,'Accept':'application/json','Accept-Language':'en-US,en;q=0.9'})
+            try:
+                with urlopen(req, timeout=25) as r:
+                    obj = json.load(r)
+                res = obj['chart']['result'][0]
+                ts = res['timestamp']
+                q = res['indicators']['quote'][0]
+                rows=[]
+                for i,t in enumerate(ts):
+                    try:
+                        o,h,l,c = q['open'][i],q['high'][i],q['low'][i],q['close'][i]
+                        if None in (o,h,l,c): continue
+                        rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
+                    except Exception:
+                        continue
+                if rows:
+                    return rows, None
+            except HTTPError as e:
+                last_err = f'HTTP {e.code} {host}'
+                if e.code in (429, 502, 503): time.sleep(1.2*(attempt+1))
+                else: break
+            except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
+                last_err = f'{type(e).__name__}: {e}'
+                time.sleep(0.7*(attempt+1))
+    return [], last_err or 'no data'
 
 
 def pivots(rows, span=4):
@@ -65,24 +72,20 @@ def pivots(rows, span=4):
     cleaned=[]
     for p in out:
         if not cleaned or p[1]!=cleaned[-1][1]: cleaned.append(p)
-        else:
-            if p[1]=='H' and p[2]>cleaned[-1][2]: cleaned[-1]=p
-            elif p[1]=='L' and p[2]<cleaned[-1][2]: cleaned[-1]=p
-    return cleaned[-12:]
+        elif p[1]=='H' and p[2]>cleaned[-1][2]: cleaned[-1]=p
+        elif p[1]=='L' and p[2]<cleaned[-1][2]: cleaned[-1]=p
+    return cleaned[-14:]
 
 
-def ratio(a,b):
-    return abs(b[2]-a[2])
-
+def leg(a,b): return abs(b[2]-a[2])
 
 def score_pattern(x,a,b,c,d,name):
-    xa=ratio(x,a)
+    xa=leg(x,a)
     if xa<=0: return None
-    bxa=ratio(a,b)/xa
+    bxa=leg(a,b)/xa
     dxa=abs(d[2]-x[2])/xa
     cfg=PATTERNS[name]
-    if not (cfg['b'][0] <= bxa <= cfg['b'][1] and cfg['d'][0] <= dxa <= cfg['d'][1]):
-        return None
+    if not (cfg['b'][0] <= bxa <= cfg['b'][1] and cfg['d'][0] <= dxa <= cfg['d'][1]): return None
     midb=sum(cfg['b'])/2; midd=sum(cfg['d'])/2
     eb=abs(bxa-midb)/((cfg['b'][1]-cfg['b'][0])/2)
     ed=abs(dxa-midd)/((cfg['d'][1]-cfg['d'][0])/2)
@@ -90,36 +93,29 @@ def score_pattern(x,a,b,c,d,name):
     return score,bxa,dxa
 
 
-def classify_direction(points):
-    x,a,b,c,d=points
-    return 'pozitif' if d[1]=='L' else 'negatif'
-
-
 def analyze(symbol, interval, rng, span):
-    rows=fetch_chart(symbol,interval,rng)
-    if len(rows)<80: return []
+    rows, ferr=fetch_chart(symbol,interval,rng)
+    if len(rows)<80: return [], ferr or f'insufficient rows={len(rows)}'
     pv=pivots(rows,span)
-    if len(pv)<5: return []
-    last=rows[-1]['c']
-    findings=[]
-    for start in range(max(0,len(pv)-8),len(pv)-4):
+    if len(pv)<5: return [], f'insufficient pivots={len(pv)}'
+    last=rows[-1]['c']; findings=[]
+    for start in range(max(0,len(pv)-10),len(pv)-4):
         pts=pv[start:start+5]
-        if len(pts)<5: continue
-        if any(pts[i][1]==pts[i+1][1] for i in range(4)): continue
+        if len(pts)<5 or any(pts[i][1]==pts[i+1][1] for i in range(4)): continue
         x,a,b,c,d=pts
-        direction=classify_direction(pts)
+        direction='pozitif' if d[1]=='L' else 'negatif'
         for name in PATTERNS:
             sc=score_pattern(x,a,b,c,d,name)
             if not sc: continue
-            score,bxa,dxa=sc
-            dprice=d[2]
-            xa=abs(a[2]-x[2])
+            score,bxa,dxa=sc; dprice=d[2]; xa=abs(a[2]-x[2])
             if direction=='pozitif':
                 target1=dprice+0.382*xa; target2=dprice+0.618*xa; invalid=dprice-0.12*xa
                 progress=(last-dprice)/(target2-dprice) if target2!=dprice else 0
+                potential=(target2-last)/last*100
             else:
                 target1=dprice-0.382*xa; target2=dprice-0.618*xa; invalid=dprice+0.12*xa
                 progress=(dprice-last)/(dprice-target2) if dprice!=target2 else 0
+                potential=(last-target2)/last*100
             progress=max(-1.0,min(2.0,progress))
             if progress>=1.0: status='tamamlandı-kâr koru'
             elif progress>=0.70: status='hedefe yakın-kovalama'
@@ -127,43 +123,43 @@ def analyze(symbol, interval, rng, span):
             else: status='doğru maliyet bekle'
             findings.append({
                 'symbol':symbol,'timeframe':interval,'pattern':name,'direction':direction,'confidence':score,
-                'x':x[2],'a':a[2],'b':b[2],'c':c[2],'d':d[2],
-                'b_xa':round(bxa,3),'d_xa':round(dxa,3),'last':round(last,4),
-                'invalid':round(invalid,4),'target1':round(target1,4),'target2':round(target2,4),
-                'progress_pct':round(progress*100,1),'status':status,
-                'potential_to_t2_pct':round(((target2-last)/last*100) if direction=='pozitif' else ((last-target2)/last*100),1),
+                'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),'d':round(d[2],4),
+                'b_xa':round(bxa,3),'d_xa':round(dxa,3),'last':round(last,4),'invalid':round(invalid,4),
+                'target1':round(target1,4),'target2':round(target2,4),'progress_pct':round(progress*100,1),
+                'status':status,'potential_to_t2_pct':round(potential,1),
                 'd_date':datetime.fromtimestamp(rows[d[0]]['t'],timezone.utc).date().isoformat(),
             })
-    findings.sort(key=lambda z:(z['confidence'], -abs(z['progress_pct']-35)), reverse=True)
-    return findings[:3]
+    findings.sort(key=lambda z:(z['confidence'],-abs(z['progress_pct']-35)),reverse=True)
+    return findings[:4], None
 
 
 def main():
     allf=[]; errors=[]
-    for i,s in enumerate(TICKERS,1):
-        try:
-            allf += analyze(s,'1d','2y',4)
-            allf += analyze(s,'1wk','5y',2)
-        except Exception as e:
-            errors.append({'symbol':s,'error':str(e)})
-        time.sleep(0.15)
-    # Galatali filter: prefer active / right-cost candidates, penalize exhausted targets.
+    for s in TICKERS:
+        for interval,rng,span in [('1d','2y',4),('1wk','5y',2)]:
+            try:
+                f,err=analyze(s,interval,rng,span); allf += f
+                if err: errors.append({'symbol':s,'timeframe':interval,'error':err})
+            except Exception as e:
+                errors.append({'symbol':s,'timeframe':interval,'error':f'{type(e).__name__}: {e}'})
+        time.sleep(0.08)
     rank={'doğru maliyet bekle':3,'aktif-takip':4,'hedefe yakın-kovalama':1,'tamamlandı-kâr koru':0}
-    allf.sort(key=lambda z:(rank.get(z['status'],0),z['confidence'],z['potential_to_t2_pct']), reverse=True)
+    allf.sort(key=lambda z:(rank.get(z['status'],0),z['confidence'],z['potential_to_t2_pct']),reverse=True)
     payload={'generated_at':datetime.now(timezone.utc).isoformat(),'universe':len(TICKERS),'findings':allf,'errors':errors}
     (OUT/'scan.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
-    lines=['# Galatalı Metodu — BIST Tarama','',f"Güncelleme: {payload['generated_at']}",f"Evren: {len(TICKERS)} hisse",f"Aday: {len(allf)}",'',
-           '> Not: Harmonik Fibonacci oranları klasik literatürden aday üretmek için kullanılır; Galatalı arşivinden kanıtlanan kısım formasyon-hedef-maliyet-hedef sonrası düzeltme yaşam döngüsüdür.','']
-    for f in allf[:40]:
+    lines=['# Galatalı Metodu — BIST Tarama','',f"Güncelleme: {payload['generated_at']}",f"Evren: {len(TICKERS)} hisse",f"Aday: {len(allf)}",f"Veri uyarısı: {len(errors)}",'',
+           '> Harmonik oranlar aday üretmek için klasik literatürden gelir; Galatalı arşivinden kanıtlanan bölüm formasyon → doğru maliyet → hedef → hedef sonrası düzeltme yaşam döngüsüdür.','']
+    for f in allf[:50]:
         lines += [f"## {f['symbol']} — {f['pattern']} / {f['timeframe']}",
                   f"- Yön: {f['direction']} | Güven: {f['confidence']}/100 | Durum: **{f['status']}**",
-                  f"- Fiyat: {f['last']} | D/PRZ: {round(f['d'],4)} | Invalidasyon: {f['invalid']}",
-                  f"- Hedef 1: {f['target1']} | Hedef 2: {f['target2']} | H2 kalan potansiyel: %{f['potential_to_t2_pct']}",
-                  f"- X-A-B-C-D: {round(f['x'],4)} / {round(f['a'],4)} / {round(f['b'],4)} / {round(f['c'],4)} / {round(f['d'],4)}",
+                  f"- Fiyat: {f['last']} | D/PRZ: {f['d']} | Invalidasyon: {f['invalid']}",
+                  f"- Hedef 1: {f['target1']} | Hedef 2: {f['target2']} | H2 kalan: %{f['potential_to_t2_pct']}",
+                  f"- X-A-B-C-D: {f['x']} / {f['a']} / {f['b']} / {f['c']} / {f['d']}",
                   f"- B/XA: {f['b_xa']} | D/XA: {f['d_xa']} | Hedef ilerleme: %{f['progress_pct']}",'']
     if errors:
-        lines += ['## Veri hataları','']+[f"- {e['symbol']}: {e['error']}" for e in errors[:20]]
+        lines += ['## Veri uyarıları','']+[f"- {e['symbol']} {e['timeframe']}: {e['error']}" for e in errors[:40]]
     (OUT/'scan.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+    (OUT/'status.txt').write_text(f"scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)} generated_at={payload['generated_at']}\n",encoding='utf-8')
     print(f"scanned={len(TICKERS)} findings={len(allf)} errors={len(errors)}")
 
 if __name__=='__main__': main()
