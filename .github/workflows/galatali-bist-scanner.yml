@@ -42,6 +42,7 @@ jobs:
           mkdir -p data/galatali_bist
           echo "run_id=${GITHUB_RUN_ID}" > data/galatali_bist/workflow_status.txt
           echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> data/galatali_bist/workflow_status.txt
+          echo "mode=full-bist-with-galatali-charts" >> data/galatali_bist/workflow_status.txt
       - name: Run completed harmonic scanner
         id: scan
         continue-on-error: true
