@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/galatali-xquik.yml"
+      - "tools/galatali_xquik_fetch.py"
 
 permissions:
   contents: write
