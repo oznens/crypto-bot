@@ -9,12 +9,18 @@ on:
     paths:
       - "tools/galatali_bist_scanner.py"
       - ".github/workflows/galatali-bist-scanner.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/galatali_bist_scanner.py"
+      - ".github/workflows/galatali-bist-scanner.yml"
+      - "tools/galatali_scan_trigger.txt"
 
 permissions:
   contents: write
 
 concurrency:
-  group: galatali-bist-scanner
+  group: galatali-bist-scanner-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -46,10 +52,16 @@ jobs:
           python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
           rc=$?
           echo "exit_code=$rc" >> data/galatali_bist/workflow_status.txt
+          echo "--- scanner stdout ---"
+          cat data/galatali_bist/stdout.txt || true
+          echo "--- scanner stderr ---"
+          cat data/galatali_bist/stderr.txt || true
+          echo "--- scan preview ---"
+          sed -n '1,220p' data/galatali_bist/scan.md 2>/dev/null || true
           exit $rc
 
       - name: Commit scanner results and diagnostics
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
