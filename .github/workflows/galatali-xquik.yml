@@ -30,23 +30,53 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Prepare diagnostics
+        shell: bash
+        env:
+          XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY }}
+        run: |
+          mkdir -p data/galatali
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "sha=${GITHUB_SHA}"
+            echo "event=${GITHUB_EVENT_NAME}"
+            if [ -n "$XQUIK_API_KEY" ]; then
+              echo "secret_present=yes"
+            else
+              echo "secret_present=no"
+            fi
+          } > data/galatali/workflow_status.txt
+
       - name: Fetch GalataliBorsaci tweets
+        id: fetch
+        continue-on-error: true
         env:
           XQUIK_API_KEY: ${{ secrets.XQUIK_API_KEY }}
           XQUIK_USERNAME: GalataliBorsaci
           XQUIK_MAX_PAGES: "25"
           XQUIK_LIMIT: "200"
-        run: python tools/galatali_xquik_fetch.py
-
-      - name: Commit archive updates
         shell: bash
         run: |
-          if git diff --quiet -- data/galatali; then
-            echo "No archive changes"
-            exit 0
-          fi
+          set +e
+          python tools/galatali_xquik_fetch.py > data/galatali/fetch_stdout.txt 2> data/galatali/fetch_stderr.txt
+          rc=$?
+          echo "exit_code=$rc" >> data/galatali/workflow_status.txt
+          exit $rc
+
+      - name: Commit diagnostics and archive
+        if: always()
+        shell: bash
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/galatali
-          git commit -m "Update Galatali X archive"
-          git push
+          if git diff --cached --quiet; then
+            echo "No Galatali changes to commit"
+          else
+            git commit -m "Update Galatali X archive diagnostics"
+            git push
+          fi
+
+      - name: Fail workflow if fetch failed
+        if: steps.fetch.outcome == 'failure'
+        run: exit 1
