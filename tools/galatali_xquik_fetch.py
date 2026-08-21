@@ -12,7 +12,7 @@ BASE_URL = os.getenv("XQUIK_BASE_URL", "https://xquik.com/api/v1").rstrip("/")
 API_KEY = os.getenv("XQUIK_API_KEY", "").strip()
 USERNAME = os.getenv("XQUIK_USERNAME", "GalataliBorsaci").lstrip("@")
 MAX_PAGES = int(os.getenv("XQUIK_MAX_PAGES", "25"))
-LIMIT = min(int(os.getenv("XQUIK_LIMIT", "200")), 200)
+LIMIT = min(int(os.getenv("XQUIK_LIMIT", "200")), 10000)
 OUT_DIR = Path(os.getenv("XQUIK_OUT_DIR", "data/galatali"))
 
 
@@ -28,9 +28,8 @@ def get_json(params):
         url,
         headers={
             "x-api-key": API_KEY,
-            "xquik-api-contract": "2026-04-29",
             "accept": "application/json",
-            "user-agent": "crypto-bot-galatali-collector/1.1",
+            "user-agent": "crypto-bot-galatali-collector/1.2",
         },
     )
     try:
@@ -47,26 +46,14 @@ def get_json(params):
 
 
 def as_list(payload):
-    for key in ("tweets", "data", "items", "results"):
-        value = payload.get(key)
-        if isinstance(value, list):
-            return value
-        if isinstance(value, dict):
-            for sub in ("tweets", "items", "results"):
-                if isinstance(value.get(sub), list):
-                    return value[sub]
-    return []
+    tweets = payload.get("tweets") if isinstance(payload, dict) else None
+    return tweets if isinstance(tweets, list) else []
 
 
 def next_cursor(payload):
-    for key in ("next_cursor", "nextCursor"):
-        value = payload.get(key)
-        if value:
-            return value
-    data = payload.get("data")
-    if isinstance(data, dict):
-        return data.get("next_cursor") or data.get("nextCursor")
-    return None
+    if not isinstance(payload, dict):
+        return None
+    return payload.get("next_cursor") or payload.get("nextCursor")
 
 
 def tweet_id(t):
@@ -91,7 +78,7 @@ def media_urls(t):
                 if isinstance(item, str):
                     out.append(item)
                 elif isinstance(item, dict):
-                    for k in ("url", "media_url_https", "media_url", "preview_image_url"):
+                    for k in ("mediaUrl", "url", "media_url_https", "media_url", "preview_image_url"):
                         if item.get(k):
                             out.append(item[k])
                             break
@@ -101,7 +88,7 @@ def media_urls(t):
 def normalize(t):
     tid = tweet_id(t)
     text = t.get("text") or t.get("full_text") or t.get("fullText") or ""
-    created = t.get("created_at") or t.get("createdAt") or t.get("timestamp")
+    created = t.get("createdAt") or t.get("created_at") or t.get("timestamp")
     url = t.get("url") or (f"https://x.com/{USERNAME}/status/{tid}" if tid else None)
     return {
         "id": tid,
@@ -126,11 +113,9 @@ def main():
 
     try:
         while page < MAX_PAGES:
-            params = {"q": query}
+            params = {"q": query, "queryType": "Latest", "limit": LIMIT}
             if cursor:
                 params["cursor"] = cursor
-            else:
-                params["limit"] = LIMIT
             payload = get_json(params)
             tweets = as_list(payload)
             print(f"page={page + 1} tweets={len(tweets)}")
@@ -140,10 +125,14 @@ def main():
                 item = normalize(raw)
                 if item["id"]:
                     collected[item["id"]] = item
-            cursor = next_cursor(payload)
+            next_cur = next_cursor(payload)
+            has_next = bool(payload.get("has_next_page")) if isinstance(payload, dict) else False
             page += 1
-            if not cursor or not tweets:
+            if not has_next or not next_cur or not tweets:
                 break
+            if next_cur == cursor:
+                raise RuntimeError("XQuik pagination cursor repeated")
+            cursor = next_cur
             time.sleep(0.4)
     except Exception as e:
         write_error(str(e))
