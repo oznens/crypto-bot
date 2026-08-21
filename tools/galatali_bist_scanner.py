@@ -32,44 +32,37 @@ def fetch_chart(symbol, interval='1d', rng='2y'):
     last_err = None
     for host in ('query1.finance.yahoo.com','query2.finance.yahoo.com'):
         url = f'https://{host}/v8/finance/chart/{ysym}?range={rng}&interval={interval}&includePrePost=false&events=div%2Csplits'
-        for attempt in range(2):
-            req = Request(url, headers={'User-Agent':UA,'Accept':'application/json','Accept-Language':'en-US,en;q=0.9'})
-            try:
-                with urlopen(req, timeout=15) as r:
-                    obj = json.load(r)
-                res = obj['chart']['result'][0]
-                ts = res['timestamp']
-                q = res['indicators']['quote'][0]
-                rows=[]
-                for i,t in enumerate(ts):
-                    try:
-                        o,h,l,c = q['open'][i],q['high'][i],q['low'][i],q['close'][i]
-                        if None in (o,h,l,c): continue
-                        rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
-                    except Exception:
-                        continue
-                if rows: return rows, None
-            except HTTPError as e:
-                last_err = f'HTTP {e.code} {host}'
-                if e.code in (429,502,503): time.sleep(0.8*(attempt+1))
-                else: break
-            except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
-                last_err = f'{type(e).__name__}: {e}'
-                time.sleep(0.4*(attempt+1))
+        req = Request(url, headers={'User-Agent':UA,'Accept':'application/json','Accept-Language':'en-US,en;q=0.9'})
+        try:
+            with urlopen(req, timeout=5) as r:
+                obj = json.load(r)
+            res = obj['chart']['result'][0]
+            ts = res['timestamp']; q = res['indicators']['quote'][0]
+            rows=[]
+            for i,t in enumerate(ts):
+                try:
+                    o,h,l,c = q['open'][i],q['high'][i],q['low'][i],q['close'][i]
+                    if None in (o,h,l,c): continue
+                    rows.append({'t':t,'o':float(o),'h':float(h),'l':float(l),'c':float(c)})
+                except Exception:
+                    continue
+            if rows: return rows, None
+        except HTTPError as e:
+            last_err = f'HTTP {e.code} {host}'
+        except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
+            last_err = f'{type(e).__name__}: {e}'
     return [], last_err or 'no data'
 
 
 def pivots(rows, span=4):
-    out=[]
-    n=len(rows)
+    out=[]; n=len(rows)
     for i in range(span,n-span):
         hi=rows[i]['h']; lo=rows[i]['l']
         hs=[rows[j]['h'] for j in range(i-span,i+span+1)]
         ls=[rows[j]['l'] for j in range(i-span,i+span+1)]
         if hi==max(hs): out.append((i,'H',hi))
         if lo==min(ls): out.append((i,'L',lo))
-    out.sort()
-    cleaned=[]
+    out.sort(); cleaned=[]
     for p in out:
         if not cleaned or p[1]!=cleaned[-1][1]: cleaned.append(p)
         elif p[1]=='H' and p[2]>cleaned[-1][2]: cleaned[-1]=p
@@ -78,10 +71,8 @@ def pivots(rows, span=4):
 
 
 def leg(a,b): return abs(b[2]-a[2])
-
 def _err_to_mid(v, lo, hi):
-    mid=(lo+hi)/2
-    half=max((hi-lo)/2,1e-9)
+    mid=(lo+hi)/2; half=max((hi-lo)/2,1e-9)
     return abs(v-mid)/half
 
 def score_pattern(x,a,b,c,d,name):
@@ -93,10 +84,8 @@ def score_pattern(x,a,b,c,d,name):
     for k,v in vals.items():
         lo,hi=cfg[k]
         if not (lo <= v <= hi): return None
-    err=(0.30*_err_to_mid(bxa,*cfg['b'])+
-         0.15*_err_to_mid(bcab,*cfg['bc'])+
-         0.20*_err_to_mid(cd_bc,*cfg['cd'])+
-         0.35*_err_to_mid(dxa,*cfg['d']))
+    err=(0.30*_err_to_mid(bxa,*cfg['b'])+0.15*_err_to_mid(bcab,*cfg['bc'])+
+         0.20*_err_to_mid(cd_bc,*cfg['cd'])+0.35*_err_to_mid(dxa,*cfg['d']))
     score=max(0, min(100, round(100-32*err)))
     return score,bxa,bcab,cd_bc,dxa
 
@@ -110,26 +99,21 @@ def analyze(symbol, interval, rng, span):
     for start in range(max(0,len(pv)-12),len(pv)-4):
         pts=pv[start:start+5]
         if len(pts)<5 or any(pts[i][1]==pts[i+1][1] for i in range(4)): continue
-        x,a,b,c,d=pts
-        direction='pozitif' if d[1]=='L' else 'negatif'
-        bars_since_d=len(rows)-1-d[0]
-        max_age=70 if interval=='1d' else 18
+        x,a,b,c,d=pts; direction='pozitif' if d[1]=='L' else 'negatif'
+        bars_since_d=len(rows)-1-d[0]; max_age=70 if interval=='1d' else 18
         if bars_since_d>max_age: continue
         for name in PATTERNS:
             sc=score_pattern(x,a,b,c,d,name)
             if not sc: continue
-            score,bxa,bcab,cd_bc,dxa=sc
-            dprice=d[2]; xa=abs(a[2]-x[2])
+            score,bxa,bcab,cd_bc,dxa=sc; dprice=d[2]; xa=abs(a[2]-x[2])
             if direction=='pozitif':
                 target1=dprice+0.382*xa; target2=dprice+0.618*xa; invalid=dprice-0.12*xa
                 progress=(last-dprice)/(target2-dprice) if target2!=dprice else 0
-                potential=(target2-last)/last*100
-                invalidated=last < invalid
+                potential=(target2-last)/last*100; invalidated=last < invalid
             else:
                 target1=dprice-0.382*xa; target2=dprice-0.618*xa; invalid=dprice+0.12*xa
                 progress=(dprice-last)/(dprice-target2) if dprice!=target2 else 0
-                potential=(last-target2)/last*100
-                invalidated=last > invalid
+                potential=(last-target2)/last*100; invalidated=last > invalid
             progress=max(-1.0,min(2.0,progress))
             if invalidated: status='geçersiz'
             elif progress>=1.0: status='tamamlandı-kâr koru'
@@ -142,8 +126,7 @@ def analyze(symbol, interval, rng, span):
                 'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'cd_bc':round(cd_bc,3),'d_xa':round(dxa,3),
                 'last':round(last,4),'invalid':round(invalid,4),'target1':round(target1,4),'target2':round(target2,4),
                 'progress_pct':round(progress*100,1),'status':status,'potential_to_t2_pct':round(potential,1),
-                'd_date':datetime.fromtimestamp(rows[d[0]]['t'],timezone.utc).date().isoformat(),
-                'bars_since_d':bars_since_d,
+                'd_date':datetime.fromtimestamp(rows[d[0]]['t'],timezone.utc).date().isoformat(),'bars_since_d':bars_since_d,
             })
     findings.sort(key=lambda z:(z['confidence'],-abs(z['progress_pct']-35)),reverse=True)
     return findings[:4], None
@@ -162,9 +145,8 @@ def main():
     allf=[]; errors=[]
     tasks=[]
     for s in TICKERS:
-        tasks.append((s,'1d','2y',4))
-        tasks.append((s,'1wk','5y',2))
-    with ThreadPoolExecutor(max_workers=8) as ex:
+        tasks += [(s,'1d','2y',4),(s,'1wk','5y',2)]
+    with ThreadPoolExecutor(max_workers=16) as ex:
         futures=[ex.submit(scan_one,t) for t in tasks]
         for fut in as_completed(futures):
             f,err=fut.result(); allf += f
