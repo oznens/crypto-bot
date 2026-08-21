@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install TradingView datafeed
+        run: python -m pip install --quiet tradingview-datafeed pandas
 
       - name: Prepare diagnostics
         shell: bash
@@ -57,7 +59,7 @@ jobs:
           echo "--- scanner stderr ---"
           cat data/galatali_bist/stderr.txt || true
           echo "--- scan preview ---"
-          sed -n '1,220p' data/galatali_bist/scan.md 2>/dev/null || true
+          sed -n '1,260p' data/galatali_bist/scan.md 2>/dev/null || true
           exit $rc
 
       - name: Commit scanner results and diagnostics
