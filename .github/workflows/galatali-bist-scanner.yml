@@ -25,9 +25,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Prepare diagnostics
+        shell: bash
+        run: |
+          mkdir -p data/galatali_bist
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "sha=${GITHUB_SHA}"
+            echo "event=${GITHUB_EVENT_NAME}"
+            echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > data/galatali_bist/workflow_status.txt
+
       - name: Run BIST scanner
-        run: python tools/galatali_bist_scanner.py
-      - name: Commit scanner results
+        id: scan
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python tools/galatali_bist_scanner.py > data/galatali_bist/stdout.txt 2> data/galatali_bist/stderr.txt
+          rc=$?
+          echo "exit_code=$rc" >> data/galatali_bist/workflow_status.txt
+          exit $rc
+
+      - name: Commit scanner results and diagnostics
+        if: always()
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -36,6 +58,10 @@ jobs:
           if git diff --cached --quiet; then
             echo "No scanner changes"
           else
-            git commit -m "Update Galatali BIST scan"
+            git commit -m "Update Galatali BIST scan diagnostics"
             git push
           fi
+
+      - name: Fail if scanner failed
+        if: steps.scan.outcome == 'failure'
+        run: exit 1
