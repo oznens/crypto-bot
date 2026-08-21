@@ -71,18 +71,18 @@ def _err_to_mid(v, lo, hi):
     return abs(v-mid)/half
 
 def score_pattern(x,a,b,c,d,name):
-    xa=leg(x,a); ab=leg(a,b); bc=leg(b,c); cd=leg(c,d)
-    if min(xa,ab,bc,cd)<=0: return None
-    bxa=ab/xa; bcab=bc/ab; cd_bc=cd/bc; dxa=abs(d[2]-x[2])/xa
+    xa=leg(x,a); ab=leg(a,b); bc=leg(b,c); cd=leg(c,d); ad=leg(a,d)
+    if min(xa,ab,bc,cd,ad)<=0: return None
+    bxa=ab/xa; bcab=bc/ab; cd_bc=cd/bc; d_ad_xa=ad/xa
     cfg=PATTERNS[name]
-    vals={'b':bxa,'bc':bcab,'cd':cd_bc,'d':dxa}
+    vals={'b':bxa,'bc':bcab,'cd':cd_bc,'d':d_ad_xa}
     for k,v in vals.items():
         lo,hi=cfg[k]
         if not (lo <= v <= hi): return None
     err=(0.30*_err_to_mid(bxa,*cfg['b'])+0.15*_err_to_mid(bcab,*cfg['bc'])+
-         0.20*_err_to_mid(cd_bc,*cfg['cd'])+0.35*_err_to_mid(dxa,*cfg['d']))
+         0.20*_err_to_mid(cd_bc,*cfg['cd'])+0.35*_err_to_mid(d_ad_xa,*cfg['d']))
     score=max(0, min(100, round(100-32*err)))
-    return score,bxa,bcab,cd_bc,dxa
+    return score,bxa,bcab,cd_bc,d_ad_xa
 
 
 def analyze(symbol, interval, rng, span):
@@ -100,13 +100,14 @@ def analyze(symbol, interval, rng, span):
         for name in PATTERNS:
             sc=score_pattern(x,a,b,c,d,name)
             if not sc: continue
-            score,bxa,bcab,cd_bc,dxa=sc; dprice=d[2]; xa=abs(a[2]-x[2])
+            score,bxa,bcab,cd_bc,d_ad_xa=sc
+            dprice=d[2]; ad=abs(a[2]-d[2])
             if direction=='pozitif':
-                target1=dprice+0.382*xa; target2=dprice+0.618*xa; invalid=dprice-0.12*xa
+                target1=dprice+0.382*ad; target2=dprice+0.618*ad; invalid=dprice-0.10*ad
                 progress=(last-dprice)/(target2-dprice) if target2!=dprice else 0
                 potential=(target2-last)/last*100; invalidated=last < invalid
             else:
-                target1=dprice-0.382*xa; target2=dprice-0.618*xa; invalid=dprice+0.12*xa
+                target1=dprice-0.382*ad; target2=dprice-0.618*ad; invalid=dprice+0.10*ad
                 progress=(dprice-last)/(dprice-target2) if dprice!=target2 else 0
                 potential=(last-target2)/last*100; invalidated=last > invalid
             progress=max(-1.0,min(2.0,progress))
@@ -118,7 +119,7 @@ def analyze(symbol, interval, rng, span):
             findings.append({
                 'symbol':symbol,'timeframe':interval,'pattern':name,'direction':direction,'confidence':score,
                 'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),'d':round(d[2],4),
-                'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'cd_bc':round(cd_bc,3),'d_xa':round(dxa,3),
+                'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'cd_bc':round(cd_bc,3),'ad_xa':round(d_ad_xa,3),
                 'last':round(last,4),'invalid':round(invalid,4),'target1':round(target1,4),'target2':round(target2,4),
                 'progress_pct':round(progress*100,1),'status':status,'potential_to_t2_pct':round(potential,1),
                 'd_date':datetime.fromtimestamp(rows[d[0]]['t'],timezone.utc).date().isoformat(),'bars_since_d':bars_since_d,
@@ -155,9 +156,9 @@ def main():
         lines += [f"## {f['symbol']} — {f['pattern']} / {f['timeframe']}",
                   f"- Yön: {f['direction']} | Güven: {f['confidence']}/100 | Durum: **{f['status']}**",
                   f"- Fiyat: {f['last']} | D/PRZ: {f['d']} | Invalidasyon: {f['invalid']}",
-                  f"- Hedef 1: {f['target1']} | Hedef 2: {f['target2']} | H2 kalan: %{f['potential_to_t2_pct']}",
+                  f"- Hedef 1: {f['target1']} | Hedef 2: {f['target2']} | H2 kalan: %{{f['potential_to_t2_pct']}}",
                   f"- X-A-B-C-D: {f['x']} / {f['a']} / {f['b']} / {f['c']} / {f['d']}",
-                  f"- B/XA: {f['b_xa']} | BC/AB: {f['bc_ab']} | CD/BC: {f['cd_bc']} | D/XA: {f['d_xa']}",
+                  f"- B/XA: {f['b_xa']} | BC/AB: {f['bc_ab']} | CD/BC: {f['cd_bc']} | AD/XA: {f['ad_xa']}",
                   f"- Hedef ilerleme: %{f['progress_pct']} | D'den beri bar: {f['bars_since_d']}",'']
     if errors:
         lines += ['## Veri uyarıları','']+[f"- {e['symbol']} {e['timeframe']}: {e['error']}" for e in errors[:40]]
