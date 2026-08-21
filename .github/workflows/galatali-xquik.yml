@@ -10,6 +10,7 @@ on:
     paths:
       - ".github/workflows/galatali-xquik.yml"
       - "tools/galatali_xquik_fetch.py"
+      - "tools/galatali_method_analyze.py"
 
 permissions:
   contents: write
@@ -53,7 +54,7 @@ jobs:
         env:
           XQUIK_API_KEY: ${{ secrets.X_QUIK_API_KEY }}
           XQUIK_USERNAME: GalataliBorsaci
-          XQUIK_MAX_PAGES: "25"
+          XQUIK_MAX_PAGES: "100"
           XQUIK_LIMIT: "200"
         shell: bash
         run: |
@@ -63,7 +64,11 @@ jobs:
           echo "exit_code=$rc" >> data/galatali/workflow_status.txt
           exit $rc
 
-      - name: Commit diagnostics and archive
+      - name: Analyze methodology
+        if: always()
+        run: python tools/galatali_method_analyze.py
+
+      - name: Commit diagnostics archive and method summary
         if: always()
         shell: bash
         run: |
