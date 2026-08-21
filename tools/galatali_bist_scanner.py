@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json, time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -17,8 +18,6 @@ TICKERS = [
 OUT = Path('data/galatali_bist')
 OUT.mkdir(parents=True, exist_ok=True)
 
-# Classical harmonic ranges used only to generate candidates. The Galatali-specific
-# evidence is the lifecycle: formation -> right cost -> technical target -> correction.
 PATTERNS = {
     'Gartley':   {'b':(0.56,0.68),'bc':(0.35,0.92),'cd':(1.05,1.70),'d':(0.74,0.82)},
     'Bat':       {'b':(0.34,0.54),'bc':(0.35,0.92),'cd':(1.50,2.75),'d':(0.84,0.92)},
@@ -33,10 +32,10 @@ def fetch_chart(symbol, interval='1d', rng='2y'):
     last_err = None
     for host in ('query1.finance.yahoo.com','query2.finance.yahoo.com'):
         url = f'https://{host}/v8/finance/chart/{ysym}?range={rng}&interval={interval}&includePrePost=false&events=div%2Csplits'
-        for attempt in range(3):
+        for attempt in range(2):
             req = Request(url, headers={'User-Agent':UA,'Accept':'application/json','Accept-Language':'en-US,en;q=0.9'})
             try:
-                with urlopen(req, timeout=25) as r:
+                with urlopen(req, timeout=15) as r:
                     obj = json.load(r)
                 res = obj['chart']['result'][0]
                 ts = res['timestamp']
@@ -52,11 +51,11 @@ def fetch_chart(symbol, interval='1d', rng='2y'):
                 if rows: return rows, None
             except HTTPError as e:
                 last_err = f'HTTP {e.code} {host}'
-                if e.code in (429,502,503): time.sleep(1.2*(attempt+1))
+                if e.code in (429,502,503): time.sleep(0.8*(attempt+1))
                 else: break
             except (URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
                 last_err = f'{type(e).__name__}: {e}'
-                time.sleep(0.7*(attempt+1))
+                time.sleep(0.4*(attempt+1))
     return [], last_err or 'no data'
 
 
@@ -88,16 +87,12 @@ def _err_to_mid(v, lo, hi):
 def score_pattern(x,a,b,c,d,name):
     xa=leg(x,a); ab=leg(a,b); bc=leg(b,c); cd=leg(c,d)
     if min(xa,ab,bc,cd)<=0: return None
-    bxa=ab/xa
-    bcab=bc/ab
-    cd_bc=cd/bc
-    dxa=abs(d[2]-x[2])/xa
+    bxa=ab/xa; bcab=bc/ab; cd_bc=cd/bc; dxa=abs(d[2]-x[2])/xa
     cfg=PATTERNS[name]
     vals={'b':bxa,'bc':bcab,'cd':cd_bc,'d':dxa}
     for k,v in vals.items():
         lo,hi=cfg[k]
         if not (lo <= v <= hi): return None
-    # Weight D/XA and B/XA highest because they define the pattern family most strongly.
     err=(0.30*_err_to_mid(bxa,*cfg['b'])+
          0.15*_err_to_mid(bcab,*cfg['bc'])+
          0.20*_err_to_mid(cd_bc,*cfg['cd'])+
@@ -117,7 +112,6 @@ def analyze(symbol, interval, rng, span):
         if len(pts)<5 or any(pts[i][1]==pts[i+1][1] for i in range(4)): continue
         x,a,b,c,d=pts
         direction='pozitif' if d[1]=='L' else 'negatif'
-        # D must be a relatively recent pivot; ancient completed structures are not fresh setups.
         bars_since_d=len(rows)-1-d[0]
         max_age=70 if interval=='1d' else 18
         if bars_since_d>max_age: continue
@@ -155,16 +149,26 @@ def analyze(symbol, interval, rng, span):
     return findings[:4], None
 
 
+def scan_one(task):
+    s,interval,rng,span=task
+    try:
+        f,err=analyze(s,interval,rng,span)
+        return f, ({'symbol':s,'timeframe':interval,'error':err} if err else None)
+    except Exception as e:
+        return [], {'symbol':s,'timeframe':interval,'error':f'{type(e).__name__}: {e}'}
+
+
 def main():
     allf=[]; errors=[]
+    tasks=[]
     for s in TICKERS:
-        for interval,rng,span in [('1d','2y',4),('1wk','5y',2)]:
-            try:
-                f,err=analyze(s,interval,rng,span); allf += f
-                if err: errors.append({'symbol':s,'timeframe':interval,'error':err})
-            except Exception as e:
-                errors.append({'symbol':s,'timeframe':interval,'error':f'{type(e).__name__}: {e}'})
-        time.sleep(0.08)
+        tasks.append((s,'1d','2y',4))
+        tasks.append((s,'1wk','5y',2))
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        futures=[ex.submit(scan_one,t) for t in tasks]
+        for fut in as_completed(futures):
+            f,err=fut.result(); allf += f
+            if err: errors.append(err)
     rank={'aktif-takip':5,'doğru maliyet bekle':4,'hedefe yakın-kovalama':2,'tamamlandı-kâr koru':1,'geçersiz':0}
     allf.sort(key=lambda z:(rank.get(z['status'],0),z['confidence'],z['potential_to_t2_pct']),reverse=True)
     payload={'generated_at':datetime.now(timezone.utc).isoformat(),'universe':len(TICKERS),'findings':allf,'errors':errors}
