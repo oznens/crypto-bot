@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -11,7 +12,7 @@ BASE_URL = os.getenv("XQUIK_BASE_URL", "https://xquik.com/api/v1").rstrip("/")
 API_KEY = os.getenv("XQUIK_API_KEY", "").strip()
 USERNAME = os.getenv("XQUIK_USERNAME", "GalataliBorsaci").lstrip("@")
 MAX_PAGES = int(os.getenv("XQUIK_MAX_PAGES", "25"))
-LIMIT = min(int(os.getenv("XQUIK_LIMIT", "200")), 200)
+LIMIT = min(max(int(os.getenv("XQUIK_LIMIT", "200")), 1), 200)
 OUT_DIR = Path(os.getenv("XQUIK_OUT_DIR", "data/galatali"))
 
 
@@ -28,11 +29,17 @@ def get_json(params):
             "x-api-key": API_KEY,
             "xquik-api-contract": "2026-04-29",
             "accept": "application/json",
-            "user-agent": "crypto-bot-galatali-collector/1.0",
+            "user-agent": "crypto-bot-galatali-collector/1.1",
         },
     )
-    with urlopen(req, timeout=60) as resp:
-        return json.load(resp)
+    try:
+        with urlopen(req, timeout=60) as resp:
+            return json.load(resp)
+    except HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        fail(f"XQuik HTTP {e.code}: {body}")
+    except URLError as e:
+        fail(f"XQuik network error: {e.reason}")
 
 
 def as_list(payload):
@@ -113,9 +120,13 @@ def main():
     page = 0
 
     while page < MAX_PAGES:
-        params = {"q": query, "limit": LIMIT}
+        # XQuik docs specify that bounded `limit` should be omitted when
+        # requesting subsequent pages with an opaque cursor.
         if cursor:
-            params["cursor"] = cursor
+            params = {"q": query, "cursor": cursor}
+        else:
+            params = {"q": query, "limit": LIMIT, "queryType": "Latest"}
+
         payload = get_json(params)
         tweets = as_list(payload)
         print(f"page={page + 1} tweets={len(tweets)}")
@@ -125,6 +136,7 @@ def main():
             item = normalize(raw)
             if item["id"]:
                 collected[item["id"]] = item
+
         cursor = next_cursor(payload)
         page += 1
         if not cursor or not tweets:
