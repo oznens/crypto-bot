@@ -13,14 +13,14 @@
 - maliyet: 24
 - direnc: 24
 - negatif_formasyon: 18
-- bat_yarasa: 16
 - crab_yengec: 9
 - kar_realizasyonu: 9
 - kanal: 7
 - stop: 5
 - trend: 5
-- gartley: 2
+- bat_yarasa: 3
 - butterfly_kelebek: 2
+- gartley: 1
 - shark: 1
 - ab=cd: 1
 - harmonik: 1
@@ -65,4 +65,4 @@
 - Paylaşım dili güçlü biçimde formasyon-merkezli; hedefe ulaşma ve hedef sonrası düzeltme ayrı aşamalar olarak takip ediliyor.
 - Harmonik formasyon adlarının frekansı, yöntemin ana omurgasının harmonik/geometrik hedefleme olduğunu test etmek için kullanılacak.
 - Maliyet, uyarı, kâr realizasyonu ve stop ifadeleri işlem yönetimi katmanını anlamak için ayrıca incelenecek.
-- Grafik içi çizimler sonraki aşamada tweet metniyle eşleştirilerek giriş, PRZ/hedef ve geçersizlik mantığına ayrılacak.
+- Grafik içi çizimler tweet metniyle eşleştirilerek giriş, PRZ/hedef ve geçersizlik mantığına ayrılacak.
