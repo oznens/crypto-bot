@@ -46,6 +46,21 @@ def leg(a,b):return abs(b[2]-a[2])
 def inr(v,r):return r[0]<=v<=r[1]
 def sma(rows,n): return sum(x['c'] for x in rows[-n:])/n if len(rows)>=n else rows[-1]['c']
 def pdate(rows,p): return datetime.fromtimestamp(rows[p[0]]['t'],timezone.utc).date().isoformat()
+def idate(rows,i): return datetime.fromtimestamp(rows[i]['t'],timezone.utc).date().isoformat()
+
+def find_d_touch(rows,c_idx,direction,prz_lo,prz_hi,dmid):
+    """Return the real post-C candle that actually reaches the PRZ.
+    If PRZ has not been touched yet, D stays projected and no fake pivot is emitted.
+    """
+    touches=[]
+    for i in range(c_idx+1,len(rows)):
+        r=rows[i]
+        if r['l']<=prz_hi and r['h']>=prz_lo:
+            actual=r['l'] if direction=='pozitif' else r['h']
+            touches.append((abs(actual-dmid),i,actual))
+    if not touches:return None
+    _,i,actual=min(touches,key=lambda z:(z[0],z[1]))
+    return {'index':i,'date':idate(rows,i),'price':actual}
 
 def confirmation(rows,direction,prz_lo,prz_hi,dist):
     last=rows[-1]; prev=rows[-2]; rng=max(last['h']-last['l'],1e-9)
@@ -90,10 +105,18 @@ def analyze(symbol,tf,span):
             if dist>18:continue
             direction='pozitif' if bullish else 'negatif'; approaching=last>=prz_hi if direction=='pozitif' else last<=prz_lo
             status='PRZ içinde' if dist==0 else ('PRZ yaklaşıyor' if approaching else 'PRZ sonrası/uzakta')
+            d_touch=find_d_touch(rows,c[0],direction,prz_lo,prz_hi,dmid)
             base=70+max(0,10-int(dist*1.5))+(5 if approaching else 0); cpts,grade,reasons=confirmation(rows,direction,prz_lo,prz_hi,dist); score=min(99,base+cpts*2)
-            out.append({'symbol':symbol,'timeframe':tf,'pattern':name,'direction':direction,'confidence':score,'grade':grade,'confirmation_score':cpts,'confirmations':reasons,
-              'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),'x_date':pdate(rows,x),'a_date':pdate(rows,a),'b_date':pdate(rows,b),'c_date':pdate(rows,c),
-              'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'prz_low':round(prz_lo,4),'prz_high':round(prz_hi,4),'prz_mid':round(dmid,4),'last':round(last,4),'distance_to_prz_pct':round(dist,1),'status':status})
+            item={'symbol':symbol,'timeframe':tf,'pattern':name,'direction':direction,'confidence':score,'grade':grade,'confirmation_score':cpts,'confirmations':reasons,
+              'x':round(x[2],4),'a':round(a[2],4),'b':round(b[2],4),'c':round(c[2],4),
+              'x_date':pdate(rows,x),'a_date':pdate(rows,a),'b_date':pdate(rows,b),'c_date':pdate(rows,c),
+              'x_index':x[0],'a_index':a[0],'b_index':b[0],'c_index':c[0],
+              'b_xa':round(bxa,3),'bc_ab':round(bcab,3),'prz_low':round(prz_lo,4),'prz_high':round(prz_hi,4),'prz_mid':round(dmid,4),'last':round(last,4),'distance_to_prz_pct':round(dist,1),'status':status}
+            if d_touch:
+                item.update({'d':round(d_touch['price'],4),'d_date':d_touch['date'],'d_index':d_touch['index'],'d_confirmed':True})
+            else:
+                item.update({'d':round(dmid,4),'d_date':None,'d_index':None,'d_confirmed':False})
+            out.append(item)
     gr={'A+':4,'A':3,'B':2,'BEKLE':1}; st={'PRZ içinde':3,'PRZ yaklaşıyor':2,'PRZ sonrası/uzakta':1}; out.sort(key=lambda z:(gr[z['grade']],st[z['status']],z['confidence'],-z['distance_to_prz_pct']),reverse=True)
     return out[:8],None
 
@@ -112,6 +135,6 @@ def main():
     payload={'generated_at':datetime.now(timezone.utc).isoformat(),'source':'TradingView via tvDatafeed','universe_source':universe_source,'universe':len(tickers),'findings':fs,'errors':errs}
     (OUT/'prz_scan.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8'); (OUT/'universe.json').write_text(json.dumps({'source':universe_source,'count':len(tickers),'symbols':tickers},ensure_ascii=False,indent=2),encoding='utf-8')
     lines=['# Galatalı — Tüm BIST Oluşmakta Olan PRZ Adayları','',f"Güncelleme: {payload['generated_at']}",f"Evren: {len(tickers)} hisse ({universe_source})",f"Aday: {len(fs)} | A/A+: {sum(1 for x in fs if x['grade'] in ('A','A+'))}",'']
-    for f in fs[:80]: lines += [f"## {f['symbol']} — {f['pattern']} / {f['timeframe']} — {f['grade']}",f"- Yön: {f['direction']} | Güven: {f['confidence']}/100 | Durum: **{f['status']}**",f"- Fiyat: {f['last']} | PRZ: {f['prz_low']}–{f['prz_high']} | Uzaklık: %{f['distance_to_prz_pct']}",f"- Teyit {f['confirmation_score']}/6: {', '.join(f['confirmations']) or 'henüz yok'}",f"- X-A-B-C: {f['x']} / {f['a']} / {f['b']} / {f['c']} | B/XA {f['b_xa']} | BC/AB {f['bc_ab']}",'']
+    for f in fs[:80]: lines += [f"## {f['symbol']} — {f['pattern']} / {f['timeframe']} — {f['grade']}",f"- Yön: {f['direction']} | Güven: {f['confidence']}/100 | Durum: **{f['status']}**",f"- Fiyat: {f['last']} | PRZ: {f['prz_low']}–{f['prz_high']} | Uzaklık: %{f['distance_to_prz_pct']}",f"- Teyit {f['confirmation_score']}/6: {', '.join(f['confirmations']) or 'henüz yok'}",f"- X-A-B-C-D: {f['x']} / {f['a']} / {f['b']} / {f['c']} / {f['d']} | D gerçek: {f['d_confirmed']} | B/XA {f['b_xa']} | BC/AB {f['bc_ab']}",'']
     (OUT/'prz_scan.md').write_text('\n'.join(lines)+'\n',encoding='utf-8'); print(f"universe={len(tickers)} source={universe_source} prz_findings={len(fs)} A={sum(1 for x in fs if x['grade'] in ('A','A+'))} errors={len(errs)}")
 if __name__=='__main__':main()
