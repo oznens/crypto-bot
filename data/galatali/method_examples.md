@@ -83,7 +83,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## negatif_formasyon (16)
+## negatif_formasyon (17)
 
 - Sat Jul 11 04:20:40 +0000 2026 — #PASEU Negatif formasyon🔻 %➖4️⃣4️⃣🔻 marj ile tamamlandı . ✍️ R&amp;İ Yorumlar grafiklerin içinde 👇👇 #bist #bist100 #borsa #yatırım #endeks #strateji #altın #btc #coin #emtia #euro #dolar #usd #sdttr #miatk #alark #kozal #magen #aefes #mgros #bimas #ardyz #fener #sokm #doas #karsn
   - Tweet: https://x.com/GalataliBorsaci/status/2075797395355427120
@@ -118,6 +118,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1982811280520929737
   - Media: https://pbs.twimg.com/media/G4RcV0jXsAALRwQ.jpg
   - Media: https://pbs.twimg.com/media/G4RcV0kW0AAa46N.jpg
+- Sat Oct 04 07:08:15 +0000 2025 — #USAK %➖5️⃣0️⃣,7️⃣9️⃣🔻 marj ile Negatif formasyon hedefe ulaştı ✅ ✍️R&İ #ytd . . . #bist100 #borsa #endeks #yatırım #strateji #para #usd #döviz #altın #trump #xu100 #emtia #YKBNK #ZOREN #THYAO #VESTL #AKBNK #MGROS #SMART #SMRTG #SASA #GUBRF #ASELS #SISE #EREGL #THYAO #CANTE #KOZA
+  - Tweet: https://x.com/GalataliBorsaci/status/1974370968484123050
+  - Media: https://pbs.twimg.com/media/G2Zfn9PWcAADpK3.jpg
+  - Media: https://pbs.twimg.com/media/G2Zfn9OXQAA2533.jpg
 - Sun Jul 06 11:57:38 +0000 2025 — #TUREX teknik olarak çizilen negatif formasyon ile güneşin çocukları zamanında uyarıldı . Ve….sonuç ! 2 ayda🔻%➖7️⃣5️⃣🔻düşüş. İlk grafik yorumunda gizli her şey… Hepsi göz göre göre geldi ..Önce/Sonra 👇👇 Zor zamanlar, gerçek karakteri ortaya çıkarır. Tıpkı yatırımda olduğu gibi… B
   - Tweet: https://x.com/GalataliBorsaci/status/1941828884791545978
   - Media: https://pbs.twimg.com/media/GvLDE6HXcAAIf55.jpg
@@ -130,10 +134,6 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1921127922355548221
   - Media: https://pbs.twimg.com/media/Gqk3qU8XkAEEn3S.jpg
   - Media: https://pbs.twimg.com/media/Gqk3qU4WQAAGrym.jpg
-- Thu May 08 07:38:28 +0000 2025 — #GRTHO #ytd 🔻 %➖3️⃣0️⃣🔻✍️ Negatif formasyon hedefe ulaştı . Formasyon başarılı bir şekilde sonuçlandı ✅ #XU100 #bist100 #endeks https://t.co/q4Cf6HbB0w
-  - Tweet: https://x.com/GalataliBorsaci/status/1920382780216574459
-  - Media: https://pbs.twimg.com/media/GqaR9LyWUAAWxuW.jpg
-  - Media: https://pbs.twimg.com/media/GqaR9L1W8AAWWNF.jpg
 
 ## harmonik (1)
 
@@ -142,7 +142,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (89)
+## hedef_duzeltmesi (99)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
@@ -197,7 +197,7 @@
   - Tweet: https://x.com/GalataliBorsaci/status/2061086909401600238
   - Media: https://pbs.twimg.com/media/HJpznojW0AIoEB9.jpg
 
-## maliyet (22)
+## maliyet (24)
 
 - Tue Jul 07 20:17:53 +0000 2026 — #BRMEN 🔻 %-1️⃣4️⃣ 🔻 Doğru Nokta Maliyet ✅✍️ ♻️ %2️⃣4️⃣5️⃣ ♻️ Kar marjı ile formasyon tamamlandı ✅✍️ 🔻%➖1️⃣9️⃣🔻Hedef düzeltmesi ✍️ R&İ Piyasalarda kar realizasyonu ne kadar önemliyse, doğru alım noktasını bilmek de en az o kadar kritiktir. 🎯 Doğru seviyeden pozisyon açmak,belki be
   - Tweet: https://x.com/GalataliBorsaci/status/2074588734859665750
@@ -235,6 +235,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1980404380265226455
   - Media: https://pbs.twimg.com/media/G3vPSUmXYAAy_K7.jpg
   - Media: https://pbs.twimg.com/media/G3vPSUlW4AAutD7.jpg
+- Fri Oct 17 07:01:48 +0000 2025 — #CGCAM #ytd 🍀%-1️⃣8️⃣🍀 🔻 doğru maliyet noktası , ♻️🔆%8️⃣6️⃣ 🔆 ♻️kar marjı , 🔻 %-2️⃣8️⃣🔻 hedef düzeltmesi Geldiğin yerin bulutunu yanında taşırsan, gittiğin yerin Güneşini göremezsin. ✍️ R&amp;İCARUS #bist100 #xu100 #endeks #borsa #ALTIN #XAUUSD #gold https://t.co/oN4MQ2Cuil
+  - Tweet: https://x.com/GalataliBorsaci/status/1979080389193773548
+  - Media: https://pbs.twimg.com/media/G3cbHpmXUAAVNlL.jpg
+  - Media: https://pbs.twimg.com/media/G3cbHphX0AEJkCT.jpg
 - Wed Sep 24 12:32:12 +0000 2025 — #ECILC #ytd 🔻 %-2️⃣5️⃣ 🔻 Doğru Nokta Maliyet ✅✍️ ♻️ %1️⃣0️⃣0️⃣ ♻️ Kar marjı ile formasyon süreci tamamlandı 🦾✍️ R&İ Piyasalarda kar realizasyonu ne kadar önemliyse, doğru alım noktasını bilmek de en az o kadar kritiktir. 🎯 Doğru seviyeden pozisyon açmak, yatırımcıyı hem riskten k
   - Tweet: https://x.com/GalataliBorsaci/status/1970828612417867960
   - Media: https://pbs.twimg.com/media/G1nKKxGXUAEZl1c.jpg
@@ -245,10 +249,6 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1966423680734404689
   - Media: https://pbs.twimg.com/media/G0oj6DXXUAAWuZ-.jpg
   - Media: https://pbs.twimg.com/media/G0oj6DYWkAAZWye.jpg
-- Sun Sep 07 12:26:55 +0000 2025 — #MSGYO %-24 🔻 ikili dip onay ,maliyet seviyesi #varan2 ↗️%81 ♻️ marj ile formasyon sona erdi. 4 ayda %81 👌 #bist100 #endeks #hisse #borsa https://t.co/1ViP6vVFNM
-  - Tweet: https://x.com/GalataliBorsaci/status/1964666690970767599
-  - Media: https://pbs.twimg.com/media/G0Pl8OvWcAEhIlE.jpg
-  - Media: https://pbs.twimg.com/media/G0Pl8OvXgAEznDG.jpg
 
 ## kar_realizasyonu (9)
 
@@ -291,7 +291,7 @@
   - Media: https://pbs.twimg.com/media/Gxv3qC9X0AAI7du.jpg
   - Media: https://pbs.twimg.com/media/Gxv3qDBXMAAaLbt.jpg
 
-## stop (5)
+## stop (6)
 
 - Fri Jun 05 10:45:40 +0000 2026 — #SEKUR %1️⃣4️⃣1️⃣♻️kar marjı ile yeni bir formasyon daha tamamlandı. ✍️ 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek lazım bu hayatta ..✍️R&İ Çinli filozof, eğitimci ve yazar Konfüçyüs’ ün dediği gibi .. "Bir kelime kararını, Bir 
   - Tweet: https://x.com/GalataliBorsaci/status/2062848322977550782
@@ -306,6 +306,10 @@
   - Media: https://pbs.twimg.com/media/G6iyHZqWoAA73oD.jpg
   - Media: https://pbs.twimg.com/media/G6iyHZsXUAAK2tZ.jpg
   - Media: https://pbs.twimg.com/media/G6iyHZpWwAAIgSZ.jpg
+- Mon Nov 17 05:16:19 +0000 2025 — #CCOLA #ytd %2️⃣3️⃣,5️⃣0️⃣♻️kar marjı ile formasyon tamamlandı. ✍️ 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek lazım bu hayatta ..✍️R&İ Çinli filozof, eğitimci ve yazar Konfüçyüs’ ün dediği gibi .. "Bir kelime kararını, Bir duygu
+  - Tweet: https://x.com/GalataliBorsaci/status/1990287864928645441
+  - Media: https://pbs.twimg.com/media/G57sQ3oXcAA-Yr5.jpg
+  - Media: https://pbs.twimg.com/media/G57sQ3kW4AAaP1-.jpg
 - Wed Nov 12 22:02:09 +0000 2025 — #BRMEN #ytd %1️⃣4️⃣1️⃣♻️kar marjı 🎯Hedef sonrası %-2️⃣9️⃣🔻 düşüş 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek istiyorsan 👇 sayfayı çevir 📄👉 @GalataliBorsaci Önce/Sonra 👇👇👇👇 #XU100 #XU030 #bist #Endeks #SASA #GESAN #KONTR #ASELS #E
   - Tweet: https://x.com/GalataliBorsaci/status/1988729053541536042
   - Media: https://pbs.twimg.com/media/G5liiDYWQAEZzui.jpg
