@@ -1,25 +1,25 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 691
+İncelenen benzersiz tweet: 1130
 
 ## Terim frekansları
 
-- formasyon: 302
-- hedef_duzeltmesi: 101
-- formasyon_tamamlandi: 76
-- hedefe_ulasti: 34
-- destek: 29
-- uyari: 27
-- maliyet: 26
-- direnc: 25
-- negatif_formasyon: 19
-- crab_yengec: 9
+- formasyon: 392
+- hedef_duzeltmesi: 150
+- formasyon_tamamlandi: 84
+- destek: 64
+- direnc: 53
+- hedefe_ulasti: 36
+- uyari: 30
+- maliyet: 27
+- negatif_formasyon: 24
+- crab_yengec: 12
+- stop: 11
+- kanal: 11
+- trend: 10
+- bat_yarasa: 9
 - kar_realizasyonu: 9
-- kanal: 8
-- stop: 6
-- trend: 5
-- bat_yarasa: 3
-- butterfly_kelebek: 2
+- butterfly_kelebek: 3
 - gartley: 1
 - shark: 1
 - ab=cd: 1
@@ -29,36 +29,36 @@
 
 ## En sık geçen semboller
 
-- THYAO: 249
-- KONTR: 204
-- PGSUS: 201
-- SASA: 191
-- ASELS: 188
-- EREGL: 186
-- SISE: 181
-- PETKM: 174
-- GESAN: 165
-- ISCTR: 163
-- TOASO: 162
-- GUBRF: 162
-- FROTO: 160
-- KCHOL: 153
-- SAHOL: 152
-- GARAN: 151
-- XAUUSD: 147
-- TUPRS: 127
-- JANTS: 123
-- AKBNK: 108
-- USDTRY: 101
-- KOZAL: 91
-- KRDMD: 90
-- YKBNK: 86
-- SMRTG: 82
-- ZOREN: 71
-- SMART: 71
-- KOZAA: 69
-- VESTL: 68
-- MGROS: 67
+- THYAO: 382
+- SASA: 354
+- KONTR: 327
+- GESAN: 326
+- ASELS: 322
+- SISE: 294
+- PGSUS: 292
+- EREGL: 289
+- ISCTR: 282
+- PETKM: 266
+- GARAN: 250
+- FROTO: 247
+- GUBRF: 238
+- TOASO: 236
+- KCHOL: 228
+- TUPRS: 227
+- SAHOL: 223
+- XAUUSD: 198
+- KRDMD: 180
+- JANTS: 170
+- AKBNK: 147
+- SMRTG: 137
+- USDTRY: 123
+- YKBNK: 119
+- KOZAL: 110
+- ZOREN: 99
+- SMART: 99
+- EKGYO: 84
+- KOZAA: 84
+- VESTL: 74
 
 ## Otomatik çıkarım
 
