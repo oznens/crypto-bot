@@ -1,25 +1,25 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1130
+İncelenen benzersiz tweet: 1394
 
 ## Terim frekansları
 
-- formasyon: 392
-- hedef_duzeltmesi: 150
+- formasyon: 433
+- hedef_duzeltmesi: 161
+- destek: 89
 - formasyon_tamamlandi: 84
-- destek: 64
-- direnc: 53
+- direnc: 68
+- stop: 40
 - hedefe_ulasti: 36
-- uyari: 30
-- maliyet: 27
-- negatif_formasyon: 24
-- crab_yengec: 12
-- stop: 11
-- kanal: 11
-- trend: 10
-- bat_yarasa: 9
+- maliyet: 33
+- negatif_formasyon: 32
+- uyari: 31
+- crab_yengec: 13
+- trend: 13
+- kanal: 13
+- bat_yarasa: 10
 - kar_realizasyonu: 9
-- butterfly_kelebek: 3
+- butterfly_kelebek: 4
 - gartley: 1
 - shark: 1
 - ab=cd: 1
@@ -29,36 +29,36 @@
 
 ## En sık geçen semboller
 
-- THYAO: 382
-- SASA: 354
-- KONTR: 327
-- GESAN: 326
-- ASELS: 322
-- SISE: 294
-- PGSUS: 292
-- EREGL: 289
-- ISCTR: 282
-- PETKM: 266
-- GARAN: 250
-- FROTO: 247
-- GUBRF: 238
-- TOASO: 236
-- KCHOL: 228
-- TUPRS: 227
-- SAHOL: 223
-- XAUUSD: 198
-- KRDMD: 180
-- JANTS: 170
-- AKBNK: 147
-- SMRTG: 137
-- USDTRY: 123
-- YKBNK: 119
-- KOZAL: 110
-- ZOREN: 99
-- SMART: 99
-- EKGYO: 84
-- KOZAA: 84
-- VESTL: 74
+- THYAO: 464
+- SASA: 425
+- ASELS: 394
+- GESAN: 392
+- KONTR: 371
+- SISE: 370
+- EREGL: 363
+- PETKM: 329
+- ISCTR: 318
+- PGSUS: 309
+- TUPRS: 292
+- GUBRF: 278
+- GARAN: 277
+- FROTO: 275
+- TOASO: 271
+- KCHOL: 251
+- XAUUSD: 246
+- SAHOL: 245
+- KRDMD: 209
+- SMRTG: 181
+- JANTS: 180
+- AKBNK: 174
+- USDTRY: 146
+- EKGYO: 132
+- YKBNK: 129
+- KOZAL: 129
+- HEKTS: 117
+- ZOREN: 111
+- SMART: 111
+- KOZAA: 91
 
 ## Otomatik çıkarım
 
