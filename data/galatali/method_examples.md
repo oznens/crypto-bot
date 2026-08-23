@@ -7,7 +7,7 @@
   - Media: https://pbs.twimg.com/media/G_LEhnlWEAAaVnD.jpg
   - Media: https://pbs.twimg.com/media/G_LEhnjWUAAijAX.jpg
 
-## bat_yarasa (10)
+## bat_yarasa (11)
 
 - Mon Aug 10 08:44:56 +0000 2026 — #TKFEN | FORMASYONUN GÜCÜNÜ GRAFİK ANLATIR… 📌 Şubat 2025 → Ağustos 2026 Yaklaşık 18 aylık sabır, disiplin ve formasyon takibi… TKFEN’de 2025 Şubat ayında başlayan Yarasa 🦇 formasyonunda, D bölgesinin tamamlanmasıyla birlikte grafik beklediğimiz yönde çalışmaya başladı. 🌱 D noktas
   - Tweet: https://x.com/GalataliBorsaci/status/2086735535641415770
@@ -20,6 +20,10 @@
 - Thu Jul 03 04:22:55 +0000 2025 — #XU100 endeks %15 ♻️ marj ile yarasa 🦇 boğa hedefe ulaştı. ✍️RİCARUS #endeks #borsa #YKBNK #ZOREN #THYAO #VESTL #AKBNK #MGROS #SMART #SMRTG #SASA #GUBRF #ASELS #SISE #EREGL #THYAO #CANTE #KOZAL #KOZAA #PETKM #SAHOL #PGSUS #KCHOL #JANTS #GESAN #KONTR #GARAN #ISCTR #FROTO #TOASO #P
   - Tweet: https://x.com/GalataliBorsaci/status/1940627288371998861
   - Media: https://pbs.twimg.com/media/Gu5-OzWWAAAw-aM.jpg
+- Mon Aug 05 10:38:02 +0000 2024 — #SP500 🇺🇸 #ytd #Amerikan borsa endeksi %5️⃣6️⃣ ♻️kar marjı İLE yarasa 🦇 takibi başarılı bir şekilde tamamlandı ✅🎯 ✍️ ⛔️%-7️⃣,3️⃣5️⃣ ⛔️ hedef düzeltmesi ,, Savaş yine it dalaşı olarak kalacak , kazanan yine panik yapmayanlar olacak .. Teknik tekniktir en fazla ayı tuzağı kurarsını
+  - Tweet: https://x.com/GalataliBorsaci/status/1820408919421841761
+  - Media: https://pbs.twimg.com/media/GUNkPfNXQAA5YxW.jpg
+  - Media: https://pbs.twimg.com/media/GUNkPfBWoAAJyZO.jpg
 - Sat Jul 06 07:07:20 +0000 2024 — #SP500 🇺🇸 #ytd #Amerikan borsa endeksi %5️⃣6️⃣ ♻️kar marjı İLE yarasa 🦇 takibi başarılı bir şekilde tamamlandı ✅🎯 ✍️ Ragnar ICARUS #SP500 #DAX #DJI #NASDAQ #IXIC #DXY #XAUUSD #Gold #endeks #XAGUSD #dolar #XU100 #borsa https://t.co/kc0GL3NHKM
   - Tweet: https://x.com/GalataliBorsaci/status/1809484260694188250
   - Media: https://pbs.twimg.com/media/GRyUV5TXkAAw3qt.jpg
@@ -95,7 +99,7 @@
   - Media: https://pbs.twimg.com/media/GC8Rw9jWEAAb2rl.jpg
   - Media: https://pbs.twimg.com/media/GC8Rw9cXAAAXBZb.jpg
 
-## butterfly_kelebek (4)
+## butterfly_kelebek (5)
 
 - Fri Apr 10 07:27:33 +0000 2026 — #DOGUB 🧿 %2️⃣6️⃣0️⃣ ♻️ 🧿 kar marjı ile formasyon tamamlandı✍️ R&İ Titrek bir kelebek,konmuş bir çiçeğe…. Çırpmaya hazır kanatlarını, bir sevgilinin ardından . #SASA #GUBRF #ASELS #SISE #EREGL #THYAO #PETKM #SAHOL #KRDMD #PGSUS #KCHOL #JANTS #GESAN #KONTR #GARAN #ISCTR #FROTO #TOA
   - Tweet: https://x.com/GalataliBorsaci/status/2042504742002126968
@@ -105,6 +109,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1927986909919556017
   - Media: https://pbs.twimg.com/media/GsGV3zoWQAA0Whk.jpg
   - Media: https://pbs.twimg.com/media/GsGV3zmWgAAaWHx.jpg
+- Mon Aug 05 10:45:11 +0000 2024 — #Dax 🇩🇪 #ytd #Almanya borsa endeksi ⛔️%-7️⃣,3️⃣5️⃣ ⛔️ ile kelebek 🦋 ayı başarılı bir şekilde hedefe ulaşmıştır . ✍️ Ragnar ICARUS #SP500 #DAX #DJI #NASDAQ #IXIC #DXY #XAUUSD #Gold #endeks #XAGUSD #dolar #XU100 #borsa https://t.co/Xa4oNYs5Um
+  - Tweet: https://x.com/GalataliBorsaci/status/1820410717188616207
+  - Media: https://pbs.twimg.com/media/GUNl5JbW0AA3Csa.jpg
+  - Media: https://pbs.twimg.com/media/GUNl5JcWgAE5OZj.jpg
 - Sun Nov 05 11:38:27 +0000 2023 — #VIOP #ytd Cuma Gece seansında alındı,, Teknik boğayı arzuluyor .. Pazartesi endekste pozitif bir açılış bekliyorum. kısada Tobo takip ediyoruz Orta vade kelebek doğrusal regresyon kanal içinde kalmaya devam ediyor .. DESTEK =8456 Direnç =8626 Hedef kısa=9138 Hedef =9773 Ben bitt
   - Tweet: https://x.com/GalataliBorsaci/status/1721129846334423311
   - Media: https://pbs.twimg.com/media/F-Kud8rXsAA2wRO.jpg
@@ -189,7 +197,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (158)
+## hedef_duzeltmesi (163)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
@@ -244,7 +252,7 @@
   - Tweet: https://x.com/GalataliBorsaci/status/2061086909401600238
   - Media: https://pbs.twimg.com/media/HJpznojW0AIoEB9.jpg
 
-## maliyet (31)
+## maliyet (33)
 
 - Tue Jul 07 20:17:53 +0000 2026 — #BRMEN 🔻 %-1️⃣4️⃣ 🔻 Doğru Nokta Maliyet ✅✍️ ♻️ %2️⃣4️⃣5️⃣ ♻️ Kar marjı ile formasyon tamamlandı ✅✍️ 🔻%➖1️⃣9️⃣🔻Hedef düzeltmesi ✍️ R&İ Piyasalarda kar realizasyonu ne kadar önemliyse, doğru alım noktasını bilmek de en az o kadar kritiktir. 🎯 Doğru seviyeden pozisyon açmak,belki be
   - Tweet: https://x.com/GalataliBorsaci/status/2074588734859665750
@@ -338,7 +346,7 @@
   - Media: https://pbs.twimg.com/media/Gxv3qC9X0AAI7du.jpg
   - Media: https://pbs.twimg.com/media/Gxv3qDBXMAAaLbt.jpg
 
-## stop (35)
+## stop (36)
 
 - Fri Jun 05 10:45:40 +0000 2026 — #SEKUR %1️⃣4️⃣1️⃣♻️kar marjı ile yeni bir formasyon daha tamamlandı. ✍️ 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek lazım bu hayatta ..✍️R&İ Çinli filozof, eğitimci ve yazar Konfüçyüs’ ün dediği gibi .. "Bir kelime kararını, Bir 
   - Tweet: https://x.com/GalataliBorsaci/status/2062848322977550782

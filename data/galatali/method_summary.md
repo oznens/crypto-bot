@@ -1,25 +1,25 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1394
+İncelenen benzersiz tweet: 1436
 
 ## Terim frekansları
 
-- formasyon: 433
-- hedef_duzeltmesi: 161
-- destek: 89
+- formasyon: 437
+- hedef_duzeltmesi: 166
+- destek: 90
 - formasyon_tamamlandi: 84
-- direnc: 68
-- stop: 40
+- direnc: 69
+- stop: 41
 - hedefe_ulasti: 36
-- maliyet: 33
+- maliyet: 35
 - negatif_formasyon: 32
 - uyari: 31
+- kanal: 14
 - crab_yengec: 13
 - trend: 13
-- kanal: 13
-- bat_yarasa: 10
+- bat_yarasa: 11
 - kar_realizasyonu: 9
-- butterfly_kelebek: 4
+- butterfly_kelebek: 5
 - gartley: 1
 - shark: 1
 - ab=cd: 1
@@ -29,36 +29,36 @@
 
 ## En sık geçen semboller
 
-- THYAO: 464
-- SASA: 425
-- ASELS: 394
-- GESAN: 392
-- KONTR: 371
-- SISE: 370
-- EREGL: 363
-- PETKM: 329
-- ISCTR: 318
-- PGSUS: 309
-- TUPRS: 292
-- GUBRF: 278
-- GARAN: 277
-- FROTO: 275
-- TOASO: 271
-- KCHOL: 251
-- XAUUSD: 246
-- SAHOL: 245
-- KRDMD: 209
-- SMRTG: 181
-- JANTS: 180
-- AKBNK: 174
-- USDTRY: 146
-- EKGYO: 132
-- YKBNK: 129
-- KOZAL: 129
-- HEKTS: 117
-- ZOREN: 111
-- SMART: 111
-- KOZAA: 91
+- THYAO: 476
+- SASA: 435
+- ASELS: 403
+- GESAN: 402
+- KONTR: 378
+- SISE: 377
+- EREGL: 370
+- PETKM: 336
+- ISCTR: 324
+- PGSUS: 314
+- TUPRS: 300
+- GARAN: 285
+- FROTO: 282
+- GUBRF: 281
+- TOASO: 277
+- XAUUSD: 259
+- KCHOL: 254
+- SAHOL: 248
+- KRDMD: 214
+- SMRTG: 185
+- JANTS: 182
+- AKBNK: 177
+- USDTRY: 152
+- EKGYO: 136
+- YKBNK: 133
+- KOZAL: 133
+- HEKTS: 119
+- ZOREN: 113
+- SMART: 112
+- KOZAA: 94
 
 ## Otomatik çıkarım
 

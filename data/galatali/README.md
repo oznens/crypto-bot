@@ -1,9 +1,9 @@
 # Galatalı Borsacı X Arşivi
 
 Hesap: @GalataliBorsaci
-Toplam benzersiz tweet: 1394
-Grafik/medya içeren tweet: 1202
-Orijinal gönderi: 1224
+Toplam benzersiz tweet: 1436
+Grafik/medya içeren tweet: 1240
+Orijinal gönderi: 1263
 Backfill sayfası: 100
 Durma nedeni: max_pages
 
