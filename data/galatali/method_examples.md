@@ -50,7 +50,7 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1684906034052136960
   - Media: https://pbs.twimg.com/media/F2H9GmzXgAAa_JK.jpg
 
-## crab_yengec (13)
+## crab_yengec (15)
 
 - Mon Jan 19 05:15:20 +0000 2026 — #XAUTRYG gram altın yengeç 🦀 boğa %20♻️ marj ile hedefe ulaştıktan sonra , %-6,12 🔻 hedef düzeltmesi gerçekleştirdi . Bu ☕️ nin onayı oldu ve %10,50 ♻️ marj ile sarı ok hedefe ulaştı . Şiir tadında bir takip✍️R&amp;İ #GRAMALTIN #Altın #XU100 #bist100 https://t.co/8VGHkBYuGU
   - Tweet: https://x.com/GalataliBorsaci/status/2013118053714628644
@@ -86,6 +86,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1895477917599379704
   - Media: https://pbs.twimg.com/media/Gk4XHVmWUAAbcMq.jpg
   - Media: https://pbs.twimg.com/media/Gk4XHVkWkAADgCc.jpg
+- Fri Feb 16 18:12:34 +0000 2024 — #XU100 USD ( Dolar ) BAZLI ☀️☀️☀️☀️☀️☀️☀️☀️☀️ ☀️🧿%2️⃣2️⃣,8️⃣1️⃣🧿☀️ kar marjı ile devam ediyor .🦾🦾🦾 ☀️☀️☀️☀️☀️☀️☀️☀️☀️ Yengeç 🦀 boğa takibine devam ediyoruz . Destek💧=295,56 💵 Direnç ⚡️=306,86-308,95 💵 bant aralığı Hedef 🎯=356,85 💵 “Zorluklara sakin bir zihinle katlanmak, talihsiz
+  - Tweet: https://x.com/GalataliBorsaci/status/1758554979617378466
+  - Media: https://pbs.twimg.com/media/GGekbkLXEAAf2y3.jpg
+  - Media: https://pbs.twimg.com/media/GGekbkJWsAA7bgw.jpg
 - Mon Jan 29 13:46:56 +0000 2024 — #VIOP USD ( Dolar ) BAZLI #viop #XU030 🇹🇷🇹🇷🇹🇷🇹🇷☀️☀️☀️ %1️⃣5️⃣☀️✳️ Yengeç ikili dip onayı aldı ✅. it ,çakal sürüsüne inat Destek💧=306,75 Direnç ⚡️=310,50 🔼☀️ Hedef 🎯 1=348 Hedef 🎯2=378-386 bant “Başkalarının en çok kızdığımız tarafları, aslında en çok kendimizi öğrendiğimiz taraft
   - Tweet: https://x.com/GalataliBorsaci/status/1751965150020526085
   - Media: https://pbs.twimg.com/media/GFA67zXWUAEskNZ.jpg
@@ -94,12 +98,8 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1750138149987024974
   - Media: https://pbs.twimg.com/media/GEm9XabXsAE_YXJ.jpg
   - Media: https://pbs.twimg.com/media/GEm9XaXWEAEpyhN.jpg
-- Wed Jan 03 19:36:50 +0000 2024 — #VIOP USD BAZLI #ytd Yengeç 🦀 boğa ikili dip onayı Aldı ✅,, son yükselişte bıraktığı gap için döndü bugün, 6 💵 #dolar ile bu iş bitecek ,, Destek 💧=(269-271) dolar 💵 Direnç ⚡️=(309-310) dolar 💵 Hedef 1🎯=(348-350) dolar 💵 Hedef 2🎯=(378-388) dolar 💵 #ÜZÜLME Yolda yürürken bir göz a
-  - Tweet: https://x.com/GalataliBorsaci/status/1742631119332270248
-  - Media: https://pbs.twimg.com/media/GC8Rw9jWEAAb2rl.jpg
-  - Media: https://pbs.twimg.com/media/GC8Rw9cXAAAXBZb.jpg
 
-## butterfly_kelebek (5)
+## butterfly_kelebek (6)
 
 - Fri Apr 10 07:27:33 +0000 2026 — #DOGUB 🧿 %2️⃣6️⃣0️⃣ ♻️ 🧿 kar marjı ile formasyon tamamlandı✍️ R&İ Titrek bir kelebek,konmuş bir çiçeğe…. Çırpmaya hazır kanatlarını, bir sevgilinin ardından . #SASA #GUBRF #ASELS #SISE #EREGL #THYAO #PETKM #SAHOL #KRDMD #PGSUS #KCHOL #JANTS #GESAN #KONTR #GARAN #ISCTR #FROTO #TOA
   - Tweet: https://x.com/GalataliBorsaci/status/2042504742002126968
@@ -113,6 +113,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1820410717188616207
   - Media: https://pbs.twimg.com/media/GUNl5JbW0AA3Csa.jpg
   - Media: https://pbs.twimg.com/media/GUNl5JcWgAE5OZj.jpg
+- Fri Dec 22 13:44:19 +0000 2023 — #XU100 USD ( Dolar ) BAZLI Kelebek 🦋 ikili dip onayı alıyor. Pes etmek yok . Ralli öncesi son tango . Destek💧=259-256 bant Direnç ⚡️=282 Hedef 🎯 1=309 Hedef 🎯2=326 “Zorluklara sakin bir zihinle katlanmak, talihsizliğin gücünü ve yükünü ortadan kaldırır. Talihi kişi kendisi yaratı
+  - Tweet: https://x.com/GalataliBorsaci/status/1738193751904776657
+  - Media: https://pbs.twimg.com/media/GB9OAEDWIAA9AsH.jpg
+  - Media: https://pbs.twimg.com/media/GB9OAEIXsAA3WqI.jpg
 - Sun Nov 05 11:38:27 +0000 2023 — #VIOP #ytd Cuma Gece seansında alındı,, Teknik boğayı arzuluyor .. Pazartesi endekste pozitif bir açılış bekliyorum. kısada Tobo takip ediyoruz Orta vade kelebek doğrusal regresyon kanal içinde kalmaya devam ediyor .. DESTEK =8456 Direnç =8626 Hedef kısa=9138 Hedef =9773 Ben bitt
   - Tweet: https://x.com/GalataliBorsaci/status/1721129846334423311
   - Media: https://pbs.twimg.com/media/F-Kud8rXsAA2wRO.jpg
@@ -197,7 +201,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (167)
+## hedef_duzeltmesi (179)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
@@ -346,7 +350,7 @@
   - Media: https://pbs.twimg.com/media/Gxv3qC9X0AAI7du.jpg
   - Media: https://pbs.twimg.com/media/Gxv3qDBXMAAaLbt.jpg
 
-## stop (37)
+## stop (38)
 
 - Fri Jun 05 10:45:40 +0000 2026 — #SEKUR %1️⃣4️⃣1️⃣♻️kar marjı ile yeni bir formasyon daha tamamlandı. ✍️ 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek lazım bu hayatta ..✍️R&İ Çinli filozof, eğitimci ve yazar Konfüçyüs’ ün dediği gibi .. "Bir kelime kararını, Bir 
   - Tweet: https://x.com/GalataliBorsaci/status/2062848322977550782
@@ -373,6 +377,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1987481520265646370
   - Media: https://pbs.twimg.com/media/G5Tz6CTXIAAI1hP.jpg
   - Media: https://pbs.twimg.com/media/G5Tz6CQXwAAXdU1.jpg
+- Sun Jan 07 14:41:14 +0000 2024 — #MMCAS #ytd ♻️ %341 ♻️🎯kar marjı ✍️İLE 5 ayda formasyon başarılı bir şekilde tamamlandı Hedef sonrası artan baskı ve kar realize sonucu⛔️ %50 ⛔️hedef düzeltmesi gerçekleşti , Hedefi bilmek ve o bölgede iz süren stop ile her gün yakın takibin önemi #BORSA 😎 dan başkası yalan 😉🦾🦾🦾 
+  - Tweet: https://x.com/GalataliBorsaci/status/1744006282426614021
+  - Media: https://pbs.twimg.com/media/GDP0eAiW8AARMwm.jpg
+  - Media: https://pbs.twimg.com/media/GDP0eAiXIAAbrHZ.jpg
 - Tue Sep 05 04:05:41 +0000 2023 — #viop Bu hafta özellikle hedefe ulaşmış hisselerde iz süren stop İLE takip çok önemli İSS =İpten alır Günaydın ☀️ Bereketli kazançlar inşallah 🙏 #XU100 #XU030 #endeks #bist #borsa https://t.co/MNHIojNjG0
   - Tweet: https://x.com/GalataliBorsaci/status/1698910246394110183
   - Media: https://pbs.twimg.com/amplify_video_thumb/1698910189586415616/img/RvaAp761hw16ncdX.jpg
@@ -394,7 +402,3 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1686845867100184576
   - Media: https://pbs.twimg.com/media/F2jhXvXXIAEwKBM.jpg
   - Media: https://pbs.twimg.com/media/F2jhXvVXkAEU2Ti.jpg
-- Sat Jul 01 13:41:26 +0000 2023 — #VIOP #ytd ♻️%14,60 ♻️marj İLE pozitif formasyon devam ediyor. 6255 de bulunan GAP i yol yakınken alırsa şahane olur . Bu nedenle özellikle 30-50 leri iz süren stop İLE takip önemli ..Hisse BAZLI ayrı ayrı değerlendirilmeli . Yatırım işi şansa bırakılmaz .( kemersiz araç kullanıl
-  - Tweet: https://x.com/GalataliBorsaci/status/1675137539743571968
-  - Media: https://pbs.twimg.com/media/Fz9IqvhXwAEGGux.jpg
-  - Media: https://pbs.twimg.com/media/Fz9IqvLXwAEQxO6.jpg

@@ -1,25 +1,25 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1471
+İncelenen benzersiz tweet: 1555
 
 ## Terim frekansları
 
-- formasyon: 446
-- hedef_duzeltmesi: 170
-- destek: 94
+- formasyon: 459
+- hedef_duzeltmesi: 182
+- destek: 100
 - formasyon_tamamlandi: 84
-- direnc: 70
-- stop: 42
-- hedefe_ulasti: 36
+- direnc: 75
+- stop: 43
+- hedefe_ulasti: 37
 - maliyet: 35
 - negatif_formasyon: 33
 - uyari: 31
+- crab_yengec: 15
 - kanal: 15
 - trend: 14
-- crab_yengec: 13
 - bat_yarasa: 11
 - kar_realizasyonu: 9
-- butterfly_kelebek: 5
+- butterfly_kelebek: 6
 - gartley: 1
 - shark: 1
 - ab=cd: 1
@@ -29,36 +29,36 @@
 
 ## En sık geçen semboller
 
-- THYAO: 487
-- SASA: 452
-- GESAN: 418
-- ASELS: 416
-- KONTR: 388
-- SISE: 386
-- EREGL: 381
-- PETKM: 346
-- ISCTR: 334
-- PGSUS: 318
-- TUPRS: 308
-- GARAN: 291
-- GUBRF: 289
-- FROTO: 286
-- TOASO: 282
-- XAUUSD: 264
-- KCHOL: 259
-- SAHOL: 252
-- KRDMD: 220
+- THYAO: 515
+- SASA: 490
+- GESAN: 455
+- ASELS: 440
+- KONTR: 424
+- SISE: 407
+- EREGL: 405
+- PETKM: 369
+- ISCTR: 357
+- PGSUS: 343
+- TUPRS: 315
+- GARAN: 314
+- GUBRF: 309
+- FROTO: 307
+- TOASO: 301
+- KCHOL: 278
+- SAHOL: 271
+- XAUUSD: 269
+- KRDMD: 231
+- JANTS: 203
 - SMRTG: 193
-- JANTS: 184
-- AKBNK: 180
-- USDTRY: 155
-- EKGYO: 141
-- YKBNK: 135
-- KOZAL: 134
-- HEKTS: 123
-- ZOREN: 115
+- AKBNK: 184
+- USDTRY: 156
+- EKGYO: 143
+- YKBNK: 140
+- KOZAL: 135
+- HEKTS: 125
+- ZOREN: 116
 - SMART: 114
-- KOZAA: 94
+- KOZAA: 95
 
 ## Otomatik çıkarım
 
