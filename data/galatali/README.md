@@ -4,8 +4,8 @@ Hesap: @GalataliBorsaci
 Toplam benzersiz tweet: 1471
 Grafik/medya içeren tweet: 1273
 Orijinal gönderi: 1288
-Backfill sayfası: 100
-Durma nedeni: max_pages
+Backfill sayfası: 15
+Durma nedeni: no_next_page
 
 ## Son gönderiler
 
