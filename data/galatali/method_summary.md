@@ -1,22 +1,22 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1436
+İncelenen benzersiz tweet: 1471
 
 ## Terim frekansları
 
-- formasyon: 437
-- hedef_duzeltmesi: 166
-- destek: 90
+- formasyon: 446
+- hedef_duzeltmesi: 170
+- destek: 94
 - formasyon_tamamlandi: 84
-- direnc: 69
-- stop: 41
+- direnc: 70
+- stop: 42
 - hedefe_ulasti: 36
 - maliyet: 35
-- negatif_formasyon: 32
+- negatif_formasyon: 33
 - uyari: 31
-- kanal: 14
+- kanal: 15
+- trend: 14
 - crab_yengec: 13
-- trend: 13
 - bat_yarasa: 11
 - kar_realizasyonu: 9
 - butterfly_kelebek: 5
@@ -29,35 +29,35 @@
 
 ## En sık geçen semboller
 
-- THYAO: 476
-- SASA: 435
-- ASELS: 403
-- GESAN: 402
-- KONTR: 378
-- SISE: 377
-- EREGL: 370
-- PETKM: 336
-- ISCTR: 324
-- PGSUS: 314
-- TUPRS: 300
-- GARAN: 285
-- FROTO: 282
-- GUBRF: 281
-- TOASO: 277
-- XAUUSD: 259
-- KCHOL: 254
-- SAHOL: 248
-- KRDMD: 214
-- SMRTG: 185
-- JANTS: 182
-- AKBNK: 177
-- USDTRY: 152
-- EKGYO: 136
-- YKBNK: 133
-- KOZAL: 133
-- HEKTS: 119
-- ZOREN: 113
-- SMART: 112
+- THYAO: 487
+- SASA: 452
+- GESAN: 418
+- ASELS: 416
+- KONTR: 388
+- SISE: 386
+- EREGL: 381
+- PETKM: 346
+- ISCTR: 334
+- PGSUS: 318
+- TUPRS: 308
+- GARAN: 291
+- GUBRF: 289
+- FROTO: 286
+- TOASO: 282
+- XAUUSD: 264
+- KCHOL: 259
+- SAHOL: 252
+- KRDMD: 220
+- SMRTG: 193
+- JANTS: 184
+- AKBNK: 180
+- USDTRY: 155
+- EKGYO: 141
+- YKBNK: 135
+- KOZAL: 134
+- HEKTS: 123
+- ZOREN: 115
+- SMART: 114
 - KOZAA: 94
 
 ## Otomatik çıkarım

@@ -138,7 +138,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## negatif_formasyon (29)
+## negatif_formasyon (30)
 
 - Sat Jul 11 04:20:40 +0000 2026 — #PASEU Negatif formasyon🔻 %➖4️⃣4️⃣🔻 marj ile tamamlandı . ✍️ R&amp;İ Yorumlar grafiklerin içinde 👇👇 #bist #bist100 #borsa #yatırım #endeks #strateji #altın #btc #coin #emtia #euro #dolar #usd #sdttr #miatk #alark #kozal #magen #aefes #mgros #bimas #ardyz #fener #sokm #doas #karsn
   - Tweet: https://x.com/GalataliBorsaci/status/2075797395355427120
@@ -197,7 +197,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (163)
+## hedef_duzeltmesi (167)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
@@ -346,7 +346,7 @@
   - Media: https://pbs.twimg.com/media/Gxv3qC9X0AAI7du.jpg
   - Media: https://pbs.twimg.com/media/Gxv3qDBXMAAaLbt.jpg
 
-## stop (36)
+## stop (37)
 
 - Fri Jun 05 10:45:40 +0000 2026 — #SEKUR %1️⃣4️⃣1️⃣♻️kar marjı ile yeni bir formasyon daha tamamlandı. ✍️ 1-Alacağın noktayı ….. 2-Zarar kes yapacağın noktayı…… 3-Kar REALİZE edeceğin noktayı…… bilmek lazım bu hayatta ..✍️R&İ Çinli filozof, eğitimci ve yazar Konfüçyüs’ ün dediği gibi .. "Bir kelime kararını, Bir 
   - Tweet: https://x.com/GalataliBorsaci/status/2062848322977550782
@@ -386,6 +386,10 @@
   - Media: https://pbs.twimg.com/media/F5GwseyXIAABH-i.jpg
   - Media: https://pbs.twimg.com/media/F5GwsebW4AELASD.jpg
   - Media: https://pbs.twimg.com/media/F5GwseeXwAAUG4y.jpg
+- Wed Aug 09 21:17:10 +0000 2023 — #XU100 dolar 💵 BAZLI grafik 👇👇👇Düşecek edecek , nakite geçelim, geçtim diyen zavallılar var . Kendiniz ne yaparsanız yapın insanları hisse BAZLI stratejik iz süren stop kuralı İLE takip önerin . Tamamen nakite geçmek sadece ahmaklık olur bu piyasada . Bunu yazın kafanızın bir ken
+  - Tweet: https://x.com/GalataliBorsaci/status/1689385353012985856
+  - Media: https://pbs.twimg.com/media/F3HnBdqWwAAcYY7.jpg
+  - Media: https://pbs.twimg.com/media/F3HnBdtXUAAQbO8.jpg
 - Wed Aug 02 21:06:09 +0000 2023 — #TUKAS #ytd 🧿 %78🧿 kar marjı İLE formasyon takibi sona erdi #ytd ❌%10❌ipten alındı Total marj %88 şimdilik 1- ŞANS 🍀 vereceğin yeri .. 2-SATACAĞIN yeri.. 3-STOPLOS olacağın yeri ..(?) Bilim ışığında takip önemli . ✍️@GalataliBorsaci #Tukas ın Yeni kaderi 👇👇👇👇👇👇👇👇 https://t.co/jxb
   - Tweet: https://x.com/GalataliBorsaci/status/1686845867100184576
   - Media: https://pbs.twimg.com/media/F2jhXvXXIAEwKBM.jpg
@@ -394,7 +398,3 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1675137539743571968
   - Media: https://pbs.twimg.com/media/Fz9IqvhXwAEGGux.jpg
   - Media: https://pbs.twimg.com/media/Fz9IqvLXwAEQxO6.jpg
-- Fri Jun 09 07:38:30 +0000 2023 — #BURVA #ytd 🧿 %110 🧿 kar REALİZE #ytd . 1- ŞANS 🍀 vereceğin yeri .. 2-SATACAĞIN yeri.. 3-STOPLOS olacağın yeri .. BİLECEKSİN . #KaderGalatadaÇizilir #ASELS #AKBNK #EREGL #SISE #TOASO #EKGYO #PETKM #TUPRS #THYAO #bist100 #bist30 #GESAN #USDTRY #XAUUSD #HEKTS #BTC https://t.co/afxA
-  - Tweet: https://x.com/GalataliBorsaci/status/1667073672035594240
-  - Media: https://pbs.twimg.com/media/FyKiqpSXwAAudl8.jpg
-  - Media: https://pbs.twimg.com/media/FyKiqpWXoAAdApR.jpg
