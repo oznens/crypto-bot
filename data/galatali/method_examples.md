@@ -50,7 +50,7 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1684906034052136960
   - Media: https://pbs.twimg.com/media/F2H9GmzXgAAa_JK.jpg
 
-## crab_yengec (15)
+## crab_yengec (16)
 
 - Mon Jan 19 05:15:20 +0000 2026 — #XAUTRYG gram altın yengeç 🦀 boğa %20♻️ marj ile hedefe ulaştıktan sonra , %-6,12 🔻 hedef düzeltmesi gerçekleştirdi . Bu ☕️ nin onayı oldu ve %10,50 ♻️ marj ile sarı ok hedefe ulaştı . Şiir tadında bir takip✍️R&amp;İ #GRAMALTIN #Altın #XU100 #bist100 https://t.co/8VGHkBYuGU
   - Tweet: https://x.com/GalataliBorsaci/status/2013118053714628644
@@ -201,7 +201,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (179)
+## hedef_duzeltmesi (183)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
