@@ -1,5 +1,5 @@
 {
-  "generatedAt": 1787741030637,
+  "generatedAt": 1787742845150,
   "source": "MEXC Futures public market data",
   "version": "reverse-ict-mexc-v3-history",
   "symbols": [
@@ -16,7 +16,7 @@
       "signal": false,
       "confidence": 30,
       "rrTp1": 2,
-      "time": "2026-08-26T10:30:00.000Z",
+      "time": "2026-08-26T11:00:00.000Z",
       "session": "ASIA",
       "killZone": false,
       "qt": "Q2_MANIPULATION",
@@ -26,7 +26,7 @@
       "tp2": null,
       "sweep": {
         "side": "BUY",
-        "i": 577,
+        "i": 575,
         "t": 1787720400000,
         "level": 78852.6,
         "extreme": 78601
@@ -39,10 +39,10 @@
       "range": {
         "low": 78208,
         "high": 79087.9,
-        "pos": 0.44,
-        "zone": "discount"
+        "pos": 0.55,
+        "zone": "premium"
       },
-      "atr15": 233.50714286,
+      "atr15": 237.07142857,
       "scoreBreakdown": {
         "htf": 15,
         "bos": 0,
@@ -56,26 +56,10 @@
       "reasoning": [
         "HTF yön (Bias=D1/H4): bullish",
         "Öncesinde ters yönde likidite süpürüldü (fiyat ≈ 78601)",
-        "Fiyat discount bölgesinde (equilibrium konumu: 0.44) -> uyumlu",
+        "Fiyat premium bölgesinde (equilibrium konumu: 0.55) -> uyumsuz",
         "Kill zone dışında (seans: ASIA) — düşük öncelik"
       ],
       "candles": [
-        {
-          "time": 1787632200000,
-          "open": 80236.2,
-          "high": 80373.3,
-          "low": 80130.8,
-          "close": 80217,
-          "volume": 7722233
-        },
-        {
-          "time": 1787633100000,
-          "open": 80217,
-          "high": 80350.1,
-          "low": 80201.1,
-          "close": 80348.8,
-          "volume": 3758193
-        },
         {
           "time": 1787634000000,
           "open": 80348.8,
@@ -1019,6 +1003,22 @@
           "low": 78392.2,
           "close": 78593.8,
           "volume": 9640713
+        },
+        {
+          "time": 1787740200000,
+          "open": 78593.8,
+          "high": 78780.3,
+          "low": 78532.4,
+          "close": 78689.7,
+          "volume": 13588160
+        },
+        {
+          "time": 1787741100000,
+          "open": 78689.7,
+          "high": 78842.9,
+          "low": 78661.3,
+          "close": 78688.5,
+          "volume": 9937771
         }
       ]
     },
@@ -1028,36 +1028,43 @@
       "side": "BUY",
       "bias": "bullish",
       "signal": true,
-      "confidence": 70,
+      "confidence": 90,
       "rrTp1": 2,
-      "time": "2026-08-26T10:30:00.000Z",
+      "time": "2026-08-26T11:00:00.000Z",
       "session": "ASIA",
       "killZone": false,
       "qt": "Q2_MANIPULATION",
-      "entry": 2458.07,
-      "sl": 2445.89357143,
-      "tp1": 2482.42285714,
-      "tp2": 2506.77571429,
+      "entry": 2462.8,
+      "sl": 2445.80978571,
+      "tp1": 2496.78042857,
+      "tp2": 2530.76085714,
       "sweep": {
         "side": "BUY",
-        "i": 541,
+        "i": 539,
         "t": 1787688000000,
         "level": 2454.38,
         "extreme": 2446.67
       },
       "bos": {
-        "i": 566,
+        "i": 564,
         "t": 1787710500000,
         "level": 2463.29,
         "close": 2466.94
       },
-      "fvg": null,
+      "fvg": {
+        "low": 2454,
+        "high": 2462.8,
+        "time": 1787741100000
+      },
       "ob": {
         "low": 2452.88,
         "high": 2458.07,
         "time": 1787709600000
       },
-      "obFvg": null,
+      "obFvg": {
+        "low": 2454,
+        "high": 2458.07
+      },
       "msnr": {
         "level": 2461.42,
         "time": 1787707800000
@@ -1065,17 +1072,17 @@
       "range": {
         "low": 2441.58,
         "high": 2468.65,
-        "pos": 0.61,
+        "pos": 0.78,
         "zone": "premium"
       },
-      "atr15": 7.76428571,
+      "atr15": 8.60214286,
       "scoreBreakdown": {
         "htf": 15,
         "bos": 20,
         "sweep": 15,
-        "fvg": 0,
+        "fvg": 15,
         "ob": 10,
-        "obFvg": 0,
+        "obFvg": 5,
         "msnr": 10,
         "killZone": 0
       },
@@ -1083,28 +1090,13 @@
         "HTF yön (Bias=D1/H4): bullish",
         "LTF (M15) BOS teyidi: bullish yönünde body-close kırılım @ 2463.29",
         "Öncesinde ters yönde likidite süpürüldü (fiyat ≈ 2446.67)",
-        "Order Block mevcut [2452.88 - 2458.07]",
-        "Fiyat premium bölgesinde (equilibrium konumu: 0.61) -> uyumsuz",
+        "Fair Value Gap mevcut ve mitigasyonu tamamlanmamış [2454 - 2462.8]",
+        "Order Block mevcut [2452.88 - 2458.07] (FVG konfluanslı)",
+        "Fiyat premium bölgesinde (equilibrium konumu: 0.78) -> uyumsuz",
         "Girişe yakın fresh/flipped MSNR (OCL) seviyesi mevcut — ekstra konfluans",
         "Kill zone dışında (seans: ASIA) — düşük öncelik"
       ],
       "candles": [
-        {
-          "time": 1787632200000,
-          "open": 2493.18,
-          "high": 2496.44,
-          "low": 2487.75,
-          "close": 2490.4,
-          "volume": 640947
-        },
-        {
-          "time": 1787633100000,
-          "open": 2490.4,
-          "high": 2494.36,
-          "low": 2489.13,
-          "close": 2493.79,
-          "volume": 598281
-        },
         {
           "time": 1787634000000,
           "open": 2493.79,
@@ -2048,6 +2040,22 @@
           "low": 2448.01,
           "close": 2453.68,
           "volume": 1552280
+        },
+        {
+          "time": 1787740200000,
+          "open": 2453.68,
+          "high": 2469.73,
+          "low": 2453.13,
+          "close": 2464.16,
+          "volume": 1908613
+        },
+        {
+          "time": 1787741100000,
+          "open": 2464.16,
+          "high": 2474.83,
+          "low": 2462.8,
+          "close": 2467.67,
+          "volume": 1903759
         }
       ]
     },
@@ -2059,7 +2067,7 @@
       "signal": false,
       "confidence": 30,
       "rrTp1": 2,
-      "time": "2026-08-26T10:30:00.000Z",
+      "time": "2026-08-26T11:00:00.000Z",
       "session": "ASIA",
       "killZone": false,
       "qt": "Q2_MANIPULATION",
@@ -2069,7 +2077,7 @@
       "tp2": null,
       "sweep": {
         "side": "BUY",
-        "i": 593,
+        "i": 591,
         "t": 1787734800000,
         "level": 1.4278,
         "extreme": 1.4273
@@ -2080,12 +2088,12 @@
       "obFvg": null,
       "msnr": null,
       "range": {
-        "low": 1.4278,
+        "low": 1.4035,
         "high": 1.44,
-        "pos": 0,
-        "zone": "discount"
+        "pos": 0.73,
+        "zone": "premium"
       },
-      "atr15": 0.00845,
+      "atr15": 0.00893571,
       "scoreBreakdown": {
         "htf": 15,
         "bos": 0,
@@ -2099,26 +2107,10 @@
       "reasoning": [
         "HTF yön (Bias=D1/H4): bullish",
         "Öncesinde ters yönde likidite süpürüldü (fiyat ≈ 1.4273)",
-        "Fiyat discount bölgesinde (equilibrium konumu: 0.00) -> uyumlu",
+        "Fiyat premium bölgesinde (equilibrium konumu: 0.73) -> uyumsuz",
         "Kill zone dışında (seans: ASIA) — düşük öncelik"
       ],
       "candles": [
-        {
-          "time": 1787632200000,
-          "open": 1.5096,
-          "high": 1.5137,
-          "low": 1.5036,
-          "close": 1.5074,
-          "volume": 3162842
-        },
-        {
-          "time": 1787633100000,
-          "open": 1.5074,
-          "high": 1.5136,
-          "low": 1.5059,
-          "close": 1.5136,
-          "volume": 2989320
-        },
         {
           "time": 1787634000000,
           "open": 1.5136,
@@ -3062,6 +3054,22 @@
           "low": 1.4073,
           "close": 1.4194,
           "volume": 7750990
+        },
+        {
+          "time": 1787740200000,
+          "open": 1.4194,
+          "high": 1.4307,
+          "low": 1.4162,
+          "close": 1.429,
+          "volume": 6564967
+        },
+        {
+          "time": 1787741100000,
+          "open": 1.429,
+          "high": 1.4347,
+          "low": 1.4273,
+          "close": 1.4302,
+          "volume": 5299913
         }
       ]
     }
@@ -3073,36 +3081,43 @@
       "side": "BUY",
       "bias": "bullish",
       "signal": true,
-      "confidence": 70,
+      "confidence": 90,
       "rrTp1": 2,
-      "time": "2026-08-26T10:30:00.000Z",
+      "time": "2026-08-26T11:00:00.000Z",
       "session": "ASIA",
       "killZone": false,
       "qt": "Q2_MANIPULATION",
-      "entry": 2458.07,
-      "sl": 2445.89357143,
-      "tp1": 2482.42285714,
-      "tp2": 2506.77571429,
+      "entry": 2462.8,
+      "sl": 2445.80978571,
+      "tp1": 2496.78042857,
+      "tp2": 2530.76085714,
       "sweep": {
         "side": "BUY",
-        "i": 541,
+        "i": 539,
         "t": 1787688000000,
         "level": 2454.38,
         "extreme": 2446.67
       },
       "bos": {
-        "i": 566,
+        "i": 564,
         "t": 1787710500000,
         "level": 2463.29,
         "close": 2466.94
       },
-      "fvg": null,
+      "fvg": {
+        "low": 2454,
+        "high": 2462.8,
+        "time": 1787741100000
+      },
       "ob": {
         "low": 2452.88,
         "high": 2458.07,
         "time": 1787709600000
       },
-      "obFvg": null,
+      "obFvg": {
+        "low": 2454,
+        "high": 2458.07
+      },
       "msnr": {
         "level": 2461.42,
         "time": 1787707800000
@@ -3110,17 +3125,17 @@
       "range": {
         "low": 2441.58,
         "high": 2468.65,
-        "pos": 0.61,
+        "pos": 0.78,
         "zone": "premium"
       },
-      "atr15": 7.76428571,
+      "atr15": 8.60214286,
       "scoreBreakdown": {
         "htf": 15,
         "bos": 20,
         "sweep": 15,
-        "fvg": 0,
+        "fvg": 15,
         "ob": 10,
-        "obFvg": 0,
+        "obFvg": 5,
         "msnr": 10,
         "killZone": 0
       },
@@ -3128,28 +3143,13 @@
         "HTF yön (Bias=D1/H4): bullish",
         "LTF (M15) BOS teyidi: bullish yönünde body-close kırılım @ 2463.29",
         "Öncesinde ters yönde likidite süpürüldü (fiyat ≈ 2446.67)",
-        "Order Block mevcut [2452.88 - 2458.07]",
-        "Fiyat premium bölgesinde (equilibrium konumu: 0.61) -> uyumsuz",
+        "Fair Value Gap mevcut ve mitigasyonu tamamlanmamış [2454 - 2462.8]",
+        "Order Block mevcut [2452.88 - 2458.07] (FVG konfluanslı)",
+        "Fiyat premium bölgesinde (equilibrium konumu: 0.78) -> uyumsuz",
         "Girişe yakın fresh/flipped MSNR (OCL) seviyesi mevcut — ekstra konfluans",
         "Kill zone dışında (seans: ASIA) — düşük öncelik"
       ],
       "candles": [
-        {
-          "time": 1787632200000,
-          "open": 2493.18,
-          "high": 2496.44,
-          "low": 2487.75,
-          "close": 2490.4,
-          "volume": 640947
-        },
-        {
-          "time": 1787633100000,
-          "open": 2490.4,
-          "high": 2494.36,
-          "low": 2489.13,
-          "close": 2493.79,
-          "volume": 598281
-        },
         {
           "time": 1787634000000,
           "open": 2493.79,
@@ -4093,13 +4093,29 @@
           "low": 2448.01,
           "close": 2453.68,
           "volume": 1552280
+        },
+        {
+          "time": 1787740200000,
+          "open": 2453.68,
+          "high": 2469.73,
+          "low": 2453.13,
+          "close": 2464.16,
+          "volume": 1908613
+        },
+        {
+          "time": 1787741100000,
+          "open": 2464.16,
+          "high": 2474.83,
+          "low": 2462.8,
+          "close": 2467.67,
+          "volume": 1903759
         }
       ]
     }
   ],
   "historyStats": {
-    "total": 103,
-    "pending": 11,
+    "total": 104,
+    "pending": 12,
     "open": 23,
     "tp1Active": 8,
     "tp2": 9,
@@ -4109,5 +4125,5 @@
     "totalR": -24
   },
   "errors": [],
-  "durationMs": 572
+  "durationMs": 791
 }
