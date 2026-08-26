@@ -7,7 +7,7 @@
   - Media: https://pbs.twimg.com/media/G_LEhnlWEAAaVnD.jpg
   - Media: https://pbs.twimg.com/media/G_LEhnjWUAAijAX.jpg
 
-## bat_yarasa (11)
+## bat_yarasa (12)
 
 - Mon Aug 10 08:44:56 +0000 2026 — #TKFEN | FORMASYONUN GÜCÜNÜ GRAFİK ANLATIR… 📌 Şubat 2025 → Ağustos 2026 Yaklaşık 18 aylık sabır, disiplin ve formasyon takibi… TKFEN’de 2025 Şubat ayında başlayan Yarasa 🦇 formasyonunda, D bölgesinin tamamlanmasıyla birlikte grafik beklediğimiz yönde çalışmaya başladı. 🌱 D noktas
   - Tweet: https://x.com/GalataliBorsaci/status/2086735535641415770
@@ -46,6 +46,10 @@
 - Tue Sep 26 17:15:43 +0000 2023 — #XU100 #ytd Hala yok ikili tepe yok bilmem ne ! Bıkmadan usanmadan kendi cahilliklerinin içine çekerek insanları yanıltmaya, korku vermeye, balinalara maşa olmaya devam ediyorlar . Düşüremediniz gitti şu #borsa yı . Arkadaşlar rahat olun . Bugün Kandil namazda ..duada bunları düş
   - Tweet: https://x.com/GalataliBorsaci/status/1706719208296312916
   - Media: https://pbs.twimg.com/media/F698EmwWUAAcJ4c.jpg
+- Sun Sep 10 20:57:18 +0000 2023 — #SP500 🇺🇸 #Amerikan borsa endeksi %25 ♻️kar marjı İLE yarasa 🦇 takibi devam ediyor Destek =4318 İss=4300 Direnç =4590 Hedef =5580 #ytd https://t.co/fptv2u9jeS
+  - Tweet: https://x.com/GalataliBorsaci/status/1700976768612749359
+  - Media: https://pbs.twimg.com/media/F5sVWeQbwAAz4k_.jpg
+  - Media: https://pbs.twimg.com/media/F5sVWeTa8AABmx8.jpg
 - Fri Jul 28 12:37:57 +0000 2023 — #viop #VIOP ♻️%8,5 ✅ ŞURAYA BİR İMZA ✍️ BIRAKALIM . Kısada Yarasa 🦇 boğa ✅ Destek 💧=7250 Direnç ⚡️=7368 Hedef 🎯 =7870 🎯🎯🎯 ✍️✍️✍️✍️✍️✍️✍️✍️ Ragnarrrrr İCARUSSSS #ytd ✍️@GalataliBorsaci #XU100 #XU030 #KRDMD #ULKER #DOAS #ZOREN #FADE #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #
   - Tweet: https://x.com/GalataliBorsaci/status/1684906034052136960
   - Media: https://pbs.twimg.com/media/F2H9GmzXgAAa_JK.jpg
@@ -142,7 +146,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## negatif_formasyon (30)
+## negatif_formasyon (32)
 
 - Sat Jul 11 04:20:40 +0000 2026 — #PASEU Negatif formasyon🔻 %➖4️⃣4️⃣🔻 marj ile tamamlandı . ✍️ R&amp;İ Yorumlar grafiklerin içinde 👇👇 #bist #bist100 #borsa #yatırım #endeks #strateji #altın #btc #coin #emtia #euro #dolar #usd #sdttr #miatk #alark #kozal #magen #aefes #mgros #bimas #ardyz #fener #sokm #doas #karsn
   - Tweet: https://x.com/GalataliBorsaci/status/2075797395355427120
