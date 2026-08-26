@@ -1,10 +1,10 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1606
+İncelenen benzersiz tweet: 1607
 
 ## Terim frekansları
 
-- formasyon: 470
+- formasyon: 472
 - hedef_duzeltmesi: 187
 - destek: 110
 - formasyon_tamamlandi: 85
@@ -13,7 +13,7 @@
 - hedefe_ulasti: 37
 - negatif_formasyon: 35
 - maliyet: 35
-- uyari: 31
+- uyari: 32
 - crab_yengec: 16
 - kanal: 16
 - trend: 14
@@ -29,26 +29,26 @@
 
 ## En sık geçen semboller
 
-- THYAO: 520
-- SASA: 507
-- GESAN: 466
-- ASELS: 456
-- KONTR: 433
-- EREGL: 420
-- SISE: 415
-- PETKM: 376
-- ISCTR: 360
-- PGSUS: 343
+- THYAO: 521
+- SASA: 508
+- GESAN: 467
+- ASELS: 457
+- KONTR: 434
+- EREGL: 421
+- SISE: 416
+- PETKM: 377
+- ISCTR: 361
+- PGSUS: 344
 - TUPRS: 319
-- GARAN: 316
-- GUBRF: 313
-- FROTO: 308
-- TOASO: 303
-- KCHOL: 280
+- GARAN: 317
+- GUBRF: 314
+- FROTO: 309
+- TOASO: 304
+- KCHOL: 281
 - XAUUSD: 276
-- SAHOL: 274
-- KRDMD: 235
-- JANTS: 203
+- SAHOL: 275
+- KRDMD: 236
+- JANTS: 204
 - SMRTG: 195
 - AKBNK: 186
 - USDTRY: 157
