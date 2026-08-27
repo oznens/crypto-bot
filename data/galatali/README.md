@@ -1,14 +1,15 @@
 # Galatalı Borsacı X Arşivi
 
 Hesap: @GalataliBorsaci
-Toplam benzersiz tweet: 1607
-Grafik/medya içeren tweet: 1392
-Orijinal gönderi: 1407
-Backfill sayfası: 10
+Toplam benzersiz tweet: 1608
+Grafik/medya içeren tweet: 1393
+Orijinal gönderi: 1408
+Backfill sayfası: 18
 Durma nedeni: no_next_page
 
 ## Son gönderiler
 
+- Thu Aug 27 09:20:50 +0000 2026 — [#COSMO %2️⃣1️⃣2️⃣💹♻️ kar marjı sonrası tamamlanan formasyon ❌%➖6️⃣4️⃣❌🔻düşüş gösterdi ✍️ @GalataliBorsaci Ö\ S #SASA #XAUUSD #GLRYH #ESEN #HALKB #ASELS #AKBNK #SKYLP #EREGL #SISE #](https://x.com/GalataliBorsaci/status/2092905163795181858)
 - Wed Aug 26 11:20:29 +0000 2026 — [#burva 🧿 %4️⃣4️⃣6️⃣5️⃣♻️ 🧿 kar marjı ile uzun vade formasyon ☀️e ulaştı ✍️ R&İ #ytd Formasyon takibi sona erdi . ⚠️☠️⚠️ UYARISI SONRASI %➖4️⃣1️⃣🔻 düşüş gösterdi ✍️😉 #SASA #GUBRF #A](https://x.com/GalataliBorsaci/status/2092572890797371559)
 - Wed Aug 19 11:31:54 +0000 2026 — [#LIDER %5️⃣3️⃣💹♻️ kar marjı sonrası tamamlanan formasyon ❌%➖7️⃣5️⃣❌🔻düşüş gösterdi ✍️ @GalataliBorsaci Ö\ S #SASA #XAUUSD #GLRYH #ESEN #ASELS #AKBNK #SKYLP #EREGL #SISE #TOASO #KRD](https://x.com/GalataliBorsaci/status/2090039048744194277)
 - Tue Aug 18 11:10:28 +0000 2026 — [#ARDYZ de %2️⃣7️⃣3️⃣ kâr marjı ile formasyon takibi tamamlanmıştır.⚠️ Teknik görünümü değerlendirilen borsa Güneşte bulunan arkadaşlarımıza bereketli olsun. #ARDYZ #Borsa #BIST #BI](https://x.com/GalataliBorsaci/status/2089671267209146471)
@@ -108,4 +109,3 @@ Durma nedeni: no_next_page
 - Tue Mar 17 12:28:07 +0000 2026 — [#BTCIM ✅%6️⃣0️⃣♻️✅kar marjı ile hedefe ulaşan formasyon tamamlandı ✍️R&İ Teknik hedef gerçekleşti. Buradan sonrası artık riskin ve cesaretin alanı… Unutmayın; Güneşe aşık olanlar, ](https://x.com/GalataliBorsaci/status/2033883074560193015)
 - Mon Mar 16 20:34:38 +0000 2026 — [#EMKEL %4️⃣0️⃣0️⃣ ♻️ formasyon hedefi sonrası başlayan düzeltme, 🔻%➖8️⃣4️⃣ 🔻seviyesine ulaştı. Stratejide disiplin, duygudan güçlü olmalı. Güneşe ☀️ aşık olan, yanmayı göze alandır](https://x.com/GalataliBorsaci/status/2033643123792871875)
 - Mon Mar 16 20:31:29 +0000 2026 — [#HURGZ ✅%3️⃣5️⃣✅kar marjı ile hedefe ulaşan hisse …%➖1️⃣5️⃣🔻 hedef düzeltmesi gerçekleştirdi . ✍️R&amp;İ #bist #bist30 #borsa #endeks #altın #dolar #USDTRY #XAUUSD #XU100 #XU030 #v](https://x.com/GalataliBorsaci/status/2033642330176024749)
-- Mon Mar 16 14:59:24 +0000 2026 — [#KRONT %1️⃣9️⃣0️⃣♻️ marj ile formasyon tamamlandı ,✍️⚠️ #XU100 #bist #bist100 #XU030 #endeks #Borsaİstanbul https://t.co/bGs4yAxiHg](https://x.com/GalataliBorsaci/status/2033558760149414165)
