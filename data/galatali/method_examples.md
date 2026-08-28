@@ -146,7 +146,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## negatif_formasyon (33)
+## negatif_formasyon (34)
 
 - Sat Jul 11 04:20:40 +0000 2026 — #PASEU Negatif formasyon🔻 %➖4️⃣4️⃣🔻 marj ile tamamlandı . ✍️ R&amp;İ Yorumlar grafiklerin içinde 👇👇 #bist #bist100 #borsa #yatırım #endeks #strateji #altın #btc #coin #emtia #euro #dolar #usd #sdttr #miatk #alark #kozal #magen #aefes #mgros #bimas #ardyz #fener #sokm #doas #karsn
   - Tweet: https://x.com/GalataliBorsaci/status/2075797395355427120
@@ -205,7 +205,7 @@
   - Media: https://pbs.twimg.com/media/HPWS6AgWgAEPrRc.jpg
   - Media: https://pbs.twimg.com/media/HPWS6AcWIAAzZJn.jpg
 
-## hedef_duzeltmesi (188)
+## hedef_duzeltmesi (189)
 
 - Sun Aug 09 13:17:24 +0000 2026 — #CELHA %3️⃣1️⃣6️⃣ ♻️ marj ile 🦀 boğa tamamlandı ✅✍️R&İ %-10 🔻 hedef düzeltmesi gerçekleşti. ⚠️⚠️⚠️ Detay resimlerde 👇 #ISCTR #GARAN #SKBNK #HALKB #QNBFL #QNBFB #TSKB #AKBNK #ICBCT #YKBNK #ULKER #DOAS #ZOREN #EKGYO #ASTOR #ALFAS #YEOTK #SASA #HEKTS #SMRTG #HUNER #SISE #Bist #Borsa
   - Tweet: https://x.com/GalataliBorsaci/status/2086441719185264990
@@ -406,3 +406,10 @@
   - Tweet: https://x.com/GalataliBorsaci/status/1686845867100184576
   - Media: https://pbs.twimg.com/media/F2jhXvXXIAEwKBM.jpg
   - Media: https://pbs.twimg.com/media/F2jhXvVXkAEU2Ti.jpg
+
+## fibonacci (1)
+
+- Tue Sep 12 22:50:00 +0000 2023 — #XBANK #ytd Ekteki formasyon hedef düzeltmesi 2618 fib den yapınca #bankalarda hedef düzeltmesi sert oldu . Yarın sabah buna bir son verecek olan bankalar #Endeksin öncüsü olacak .. Kısada trend desteği ile birlikte Destek =7670 Direnç =7734 Hedef =7921 #ytd ✍️R&İ #AKBNK #GARAN #
+  - Tweet: https://x.com/GalataliBorsaci/status/1701729906575409406
+  - Media: https://pbs.twimg.com/media/F53CVBOWUAA2d02.jpg
+  - Media: https://pbs.twimg.com/media/F53CVAkWcAAYsdv.jpg
