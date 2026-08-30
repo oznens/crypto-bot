@@ -1,16 +1,16 @@
 # Galatalı Borsacı Metodoloji Özeti
 
-İncelenen benzersiz tweet: 1815
+İncelenen benzersiz tweet: 1862
 
 ## Terim frekansları
 
-- formasyon: 518
-- hedef_duzeltmesi: 204
+- formasyon: 524
+- hedef_duzeltmesi: 208
 - destek: 125
 - direnc: 95
-- formasyon_tamamlandi: 85
-- stop: 47
-- negatif_formasyon: 40
+- formasyon_tamamlandi: 86
+- stop: 50
+- negatif_formasyon: 42
 - maliyet: 38
 - hedefe_ulasti: 37
 - uyari: 32
@@ -29,36 +29,36 @@
 
 ## En sık geçen semboller
 
-- SASA: 579
-- THYAO: 549
-- GESAN: 530
-- ASELS: 522
-- KONTR: 480
-- EREGL: 458
-- SISE: 445
-- PETKM: 405
-- ISCTR: 377
-- TUPRS: 372
-- PGSUS: 347
-- GARAN: 332
-- GUBRF: 331
-- TOASO: 322
-- FROTO: 319
-- XAUUSD: 307
-- KRDMD: 295
-- KCHOL: 288
-- SAHOL: 283
-- SMRTG: 223
-- JANTS: 204
-- AKBNK: 203
-- USDTRY: 172
-- EKGYO: 169
+- SASA: 585
+- THYAO: 556
+- GESAN: 538
+- ASELS: 530
+- KONTR: 485
+- EREGL: 465
+- SISE: 451
+- PETKM: 412
+- ISCTR: 381
+- TUPRS: 377
+- PGSUS: 350
+- GARAN: 336
+- GUBRF: 335
+- TOASO: 329
+- XAUUSD: 325
+- FROTO: 322
+- KRDMD: 298
+- KCHOL: 292
+- SAHOL: 287
+- SMRTG: 225
+- JANTS: 207
+- AKBNK: 206
+- USDTRY: 186
+- EKGYO: 173
+- HEKTS: 152
 - YKBNK: 150
-- HEKTS: 147
-- KOZAL: 139
-- ZOREN: 122
-- SMART: 119
-- ASTOR: 100
+- KOZAL: 140
+- ZOREN: 123
+- SMART: 120
+- TCELL: 102
 
 ## Otomatik çıkarım
 
