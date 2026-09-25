@@ -1,36 +1,31 @@
 # Galatalı Metodu — Tüm BIST Tamamlanmış Harmonikler
 
-Güncelleme: 2026-09-24T20:02:06.003330+00:00
+Güncelleme: 2026-09-25T20:04:27.280877+00:00
 Evren: 626 hisse (TradingView Turkey screener)
-Aday: 6
+Aday: 5
 
-## ISCTR — Bat / 1d
-- Yön: negatif | Güven 92/100 | **hedefe yakın-kovalama**
-- Fiyat 13.2 | D 14.75 | Invalidasyon 15.039 | H1 13.646 | H2 12.964
-- B/XA 0.471 | BC/AB 0.647 | CD/BC 2.374 | AD/XA 0.889
-
-## ASTOR — Gartley / 1wk
+## AZTEK — Butterfly / 1wk
 - Yön: negatif | Güven 90/100 | **tamamlandı-kâr koru**
-- Fiyat 260.5 | D 357.75 | Invalidasyon 367.275 | H1 321.3645 | H2 298.8855
-- B/XA 0.6 | BC/AB 0.872 | CD/BC 1.329 | AD/XA 0.773
+- Fiyat 3.45 | D 5.94 | Invalidasyon 6.158 | H1 5.1072 | H2 4.5928
+- B/XA 0.799 | BC/AB 0.622 | CD/BC 2.152 | AD/XA 1.371
 
-## PKENT — Butterfly / 1d
-- Yön: pozitif | Güven 93/100 | **geçersiz**
-- Fiyat 98.25 | D 136.1 | Invalidasyon 133.95 | H1 144.313 | H2 149.387
-- B/XA 0.79 | BC/AB 0.702 | CD/BC 2.046 | AD/XA 1.369
+## MARBL — Bat / 1d
+- Yön: negatif | Güven 89/100 | **tamamlandı-kâr koru**
+- Fiyat 9.52 | D 13.16 | Invalidasyon 13.322 | H1 12.5412 | H2 12.1588
+- B/XA 0.484 | BC/AB 0.567 | CD/BC 2.412 | AD/XA 0.871
 
-## TKNSA — Butterfly / 1d
-- Yön: pozitif | Güven 90/100 | **geçersiz**
-- Fiyat 14.3 | D 18.06 | Invalidasyon 17.7 | H1 19.4352 | H2 20.2848
-- B/XA 0.784 | BC/AB 0.575 | CD/BC 2.286 | AD/XA 1.364
+## CWENE — Butterfly / 1wk
+- Yön: negatif | Güven 87/100 | **tamamlandı-kâr koru**
+- Fiyat 24.74 | D 48.3 | Invalidasyon 49.594 | H1 43.3569 | H2 40.3031
+- B/XA 0.775 | BC/AB 0.876 | CD/BC 1.807 | AD/XA 1.323
 
-## BURVA — Gartley / 1wk
-- Yön: pozitif | Güven 89/100 | **geçersiz**
-- Fiyat 459.75 | D 822.0 | Invalidasyon 769.2 | H1 1023.696 | H2 1148.304
-- B/XA 0.642 | BC/AB 0.837 | CD/BC 1.272 | AD/XA 0.789
+## BIOEN — Gartley / 1wk
+- Yön: negatif | Güven 85/100 | **tamamlandı-kâr koru**
+- Fiyat 10.2 | D 20.9 | Invalidasyon 21.446 | H1 18.8143 | H2 17.5257
+- B/XA 0.564 | BC/AB 0.816 | CD/BC 1.46 | AD/XA 0.776
 
-## ORCAY — Gartley / 1d
-- Yön: pozitif | Güven 89/100 | **geçersiz**
-- Fiyat 2.46 | D 3.85 | Invalidasyon 3.706 | H1 4.4001 | H2 4.7399
-- B/XA 0.617 | BC/AB 0.914 | CD/BC 1.264 | AD/XA 0.766
+## OSTIM — Butterfly / 1d
+- Yön: pozitif | Güven 75/100 | **geçersiz**
+- Fiyat 1.31 | D 1.71 | Invalidasyon 1.6351 | H1 1.9962 | H2 2.173
+- B/XA 0.741 | BC/AB 0.889 | CD/BC 1.771 | AD/XA 1.249
 
