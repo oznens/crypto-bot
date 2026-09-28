@@ -1,31 +1,21 @@
 # Galatalı Metodu — Tüm BIST Tamamlanmış Harmonikler
 
-Güncelleme: 2026-09-25T20:04:27.280877+00:00
+Güncelleme: 2026-09-28T22:09:11.429153+00:00
 Evren: 626 hisse (TradingView Turkey screener)
-Aday: 5
+Aday: 3
 
-## AZTEK — Butterfly / 1wk
-- Yön: negatif | Güven 90/100 | **tamamlandı-kâr koru**
-- Fiyat 3.45 | D 5.94 | Invalidasyon 6.158 | H1 5.1072 | H2 4.5928
-- B/XA 0.799 | BC/AB 0.622 | CD/BC 2.152 | AD/XA 1.371
-
-## MARBL — Bat / 1d
-- Yön: negatif | Güven 89/100 | **tamamlandı-kâr koru**
-- Fiyat 9.52 | D 13.16 | Invalidasyon 13.322 | H1 12.5412 | H2 12.1588
-- B/XA 0.484 | BC/AB 0.567 | CD/BC 2.412 | AD/XA 0.871
-
-## CWENE — Butterfly / 1wk
-- Yön: negatif | Güven 87/100 | **tamamlandı-kâr koru**
-- Fiyat 24.74 | D 48.3 | Invalidasyon 49.594 | H1 43.3569 | H2 40.3031
-- B/XA 0.775 | BC/AB 0.876 | CD/BC 1.807 | AD/XA 1.323
+## USHOL — Bat / 1wk
+- Yön: pozitif | Güven 81/100 | **aktif-takip**
+- Fiyat 59.75 | D 55.05 | Invalidasyon 51.03 | H1 70.4064 | H2 79.8936
+- B/XA 0.501 | BC/AB 0.876 | CD/BC 1.921 | AD/XA 0.904
 
 ## BIOEN — Gartley / 1wk
 - Yön: negatif | Güven 85/100 | **tamamlandı-kâr koru**
-- Fiyat 10.2 | D 20.9 | Invalidasyon 21.446 | H1 18.8143 | H2 17.5257
+- Fiyat 10.95 | D 20.9 | Invalidasyon 21.446 | H1 18.8143 | H2 17.5257
 - B/XA 0.564 | BC/AB 0.816 | CD/BC 1.46 | AD/XA 0.776
 
-## OSTIM — Butterfly / 1d
-- Yön: pozitif | Güven 75/100 | **geçersiz**
-- Fiyat 1.31 | D 1.71 | Invalidasyon 1.6351 | H1 1.9962 | H2 2.173
-- B/XA 0.741 | BC/AB 0.889 | CD/BC 1.771 | AD/XA 1.249
+## AVOD — Butterfly / 1d
+- Yön: pozitif | Güven 90/100 | **geçersiz**
+- Fiyat 3.06 | D 3.67 | Invalidasyon 3.569 | H1 4.0558 | H2 4.2942
+- B/XA 0.808 | BC/AB 0.712 | CD/BC 2.0 | AD/XA 1.384
 
