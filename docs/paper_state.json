@@ -1,5 +1,5 @@
 {
- "equity": 10090.84,
+ "equity": 10165.68,
  "startEquity": 10000,
  "open": [
   {
@@ -9,7 +9,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 4449.87395,
-   "mkt": 4153.8,
+   "mkt": 4171.6,
    "slip": 0.0005,
    "entryFee": 0.3239,
    "qty": 0.36394702,
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1787952425715,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -988,7 +988,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 66.476745,
-   "mkt": 60.51,
+   "mkt": 60.8,
    "slip": 0.0005,
    "entryFee": 0.2369,
    "qty": 17.81498545,
@@ -1953,7 +1953,7 @@
     }
    },
    "openedAt": 1787973542050,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -1967,7 +1967,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 4467.22527,
-   "mkt": 4158.36,
+   "mkt": 4173.92,
    "slip": 0.0005,
    "entryFee": 0.3218,
    "qty": 0.36017031,
@@ -2687,7 +2687,7 @@
     }
    },
    "openedAt": 1788137636177,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -2701,7 +2701,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 218.2908,
-   "mkt": 230.9,
+   "mkt": 230.42,
    "slip": 0.0005,
    "entryFee": 0.2425,
    "qty": 5.55343534,
@@ -3666,7 +3666,7 @@
     }
    },
    "openedAt": 1789052641070,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -3680,12 +3680,12 @@
    "src": "perp",
    "tf": "60m",
    "entry": 1077.770845,
-   "mkt": 1062.05,
+   "mkt": 1046.33,
    "slip": 0.0005,
    "entryFee": 0.6911,
-   "qty": 3.20624871,
+   "qty": 1.60312436,
    "notional": 3455.6,
-   "sl": 1109.25,
+   "sl": 1077.770845,
    "tp1": 1030.552113,
    "tpF": 1021.34,
    "riskUSD": 100.93,
@@ -4645,12 +4645,20 @@
     }
    },
    "openedAt": 1790177702958,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
-   "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
+   "deriskDone": true,
+   "realized": 74.84,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1790871544173,
+     "px": 1030.552113,
+     "part": 0.5,
+     "why": "TP1-derisk",
+     "pnl": 74.84
+    }
+   ]
   },
   {
    "id": "SKHYNIXSTOCK_USDT-4h-1790706139532",
@@ -4659,7 +4667,7 @@
    "src": "perp",
    "tf": "4h",
    "entry": 1326.192765,
-   "mkt": 1331.75,
+   "mkt": 1316.75,
    "slip": 0.0005,
    "entryFee": 0.4186,
    "qty": 1.57813007,
@@ -5624,7 +5632,7 @@
     }
    },
    "openedAt": 1790706139532,
-   "lastCheck": 1790844900000,
+   "lastCheck": 1790871300000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -69238,16 +69246,21 @@
    "t": 1790845065779,
    "eq": 10090.84,
    "open": 6
+  },
+  {
+   "t": 1790871544345,
+   "eq": 10165.68,
+   "open": 6
   }
  ],
- "lastRun": 1790845065779,
- "runs": 694,
+ "lastRun": 1790871544345,
+ "runs": 695,
  "stats": {
   "closed": 76,
   "wins": 31,
   "losses": 45,
   "winRate": 40.8,
-  "netPnl": 90.84,
+  "netPnl": 165.68,
   "totalR": 1.64,
   "source": "perp",
   "minConf": 75,
