@@ -1,41 +1,41 @@
 # Galatalı Metodu — Tüm BIST Tamamlanmış Harmonikler
 
-Güncelleme: 2026-10-06T21:03:54.684257+00:00
+Güncelleme: 2026-10-07T21:23:03.190597+00:00
 Evren: 626 hisse (TradingView Turkey screener)
 Aday: 7
 
-## RYSAS — Butterfly / 1wk
-- Yön: negatif | Güven 82/100 | **hedefe yakın-kovalama**
-- Fiyat 25.7 | D 30.54 | Invalidasyon 31.64 | H1 26.338 | H2 23.742
-- B/XA 0.752 | BC/AB 0.628 | CD/BC 2.053 | AD/XA 1.25
-
 ## AVGYO — Butterfly / 1d
 - Yön: negatif | Güven 81/100 | **hedefe yakın-kovalama**
-- Fiyat 16.69 | D 19.21 | Invalidasyon 19.73 | H1 17.2236 | H2 15.9964
+- Fiyat 16.44 | D 19.21 | Invalidasyon 19.73 | H1 17.2236 | H2 15.9964
 - B/XA 0.806 | BC/AB 0.897 | CD/BC 2.107 | AD/XA 1.605
 
-## MARBL — Bat / 1d
+## SOKE — Gartley / 1d
+- Yön: negatif | Güven 94/100 | **tamamlandı-kâr koru**
+- Fiyat 7.27 | D 19.63 | Invalidasyon 20.183 | H1 17.5175 | H2 16.2125
+- B/XA 0.601 | BC/AB 0.782 | CD/BC 1.377 | AD/XA 0.779
+
+## SOKE — Gartley / 1wk
+- Yön: negatif | Güven 94/100 | **tamamlandı-kâr koru**
+- Fiyat 7.27 | D 19.63 | Invalidasyon 20.183 | H1 17.5175 | H2 16.2125
+- B/XA 0.601 | BC/AB 0.782 | CD/BC 1.377 | AD/XA 0.779
+
+## DIRIT — Butterfly / 1wk
 - Yön: negatif | Güven 89/100 | **tamamlandı-kâr koru**
-- Fiyat 9.0 | D 13.16 | Invalidasyon 13.322 | H1 12.5412 | H2 12.1588
-- B/XA 0.484 | BC/AB 0.567 | CD/BC 2.412 | AD/XA 0.871
+- Fiyat 20.2 | D 29.98 | Invalidasyon 31.026 | H1 25.9843 | H2 23.5157
+- B/XA 0.807 | BC/AB 0.831 | CD/BC 1.88 | AD/XA 1.398
 
-## CWENE — Butterfly / 1wk
-- Yön: negatif | Güven 87/100 | **tamamlandı-kâr koru**
-- Fiyat 18.66 | D 48.3 | Invalidasyon 49.594 | H1 43.3569 | H2 40.3031
-- B/XA 0.775 | BC/AB 0.876 | CD/BC 1.807 | AD/XA 1.323
+## HATEK — Butterfly / 1wk
+- Yön: pozitif | Güven 85/100 | **geçersiz**
+- Fiyat 8.1 | D 11.21 | Invalidasyon 10.373 | H1 14.4073 | H2 16.3827
+- B/XA 0.769 | BC/AB 0.736 | CD/BC 2.316 | AD/XA 1.514
 
-## FONET — Gartley / 1wk
-- Yön: pozitif | Güven 93/100 | **geçersiz**
-- Fiyat 4.28 | D 4.79 | Invalidasyon 4.63 | H1 5.4012 | H2 5.7788
-- B/XA 0.632 | BC/AB 0.791 | CD/BC 1.304 | AD/XA 0.784
-
-## SERNT — Butterfly / 1d
+## KUYAS — Gartley / 1d
 - Yön: pozitif | Güven 82/100 | **geçersiz**
-- Fiyat 5.01 | D 8.53 | Invalidasyon 8.218 | H1 9.7218 | H2 10.4582
-- B/XA 0.795 | BC/AB 0.48 | CD/BC 2.134 | AD/XA 1.228
+- Fiyat 15.86 | D 60.25 | Invalidasyon 58.6 | H1 66.553 | H2 70.447
+- B/XA 0.67 | BC/AB 0.703 | CD/BC 1.196 | AD/XA 0.762
 
-## OSTIM — Butterfly / 1d
-- Yön: pozitif | Güven 75/100 | **geçersiz**
-- Fiyat 1.21 | D 1.71 | Invalidasyon 1.6351 | H1 1.9962 | H2 2.173
-- B/XA 0.741 | BC/AB 0.889 | CD/BC 1.771 | AD/XA 1.249
+## EGEGY — Gartley / 1wk
+- Yön: pozitif | Güven 74/100 | **geçersiz**
+- Fiyat 16.49 | D 25.6 | Invalidasyon 24.612 | H1 29.3742 | H2 31.7058
+- B/XA 0.669 | BC/AB 0.854 | CD/BC 1.132 | AD/XA 0.744
 
