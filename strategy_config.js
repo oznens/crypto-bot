@@ -14,7 +14,9 @@ module.exports = Object.freeze({
   LTF: '15m',
   TIMEFRAMES: Object.freeze([
     Object.freeze({ tf: '15m', ltf: '5m' }),
+    Object.freeze({ tf: '30m', ltf: '5m' }),
     Object.freeze({ tf: '60m', ltf: '15m' }),
+    Object.freeze({ tf: '2h', ltf: '30m' }),
     Object.freeze({ tf: '4h', ltf: '60m' }),
     Object.freeze({ tf: '1d', ltf: '4h' })
   ]),

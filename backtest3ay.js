@@ -16,6 +16,7 @@ const https = require('https'), fs = require('fs');
 const A = require('./analysis');
 
 const N_SYM = +(process.env.SYMS || 30);
+const HISTORICAL_DAILY_TOP = process.env.HISTORICAL_DAILY_TOP === '1';
 const GUN = +(process.env.GUN || 90);
 const START_EQ = 10000, RISK_PCT = 0.01, LEV_CAP = 10;
 const MAX_OPEN = 6, MAX_NEW_PER_BUCKET = 2, BUCKET_MS = 5 * 60000;
@@ -23,8 +24,8 @@ const MIN_CONF = 75, TP1_R = 1.5;
 const MIN_RISK = { '15m': 0.008, '60m': 0.012, '4h': 0.02, '1d': 0.03 };
 const FEE_TAKER = 0.0002, FEE_MAKER = 0.0001, SLIP = 0.0005;
 const TF_LIST = [['1d', '60m'], ['4h', '15m'], ['60m', '15m'], ['15m', '5m']];
-const IV = { '5m': 'Min5', '15m': 'Min15', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
-const SEC = { '5m': 300, '15m': 900, '60m': 3600, '4h': 14400, '1d': 86400 };
+const IV = { '5m': 'Min5', '15m': 'Min15', '30m': 'Min30', '60m': 'Min60', '4h': 'Hour4', '1d': 'Day1' };
+const SEC = { '5m': 300, '15m': 900, '30m': 1800, '60m': 3600, '2h': 7200, '4h': 14400, '1d': 86400 };
 const WARMUP = 520;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -49,6 +50,16 @@ async function get(url) {                       // rate-limit'e karşı artan be
   throw last;
 }
 async function klines(sym, tf, startSec, endSec) {   // 2000 bar limitini sayfalayarak aşar
+  if (tf === '2h') {
+    const src = await klines(sym, '60m', startSec, endSec), bucketMs = SEC['2h'] * 1000, out = [];
+    for (const row of src) {
+      const bucket = Math.floor(row.t / bucketMs) * bucketMs;
+      let g = out[out.length - 1];
+      if (!g || g.t !== bucket) { g = { t: bucket, o: row.o, h: row.h, l: row.l, c: row.c, v: row.v || 0, a: row.a || 0 }; out.push(g); }
+      else { g.h = Math.max(g.h, row.h); g.l = Math.min(g.l, row.l); g.c = row.c; g.v += row.v || 0; g.a += row.a || 0; }
+    }
+    return out;
+  }
   const step = SEC[tf], out = [];
   let end = endSec;
   while (end > startSec) {
@@ -60,7 +71,7 @@ async function klines(sym, tf, startSec, endSec) {   // 2000 bar limitini sayfal
     }
     const dd = j && j.data;
     if (!dd || !dd.time || !dd.time.length) break;
-    for (let i = 0; i < dd.time.length; i++) out.push({ t: dd.time[i] * 1000, o: +dd.open[i], h: +dd.high[i], l: +dd.low[i], c: +dd.close[i], v: +dd.vol[i] });
+    for (let i = 0; i < dd.time.length; i++) out.push({ t: dd.time[i] * 1000, o: +dd.open[i], h: +dd.high[i], l: +dd.low[i], c: +dd.close[i], v: +dd.vol[i], a: +(dd.amount && dd.amount[i]) || 0 });
     if (dd.time.length < 100) break;
     end = dd.time[0] - step;
     await sleep(260);         // MEXC 5600+ istekte IP'yi 403'lüyor — nazik hız (ilk koşumda 90ms engellenmeye yol açtı)
@@ -103,9 +114,35 @@ function findManips(candles) {
   console.log('=== 3 AY GERÇEK BACKTEST === sembol:', N_SYM, '| gün:', GUN, '| test başlangıcı:', iso(testStart));
 
   const tick = await get('https://contract.mexc.com/api/v1/contract/ticker');
-  const syms = (tick.data || []).filter(x => /_USDT$/.test(x.symbol) && +x.amount24 > 0)
-    .sort((a, b) => +b.amount24 - +a.amount24).slice(0, N_SYM).map(x => x.symbol);
-  console.log('semboller:', syms.slice(0, 8).join(', '), '...\n');
+  const active = (tick.data || []).filter(x => /_USDT$/.test(x.symbol) && +x.amount24 > 0);
+  let syms = active.sort((a, b) => +b.amount24 - +a.amount24).slice(0, N_SYM).map(x => x.symbol);
+  const dailyTop = new Map();
+  if (HISTORICAL_DAILY_TOP) {
+    const byDay = new Map();
+    const volumeStart = Math.floor(testStart / 1000) - 2 * SEC['1d'];
+    console.log('Tarihsel evren hazırlanıyor: her UTC günü için önceki tamamlanmış 24 saatin top-' + N_SYM + ' hacmi...');
+    for (let i = 0; i < active.length; i++) {
+      const sym = active[i].symbol;
+      let days = [];
+      try { days = await klines(sym, '1d', volumeStart, nowSec); } catch (e) {}
+      for (const d of days) {
+        if (!d.a) continue;
+        if (!byDay.has(d.t)) byDay.set(d.t, []);
+        byDay.get(d.t).push({ sym, amount: d.a });
+      }
+      if ((i + 1) % 50 === 0) process.stdout.write('  hacim taraması ' + (i + 1) + '/' + active.length + '\n');
+      await sleep(90);
+    }
+    const dayMs = SEC['1d'] * 1000;
+    for (let day = Math.floor(testStart / dayMs) * dayMs; day <= nowSec * 1000; day += dayMs) {
+      const prev = byDay.get(day - dayMs) || [];
+      dailyTop.set(day, new Set(prev.sort((a, b) => b.amount - a.amount).slice(0, N_SYM).map(x => x.sym)));
+    }
+    syms = [...new Set([...dailyTop.values()].flatMap(set => [...set]))];
+    console.log('Günlük top-' + N_SYM + ' birleşimi: ' + syms.length + ' farklı sembol.\n');
+  } else {
+    console.log('semboller:', syms.slice(0, 8).join(', '), '...\n');
+  }
 
   // ---- FAZ A: aday sinyal üretimi (sembol sembol, bellek dostu) ----
   const cands = [];
@@ -124,6 +161,10 @@ function findManips(candles) {
       for (const m of manips) {
         const barT = cc[m.at].t;
         if (barT < testStart || m.at >= cc.length - 1) continue;      // sadece test penceresi
+        if (HISTORICAL_DAILY_TOP) {
+          const day = Math.floor(barT / (SEC['1d'] * 1000)) * SEC['1d'] * 1000;
+          if (!dailyTop.get(day)?.has(sym)) continue;
+        }
         const hist = cc.slice(0, m.at + 1);                            // SIZINTI YOK
         if (hist.length < 80) continue;
         let a;
@@ -268,7 +309,7 @@ function findManips(candles) {
     Object.entries(m).sort((a, b) => b[1].n - a[1].n).forEach(([k, v]) => say('  ' + k.padEnd(12) + String(v.n).padStart(5) + String(Math.round(100 * v.w / v.n)).padStart(6) + (v.r / v.n).toFixed(2).padStart(8) + v.r.toFixed(1).padStart(9) + v.usd.toFixed(0).padStart(10) + String(Math.round(100 * v.tp1 / v.n)).padStart(7))); };
 
   say('\n================ SONUÇ ================');
-  say('Dönem: ' + iso(testStart) + ' → ' + iso(Date.now()) + ' (' + GUN + ' gün) · ' + N_SYM + ' sembol · ' + REQ + ' API isteği');
+  say('Dönem: ' + iso(testStart) + ' → ' + iso(Date.now()) + ' (' + GUN + ' gün) · günlük top-' + N_SYM + ' · ' + REQ + ' API isteği');
   say('Aday sinyal: ' + cands.length + ' | portföy kurallarıyla açılan: ' + (closed.length + open.length) + ' | kapanan: ' + closed.length + ' | hâlâ açık: ' + open.length);
   const topR = closed.reduce((a, t) => a + t.r, 0), wins = closed.filter(t => t.realized > 0).length;
   say('KASA: ' + START_EQ + '$ → ' + rnd(eq, 2) + '$  (net ' + (eq - START_EQ >= 0 ? '+' : '') + rnd(eq - START_EQ, 2) + '$ = %' + rnd(100 * (eq - START_EQ) / START_EQ, 1) + ')');
@@ -286,7 +327,7 @@ function findManips(candles) {
     say('\nEN İYİ 5:'); [...closed].sort((a, b) => b.r - a.r).slice(0, 5).forEach(t => say('  ' + t.sym.padEnd(15) + t.tf.padEnd(4) + t.side.padEnd(6) + 'R' + t.r.toFixed(2).padStart(6) + '  ' + iso(t.t)));
     say('EN KÖTÜ 5:'); [...closed].sort((a, b) => a.r - b.r).slice(0, 5).forEach(t => say('  ' + t.sym.padEnd(15) + t.tf.padEnd(4) + t.side.padEnd(6) + 'R' + t.r.toFixed(2).padStart(6) + '  ' + iso(t.t)));
   }
-  say('\nNOT: semboller BUGÜNKÜ hacim top-' + N_SYM + "'i (seçim yanlılığı); giriş = reclaim barı kapanışı;");
+  say('\nNOT: semboller ' + (HISTORICAL_DAILY_TOP ? 'her UTC günü başlamadan önceki tamamlanmış 24 saat hacminin top-' + N_SYM + "'i" : "BUGÜNKÜ hacim top-" + N_SYM + "'i (seçim yanlılığı)") + '; giriş = reclaim barı kapanışı;');
   say('yönetim 5m barlarla, aynı barda SL+TP → SL (muhafazakâr); komisyon+kayma dahil.');
   fs.writeFileSync(__dirname + '/backtest3ay_sonuc.txt', L.join('\n'));
   fs.writeFileSync(__dirname + '/backtest3ay_islemler.json', JSON.stringify({ closed: closed.map(t => ({ sym: t.sym, tf: t.tf, side: t.side, t: t.t, sonuc: t.sonuc, r: rnd(t.r, 2), usd: rnd(t.realized, 2), conf: t.conf, mmxm: t.mmxm, stopATR: t.stopATR, bodyATR: t.bodyATR, tpfATR: t.tpfATR, nyHour: t.nyHour })), eqCurve }, null, 1));
