@@ -1,26 +1,16 @@
 # Galatalı Metodu — Tüm BIST Tamamlanmış Harmonikler
 
-Güncelleme: 2026-10-30T20:53:14.386703+00:00
+Güncelleme: 2026-11-02T23:37:43.239387+00:00
 Evren: 626 hisse (TradingView Turkey screener)
-Aday: 4
+Aday: 2
 
 ## GEDIK — Butterfly / 1wk
-- Yön: pozitif | Güven 91/100 | **doğru maliyet bekle**
-- Fiyat 4.77 | D 4.65 | Invalidasyon 4.31 | H1 5.9488 | H2 6.7512
-- B/XA 0.782 | BC/AB 0.649 | CD/BC 2.015 | AD/XA 1.298
+- Yön: pozitif | Güven 92/100 | **aktif-takip**
+- Fiyat 4.9 | D 4.55 | Invalidasyon 4.2 | H1 5.887 | H2 6.713
+- B/XA 0.782 | BC/AB 0.649 | CD/BC 2.09 | AD/XA 1.336
 
-## KONYA — Crab / 1d
-- Yön: negatif | Güven 91/100 | **tamamlandı-kâr koru**
-- Fiyat 2735.0 | D 4187.5 | Invalidasyon 4246.75 | H1 3961.165 | H2 3821.335
-- B/XA 0.51 | BC/AB 0.813 | CD/BC 3.656 | AD/XA 1.612
-
-## SMRVA — Butterfly / 1d
-- Yön: pozitif | Güven 81/100 | **geçersiz**
-- Fiyat 4.2 | D 10.29 | Invalidasyon 9.991 | H1 11.4322 | H2 12.1378
-- B/XA 0.798 | BC/AB 0.474 | CD/BC 2.141 | AD/XA 1.23
-
-## SNPAM — Butterfly / 1wk
-- Yön: pozitif | Güven 81/100 | **geçersiz**
-- Fiyat 16.35 | D 18.6 | Invalidasyon 17.952 | H1 21.0754 | H2 22.6046
-- B/XA 0.813 | BC/AB 0.49 | CD/BC 2.2 | AD/XA 1.291
+## DIRIT — Butterfly / 1d
+- Yön: negatif | Güven 89/100 | **tamamlandı-kâr koru**
+- Fiyat 15.15 | D 29.98 | Invalidasyon 31.026 | H1 25.9843 | H2 23.5157
+- B/XA 0.807 | BC/AB 0.831 | CD/BC 1.88 | AD/XA 1.398
 
