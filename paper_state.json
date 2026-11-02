@@ -1,5 +1,5 @@
 {
- "equity": 11276.65,
+ "equity": 11358.68,
  "startEquity": 10000,
  "open": [
   {
@@ -9,7 +9,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 92.54625,
-   "mkt": 97.91,
+   "mkt": 96.62,
    "slip": 0.0005,
    "entryFee": 0.3333,
    "qty": 9.00268111,
@@ -974,7 +974,7 @@
     }
    },
    "openedAt": 1791471300304,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
    "deriskDone": true,
    "realized": 78.4,
@@ -996,7 +996,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 162.01895,
-   "mkt": 137.09,
+   "mkt": 137.12,
    "slip": 0.0005,
    "entryFee": 0.2296,
    "qty": 3.54285946,
@@ -1961,7 +1961,7 @@
     }
    },
    "openedAt": 1791491866460,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
    "deriskDone": true,
    "realized": 78.48,
@@ -1983,7 +1983,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 909.69462,
-   "mkt": 903.68,
+   "mkt": 837.79,
    "slip": 0.0005,
    "entryFee": 0.2168,
    "qty": 1.19177574,
@@ -2948,7 +2948,7 @@
     }
    },
    "openedAt": 1792429930728,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -2962,7 +2962,7 @@
    "src": "perp",
    "tf": "15m",
    "entry": 77551.85655,
-   "mkt": 77875.8,
+   "mkt": 76781.4,
    "slip": 0.0005,
    "entryFee": 1.2967,
    "qty": 0.08360218,
@@ -3927,7 +3927,7 @@
     }
    },
    "openedAt": 1793328285252,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -3941,12 +3941,12 @@
    "src": "perp",
    "tf": "60m",
    "entry": 11.599198,
-   "mkt": 11.336,
+   "mkt": 11.069,
    "slip": 0.0005,
    "entryFee": 0.6699,
-   "qty": 288.75922139,
+   "qty": 144.3796107,
    "notional": 3349.38,
-   "sl": 11.9818,
+   "sl": 11.599198,
    "tp1": 11.025294,
    "tpF": 10.26,
    "riskUSD": 110.48,
@@ -4906,12 +4906,20 @@
     }
    },
    "openedAt": 1793499744672,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
-   "deriskDone": false,
-   "realized": 0,
-   "feeCharged": false,
-   "fills": []
+   "deriskDone": true,
+   "realized": 82.03,
+   "feeCharged": true,
+   "fills": [
+    {
+     "t": 1793659019555,
+     "px": 11.025294,
+     "part": 0.5,
+     "why": "TP1-derisk",
+     "pnl": 82.03
+    }
+   ]
   },
   {
    "id": "XAU_USDT-1d-1793577308487",
@@ -4920,7 +4928,7 @@
    "src": "perp",
    "tf": "1d",
    "entry": 3911.464755,
-   "mkt": 3949.72,
+   "mkt": 3957.48,
    "slip": 0.0005,
    "entryFee": 1.6266,
    "qty": 2.07929399,
@@ -5885,7 +5893,7 @@
     }
    },
    "openedAt": 1793577308487,
-   "lastCheck": 1793627400000,
+   "lastCheck": 1793658900000,
    "status": "open",
    "deriskDone": false,
    "realized": 0,
@@ -72268,16 +72276,21 @@
    "t": 1793627573954,
    "eq": 11276.65,
    "open": 6
+  },
+  {
+   "t": 1793659019674,
+   "eq": 11358.68,
+   "open": 6
   }
  ],
- "lastRun": 1793627573954,
- "runs": 863,
+ "lastRun": 1793659019674,
+ "runs": 864,
  "stats": {
   "closed": 109,
   "wins": 48,
   "losses": 61,
   "winRate": 44,
-  "netPnl": 1276.65,
+  "netPnl": 1358.68,
   "totalR": 12.48,
   "source": "perp",
   "minConf": 75,
