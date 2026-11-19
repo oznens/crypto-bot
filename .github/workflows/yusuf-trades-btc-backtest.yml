@@ -1,0 +1,25 @@
+name: Yusuf Trades BTCUSDT Backtest
+on:
+  pull_request:
+    paths:
+      - 'backtests/yusuf_trades_btc.py'
+      - '.github/workflows/yusuf-trades-btc-backtest.yml'
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pandas
+      - name: Run backtest
+        run: python backtests/yusuf_trades_btc.py
+      - name: Show summary
+        run: cat backtests/yusuf-btc-results/summary.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yusuf-trades-btc-results
+          path: backtests/yusuf-btc-results/
